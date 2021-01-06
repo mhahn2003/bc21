@@ -28,7 +28,7 @@ public class Nav {
         // reset if new destination
         if (currentDest != dest) {
             currentDest = dest;
-            patience = 0;
+            closestDist = 1000000;
         }
         closestDist = Math.min(closestDist, rc.getLocation().distanceSquaredTo(dest));
         if (!rc.isReady()) return;

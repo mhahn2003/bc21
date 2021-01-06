@@ -3,8 +3,13 @@ package init;
 import battlecode.common.*;
 
 public class Muckraker extends Robot {
+
+    private int[][] ends = {{10000, 10000}, {10000, 20000}, {10000, 30000}, {20000, 30000}, {30000, 30000}, {30000, 20000}, {30000, 10000}, {20000, 10000}};
+    private MapLocation wandLoc;
+
     public Muckraker(RobotController rc) {
         super(rc);
+        wandLoc = new MapLocation(ends[rc.getID() % 8][0], ends[rc.getID() % 8][1]);
     }
 
     public void takeTurn() throws GameActionException {
@@ -35,5 +40,10 @@ public class Muckraker extends Robot {
 
     static Direction randomDirection() {
         return directions[(int) (Math.random() * directions.length)];
+    }
+
+    // wander around
+    public void wander() throws GameActionException {
+        nav.goTo(wandLoc);
     }
 }
