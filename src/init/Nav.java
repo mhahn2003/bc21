@@ -30,6 +30,7 @@ public class Nav {
             currentDest = dest;
             closestDist = 1000000;
         }
+        rc.setIndicatorDot(dest, 0, 255, 0);
         closestDist = Math.min(closestDist, rc.getLocation().distanceSquaredTo(dest));
         if (!rc.isReady()) return;
         // if adjacent to it just move
