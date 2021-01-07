@@ -1,6 +1,9 @@
-package init;
+package coms;
 
-import battlecode.common.*;
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.RobotController;
+import battlecode.common.RobotInfo;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -145,7 +148,7 @@ public class Coms {
     public void sendPath(int id, Direction[] path) throws GameActionException {
         int[] path_value = new int[path.length/8+1];
         for (int i =0; i<path.length; i++){
-            path_value[i/8]+=Coms.directionToInt(path[i])  <<(3*(i%8) );
+            path_value[i/8]+= Coms.directionToInt(path[i])  <<(3*(i%8) );
         }
         queueSignal(id,0b10000001,path_value);
     }
