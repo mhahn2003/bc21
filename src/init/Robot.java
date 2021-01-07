@@ -8,6 +8,7 @@ import battlecode.common.RobotType;
 public class Robot {
     static RobotController rc;
     static Nav nav;
+    static Coms coms;
 
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
@@ -29,6 +30,7 @@ public class Robot {
     public Robot(RobotController r) {
         rc = r;
         nav = new Nav(rc);
+        coms = new Coms(rc);
     }
 
     public void takeTurn() throws GameActionException {
