@@ -8,6 +8,12 @@ public class Nav {
     private MapLocation currentDest;
     private int closestDist;
 
+    private int minX = 9999;
+    private int maxX = 30001;
+    private int minY = 9999;
+    private int maxY = 30001;
+    private int[][] ends;
+    public boolean[] edges = {false, false, false, false};
 
     // constants
     private double PASS = 0.4;
@@ -30,6 +36,7 @@ public class Nav {
             currentDest = dest;
             closestDist = 1000000;
         }
+        System.out.println("Going towards" + dest.toString());
         rc.setIndicatorDot(dest, 0, 255, 0);
         closestDist = Math.min(closestDist, rc.getLocation().distanceSquaredTo(dest));
         if (!rc.isReady()) return;
@@ -107,6 +114,7 @@ public class Nav {
             rc.move(str);
             patience += 3;
         }
+        lookAround();
     }
 
 
@@ -115,4 +123,44 @@ public class Nav {
 
     }
 
+    // relay information about surroundings
+    public void lookAround() throws GameActionException {
+        // first check for any edges
+        for (int i = 0; i < 4; i++) {
+            Direction dir = Direction.cardinalDirections()[i];
+            System.out.println(dir.toString());
+            MapLocation checkLoc = rc.getLocation().add(dir);
+            while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
+                if (!rc.onTheMap(checkLoc)) {
+                    System.out.println("I see an edge");
+                    if (!edges[i]) {
+                        // comm this information
+                        edges[i] = true;
+                        if (i == 0) maxY = checkLoc.y-1;
+                        if (i == 1) maxX = checkLoc.x-1;
+                        if (i == 2) minY = checkLoc.y+1;
+                        if (i == 3) minX = checkLoc.x+1;
+                    }
+                    break;
+                }
+                checkLoc = checkLoc.add(dir);
+            }
+        }
+    }
+
+    public int[][] getEnds() {
+        int midX, midY;
+        if (minX == 9999 && maxX == 30001) midX = 20000;
+        else if (minX == 9999) midX = maxX-32;
+        else if (maxX == 30001) midX = minX+32;
+        else midX = (minX+maxX)/2;
+
+        if (minY == 9999 && maxY == 30001) midY = 20000;
+        else if (minY == 9999) midY = maxY-32;
+        else if (maxY == 30001) midY = minY+32;
+        else midY = (minY+maxY)/2;
+
+        ends = new int[][]{{minX, minY}, {minX, midY}, {minX, maxY}, {midX, maxY}, {maxX, maxY}, {maxX, midY}, {maxX, minY}, {midX, minY}};
+        return ends;
+    }
 }

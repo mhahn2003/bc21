@@ -4,12 +4,11 @@ import battlecode.common.*;
 
 public class Muckraker extends Robot {
 
-    private int[][] ends = {{10000, 10000}, {10000, 20000}, {10000, 30000}, {20000, 30000}, {30000, 30000}, {30000, 20000}, {30000, 10000}, {20000, 10000}};
+
     private MapLocation wandLoc;
 
     public Muckraker(RobotController rc) {
         super(rc);
-        wandLoc = new MapLocation(ends[rc.getID() % 8][0], ends[rc.getID() % 8][1]);
     }
 
     public void takeTurn() throws GameActionException {
@@ -21,7 +20,7 @@ public class Muckraker extends Robot {
         int closestSlandererDist = 100000;
         MapLocation closestSlanderer = null;
         int maxSlanderer = -1;
-        for (RobotInfo robot : rc.senseNearbyRobots(actionRadius, enemy)) {
+        for (RobotInfo robot : rc.senseNearbyRobots(rc.getType().sensorRadiusSquared, enemy)) {
             if (robot.type.canBeExposed()) {
                 int dist = rc.getLocation().distanceSquaredTo(robot.getLocation());
                 if (dist <= closestSlandererDist) {
@@ -62,6 +61,7 @@ public class Muckraker extends Robot {
     // wander around
     // TODO: what if you're already at a corner/side and you want to explore more
     public void wander() throws GameActionException {
+        wandLoc = new MapLocation(nav.getEnds()[rc.getID() % 8][0], nav.getEnds()[rc.getID() % 8][1]);
         nav.goTo(wandLoc);
     }
 }

@@ -13,6 +13,7 @@ public class EC extends Robot {
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
+        nav.lookAround();
         RobotType toBuild = randomSpawnableRobotType();
         int influence = 50;
         for (Direction dir : directions) {
