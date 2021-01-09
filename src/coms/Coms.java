@@ -247,7 +247,7 @@ public class Coms {
 
     // process the information gained from flag
     public void processFlag(int flag) {
-        if (flag == 0) return;
+        if (flag == 0 || getCat(flag) == null) return;
         MapLocation coord = getCoord(flag);
         int ID = getID(flag);
         int minInd;
@@ -272,14 +272,6 @@ public class Coms {
                 }
                 break;
             case ENEMY_EC:
-                if (!ECLoc.containsValue(coord)) {
-                    for (int i = 0; i < 12; i++) {
-                        if (enemyECs[i] == null) {
-                            enemyECs[i] = coord;
-                            break;
-                        }
-                    }
-                }
                 minInd = -1;
                 seen = false;
                 for (int i = 11; i >= 0; i--) {
