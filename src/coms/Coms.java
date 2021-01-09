@@ -1,25 +1,26 @@
 package coms;
 
-import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
+import battlecode.common.*;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.PriorityQueue;
+
+import static coms.Robot.*;
 
 public class Coms {
     public static RobotController rc;
     private final int senseRadius;
     private final int[] enlightenmentCenterIds = new int[12];
-    private final Queue<Integer> signalQueue = new LinkedList<>();
+    private final PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
 
     // number of possible cases for InfoCategory enum class
-    private static int numCase = 21;
+    private static int numCase = 4;
 
     public Coms(RobotController r) {
         rc = r;
         senseRadius = rc.getType().sensorRadiusSquared;
     }
 
+    // TODO: need to order in terms of priority
     public enum InformationCategory {
         EDGE,
         ENEMY_EC,
@@ -70,6 +71,50 @@ public class Coms {
             else y = here.y+y+128-remY;
         } else y = here.y-remY+y;
         return new MapLocation(x, y);
+    }
+
+    // relay information about surroundings
+    public void collectInfo() throws GameActionException {
+        // first check for any edges
+        for (int i = 0; i < 4; i++) {
+            Direction dir = Direction.cardinalDirections()[i];
+            System.out.println(dir.toString());
+            MapLocation checkLoc = rc.getLocation().add(dir);
+            while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
+                if (!rc.onTheMap(checkLoc)) {
+                    System.out.println("I see an edge");
+                    if (!edges[i]) {
+                        // comm this information
+                        edges[i] = true;
+                        if (i == 0) {
+                            maxY = checkLoc.y-1;
+                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(30001, maxY)));
+                        }
+                        if (i == 1) {
+                            maxX = checkLoc.x-1;
+                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(maxX, 30001)));
+                        }
+                        if (i == 2) {
+                            minY = checkLoc.y+1;
+                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(9999, minY)));
+                        }
+                        if (i == 3) {
+                            minX = checkLoc.x+1;
+                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(minX, 9999)));
+                        }
+                    }
+                    break;
+                }
+                checkLoc = checkLoc.add(dir);
+            }
+        }
+        // check for any ECs
+        RobotInfo[] robots = rc.senseNearbyRobots();
+        for (RobotInfo r: robots) {
+            if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+                // stuff
+            }
+        }
     }
 
 }

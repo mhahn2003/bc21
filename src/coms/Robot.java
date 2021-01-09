@@ -10,6 +10,13 @@ public class Robot {
     static Nav nav;
     static Coms coms;
 
+    static int minX = 9999;
+    static int maxX = 30001;
+    static int minY = 9999;
+    static int maxY = 30001;
+    static int[][] ends;
+    static boolean[] edges = {false, false, false, false};
+
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
             RobotType.SLANDERER,
@@ -34,6 +41,6 @@ public class Robot {
     }
 
     public void takeTurn() throws GameActionException {
-        nav.lookAround();
+        coms.collectInfo();
     }
 }

@@ -1,6 +1,7 @@
 package coms;
 
 import battlecode.common.*;
+import static coms.Robot.*;
 
 public class Nav {
     private int patience;
@@ -8,21 +9,10 @@ public class Nav {
     private MapLocation currentDest;
     private int closestDist;
 
-    private int minX = 9999;
-    private int maxX = 30001;
-    private int minY = 9999;
-    private int maxY = 30001;
-    private int[][] ends;
-    public boolean[] edges = {false, false, false, false};
+
     private static Direction[] directions = Direction.cardinalDirections();
 
     // constants
-    private double PASS = 0.4;
-    private double PASS_DIAG = 0.55;
-    private double PASS_PERP = 0.65;
-    private double PASS_OPP_DIAG = 0.85;
-    private double PASS_OPP = 0.95;
-    private int IMPATIENCE = 4;
     private static double THRESHOLD = 0.45;
 
     public Nav(RobotController rc) {
@@ -123,31 +113,6 @@ public class Nav {
     // chase a unit based on their ID
     public void chase(RobotInfo ri) throws GameActionException {
 
-    }
-
-    // relay information about surroundings
-    public void lookAround() throws GameActionException {
-        // first check for any edges
-        for (int i = 0; i < 4; i++) {
-            Direction dir = Direction.cardinalDirections()[i];
-            System.out.println(dir.toString());
-            MapLocation checkLoc = rc.getLocation().add(dir);
-            while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
-                if (!rc.onTheMap(checkLoc)) {
-                    System.out.println("I see an edge");
-                    if (!edges[i]) {
-                        // comm this information
-                        edges[i] = true;
-                        if (i == 0) maxY = checkLoc.y-1;
-                        if (i == 1) maxX = checkLoc.x-1;
-                        if (i == 2) minY = checkLoc.y+1;
-                        if (i == 3) minX = checkLoc.x+1;
-                    }
-                    break;
-                }
-                checkLoc = checkLoc.add(dir);
-            }
-        }
     }
 
     public int[][] getEnds() {
