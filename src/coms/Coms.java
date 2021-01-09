@@ -133,4 +133,9 @@ public class Coms {
         }
     }
 
+    // get information from flags
+    public void getInfo() throws GameActionException {
+        
+    }
+
 }
