@@ -112,7 +112,23 @@ public class Coms {
         RobotInfo[] robots = rc.senseNearbyRobots();
         for (RobotInfo r: robots) {
             if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                // stuff
+                int id = r.getID();
+                if (!ECLoc.containsKey(r.getID())) {
+                    MapLocation loc = r.getLocation();
+                    ECLoc.put(id, loc);
+                    if (r.getTeam() == team) {
+                        ECs.add(id);
+                        signalQueue.add(getMessage(InformationCategory.EC, loc));
+                    }
+                    else if (r.getTeam() == team.opponent()) {
+                        enemyECs.add(id);
+                        signalQueue.add(getMessage(InformationCategory.ENEMY_EC, loc));
+                    }
+                    else {
+                        neutralECs.add(id);
+                        signalQueue.add(getMessage(InformationCategory.NEUTRAL_EC, loc));
+                    }
+                }
             }
         }
     }

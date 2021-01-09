@@ -1,9 +1,9 @@
 package coms;
 
-import battlecode.common.Direction;
-import battlecode.common.GameActionException;
-import battlecode.common.RobotController;
-import battlecode.common.RobotType;
+import battlecode.common.*;
+
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class Robot {
     static RobotController rc;
@@ -16,6 +16,11 @@ public class Robot {
     static int maxY = 30001;
     static int[][] ends;
     static boolean[] edges = {false, false, false, false};
+    static Team team = rc.getTeam();
+    static HashSet<Integer> ECs = new HashSet<>();
+    static HashSet<Integer> neutralECs = new HashSet<>();
+    static HashSet<Integer> enemyECs = new HashSet<>();
+    static HashMap<Integer, MapLocation> ECLoc = new HashMap<>();
 
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
