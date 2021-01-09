@@ -19,7 +19,9 @@ public class EC extends Robot {
             // build a slanderer
             build(RobotType.SLANDERER, 150);
         }
-        if (turnCount < 60) {
+//        System.out.println("About to produce muck");
+//        build(RobotType.MUCKRAKER, 1);
+        if (turnCount < 250) {
             if (rc.getInfluence() < 150) {
                 build(RobotType.MUCKRAKER, 1);
             } else {
@@ -44,9 +46,8 @@ public class EC extends Robot {
     public void build(RobotType toBuild, int influence) throws GameActionException {
         for (Direction dir : directions) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
+                System.out.println("I can build in " + dir);
                 rc.buildRobot(toBuild, dir, influence);
-            } else {
-                break;
             }
         }
     }
