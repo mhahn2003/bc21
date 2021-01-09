@@ -15,7 +15,7 @@ public class Robot {
     static int maxY = 30065;
     static int[][] ends;
     static boolean[] edges = {false, false, false, false};
-    static Team team = rc.getTeam();
+    static Team team;
     // ECIds may not necessarily correspond to EC MapLocations
     static int[] ECIds = new int[12];
     static MapLocation[] ECs = new MapLocation[12];
@@ -45,7 +45,9 @@ public class Robot {
     public Robot(RobotController r) {
         rc = r;
         nav = new Nav(rc);
-        coms = new Coms(rc);
+        if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) coms = new ECComs(rc);
+        else coms = new Coms(rc);
+        team = rc.getTeam();
     }
 
     public void takeTurn() throws GameActionException {

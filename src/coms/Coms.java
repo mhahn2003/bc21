@@ -166,8 +166,7 @@ public class Coms {
                         for (int i = 11; i >= 0; i--) {
                             if (ECs[i] == null) {
                                 minInd = i;
-                            }
-                            else if (ECs[i].equals(r.getLocation())) {
+                            } else if (ECs[i].equals(r.getLocation())) {
                                 seen = true;
                                 break;
                             }
@@ -176,8 +175,7 @@ public class Coms {
                             ECs[minInd] = r.getLocation();
                             signalQueue.add(getMessage(InformationCategory.EC, loc));
                         }
-                    }
-                    else if (r.getTeam() == team.opponent()) {
+                    } else if (r.getTeam() == team.opponent()) {
                         for (int i = 0; i < 12; i++) {
                             if (loc.equals(ECs[i])) {
                                 ECs[i] = null;
@@ -193,8 +191,7 @@ public class Coms {
                         for (int i = 11; i >= 0; i--) {
                             if (enemyECs[i] == null) {
                                 minInd = i;
-                            }
-                            else if (enemyECs[i].equals(r.getLocation())) {
+                            } else if (enemyECs[i].equals(r.getLocation())) {
                                 seen = true;
                                 break;
                             }
@@ -203,15 +200,13 @@ public class Coms {
                             enemyECs[minInd] = r.getLocation();
                             signalQueue.add(getMessage(InformationCategory.ENEMY_EC, loc));
                         }
-                    }
-                    else {
+                    } else {
                         int minInd = -1;
                         boolean seen = false;
                         for (int i = 11; i >= 0; i--) {
                             if (neutralECs[i] == null) {
                                 minInd = i;
-                            }
-                            else if (neutralECs[i].equals(r.getLocation())) {
+                            } else if (neutralECs[i].equals(r.getLocation())) {
                                 seen = true;
                                 break;
                             }
@@ -223,6 +218,11 @@ public class Coms {
                     }
                 }
             }
+        }
+        // set flag
+        if (!signalQueue.isEmpty()) {
+            int flag = signalQueue.poll();
+            rc.setFlag(flag);
         }
     }
 
@@ -247,6 +247,7 @@ public class Coms {
 
     // process the information gained from flag
     public void processFlag(int flag) {
+        if (flag == 0) return;
         MapLocation coord = getCoord(flag);
         int ID = getID(flag);
         int minInd;
