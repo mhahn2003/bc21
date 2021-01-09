@@ -253,10 +253,22 @@ public class Coms {
         boolean seen;
         switch (getCat(flag)) {
             case EDGE:
-                if (coord.x == 9999) minY = coord.y;
-                if (coord.x == 30065) maxY = coord.y;
-                if (coord.y == 9999) minX = coord.x;
-                if (coord.y == 30065) maxX = coord.x;
+                if (coord.x == 9999) {
+                    edges[2] = true;
+                    minY = coord.y;
+                }
+                if (coord.x == 30065) {
+                    edges[0] = true;
+                    maxY = coord.y;
+                }
+                if (coord.y == 9999) {
+                    edges[3] = true;
+                    minX = coord.x;
+                }
+                if (coord.y == 30065) {
+                    edges[1] = true;
+                    maxX = coord.x;
+                }
                 break;
             case ENEMY_EC:
                 if (!ECLoc.containsValue(coord)) {
