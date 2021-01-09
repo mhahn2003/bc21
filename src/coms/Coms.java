@@ -8,16 +8,13 @@ import static coms.Robot.*;
 
 public class Coms {
     public static RobotController rc;
-    private final int senseRadius;
-    private final int[] enlightenmentCenterIds = new int[12];
-    private final PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
+    public static PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
 
     // number of possible cases for InfoCategory enum class
     private static int numCase = 4;
 
     public Coms(RobotController r) {
         rc = r;
-        senseRadius = rc.getType().sensorRadiusSquared;
     }
 
     // TODO: need to order in terms of priority
@@ -25,7 +22,8 @@ public class Coms {
         EDGE,
         ENEMY_EC,
         EC,
-        NEUTRAL_EC
+        NEUTRAL_EC,
+        EC_ID,
     }
 
     public static int getMessage(InformationCategory cat, MapLocation coord) {
@@ -35,31 +33,55 @@ public class Coms {
             case ENEMY_EC: message = 2; break;
             case EC: message = 3; break;
             case NEUTRAL_EC: message = 4; break;
-            default: message = 5;
+            case EC_ID: message = 5; break;
+            default: message = 6;
         }
         message = addCoord(message, coord);
         return message;
     }
 
+    public static int getMessage(InformationCategory cat, int ID) {
+        int message = 0;
+        switch (cat) {
+            case EDGE: message = 1; break;
+            case ENEMY_EC: message = 2; break;
+            case EC: message = 3; break;
+            case NEUTRAL_EC: message = 4; break;
+            case EC_ID: message = 5; break;
+            default: message = 6;
+        }
+        message = addID(message, ID);
+        return message;
+    }
+
     public static int addCoord(int message, MapLocation coord) {
-        return message*16384+(coord.x % 128)*128+(coord.y % 128);
+        return message*32768+(coord.x % 128)*128+(coord.y % 128);
+    }
+
+    public static int addID(int message, int ID) {
+        return message*32768+ID;
     }
 
     public static InformationCategory getCat(int message) {
-        switch (message/16384) {
+        switch (message/32768) {
             case 1: return InformationCategory.EDGE;
             case 2: return InformationCategory.ENEMY_EC;
             case 3: return InformationCategory.EC;
             case 4: return InformationCategory.NEUTRAL_EC;
+            case 5: return InformationCategory.EC_ID;
             default: return null;
         }
+    }
+
+    public static int getID(int message) {
+        return message % 32768;
     }
 
     public static MapLocation getCoord(int message) {
         MapLocation here = rc.getLocation();
         int remX = here.x % 128;
         int remY = here.y % 128;
-        message = message % 16384;
+        message = message % 32768;
         int x = message/128;
         int y = message % 128;
         if (Math.abs(x-remX) >= 64) {
@@ -117,15 +139,58 @@ public class Coms {
                     MapLocation loc = r.getLocation();
                     ECLoc.put(id, loc);
                     if (r.getTeam() == team) {
-                        ECs.add(id);
+                        for (int i = 0; i < 12; i++) {
+                            if (ECIds[i] == r.getID()) break;
+                            if (ECIds[i] == 0) {
+                                ECIds[i] = r.getID();
+                                break;
+                            }
+                        }
+                        for (int i = 0; i < 12; i++) {
+                            if (loc.equals(enemyECs[i])) {
+                                enemyECs[i] = null;
+                                break;
+                            }
+                            if (loc.equals(neutralECs[i])) {
+                                neutralECs[i] = null;
+                                break;
+                            }
+                        }
+                        for (int i = 0; i < 12; i++) {
+                            if (ECs[i] == null) {
+                                ECs[i] = loc;
+                                break;
+                            }
+
+                        }
                         signalQueue.add(getMessage(InformationCategory.EC, loc));
                     }
                     else if (r.getTeam() == team.opponent()) {
-                        enemyECs.add(id);
+                        for (int i = 0; i < 12; i++) {
+                            if (loc.equals(ECs[i])) {
+                                ECs[i] = null;
+                                break;
+                            }
+                            if (loc.equals(neutralECs[i])) {
+                                neutralECs[i] = null;
+                                break;
+                            }
+                        }
+                        for (int i = 0; i < 12; i++) {
+                            if (enemyECs[i] == null) {
+                                enemyECs[i] = loc;
+                                break;
+                            }
+                        }
                         signalQueue.add(getMessage(InformationCategory.ENEMY_EC, loc));
                     }
                     else {
-                        neutralECs.add(id);
+                        for (int i = 0; i < 12; i++) {
+                            if (neutralECs[i] == null) {
+                                neutralECs[i] = loc;
+                                break;
+                            }
+                        }
                         signalQueue.add(getMessage(InformationCategory.NEUTRAL_EC, loc));
                     }
                 }
@@ -135,7 +200,7 @@ public class Coms {
 
     // get information from flags
     public void getInfo() throws GameActionException {
-        
+
     }
 
 }

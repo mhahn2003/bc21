@@ -3,7 +3,6 @@ package coms;
 import battlecode.common.*;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class Robot {
     static RobotController rc;
@@ -17,9 +16,11 @@ public class Robot {
     static int[][] ends;
     static boolean[] edges = {false, false, false, false};
     static Team team = rc.getTeam();
-    static HashSet<Integer> ECs = new HashSet<>();
-    static HashSet<Integer> neutralECs = new HashSet<>();
-    static HashSet<Integer> enemyECs = new HashSet<>();
+    // ECIds may not necessarily correspond to EC MapLocations
+    static int[] ECIds = new int[12];
+    static MapLocation[] ECs = new MapLocation[12];
+    static MapLocation[] neutralECs = new MapLocation[12];
+    static MapLocation[] enemyECs = new MapLocation[12];
     static HashMap<Integer, MapLocation> ECLoc = new HashMap<>();
 
     static final RobotType[] spawnableRobot = {
