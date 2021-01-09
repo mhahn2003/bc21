@@ -1,7 +1,7 @@
 // from the code of Bowl of Chowder:
 // https://github.com/StoneT2000/Battlecode2020
 
-package dijkstra.utils;
+package bug.utils;
 
 public class LinkedList<T> {
     public int size = 0;

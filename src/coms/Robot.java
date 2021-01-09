@@ -34,6 +34,6 @@ public class Robot {
     }
 
     public void takeTurn() throws GameActionException {
-
+        nav.lookAround();
     }
 }

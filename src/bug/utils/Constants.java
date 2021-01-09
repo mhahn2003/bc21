@@ -1,4 +1,4 @@
-package dijkstra.utils;
+package bug.utils;
 
 public class Constants {
 }

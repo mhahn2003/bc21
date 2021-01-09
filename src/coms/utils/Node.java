@@ -1,7 +1,7 @@
 // from the code of Bowl of Chowder:
 // https://github.com/StoneT2000/Battlecode2020
 
-package dijkstra.utils;
+package coms.utils;
 
 public class Node<T> {
     public Node next;
