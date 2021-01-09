@@ -13,13 +13,12 @@ public class Muckraker extends Robot {
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
-        Team enemy = rc.getTeam().opponent();
-        int actionRadius = rc.getType().actionRadiusSquared;
         int closestPoliticianDist = 100000;
         MapLocation closestPolitician = null;
         int closestSlandererDist = 100000;
         MapLocation closestSlanderer = null;
         int maxSlanderer = -1;
+        MapLocation maxSlandererLocation = null;
         for (RobotInfo robot : rc.senseNearbyRobots(rc.getType().sensorRadiusSquared, enemy)) {
             if (robot.type.canBeExposed()) {
                 int dist = rc.getLocation().distanceSquaredTo(robot.getLocation());
@@ -29,6 +28,7 @@ public class Muckraker extends Robot {
                 }
                 if (dist <= RobotType.MUCKRAKER.actionRadiusSquared) {
                     maxSlanderer = Math.max(maxSlanderer, robot.getInfluence());
+                    maxSlandererLocation=robot.location;
                 }
             }
             if (robot.type == RobotType.POLITICIAN) {
@@ -42,10 +42,8 @@ public class Muckraker extends Robot {
         if (rc.isReady()) {
             // expose the max slanderer in range
             if (maxSlanderer != -1) {
-                for (RobotInfo robot : rc.senseNearbyRobots(actionRadius, enemy)) {
-                    if (robot.type.canBeExposed() & rc.canExpose(robot.location)) {
-                        rc.expose(robot.location);
-                    }
+                if (rc.senseNearbyRobots(maxSlandererLocation,1,enemy).length>0 & rc.canExpose(maxSlandererLocation)) {
+                    rc.expose(maxSlandererLocation);
                 }
             }
             // move to the closest slanderer if not
@@ -61,7 +59,7 @@ public class Muckraker extends Robot {
     }
 
     // wander around
-    // TODO: what if you're already at a corner/side and you want to explore more
+    // TODO: what if you're already at a corner/side and you want to explore more (+3 to the end to explore?)
     public void wander() throws GameActionException {
         wandLoc = new MapLocation(nav.getEnds()[rc.getID() % 8][0], nav.getEnds()[rc.getID() % 8][1]);
         nav.bugNavigate(wandLoc);

@@ -7,7 +7,6 @@ import java.util.PriorityQueue;
 import static coms.Robot.*;
 
 public class Coms {
-    public static RobotController rc;
     private final int senseRadius;
     private final int[] enlightenmentCenterIds = new int[12];
     private final PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
@@ -15,8 +14,7 @@ public class Coms {
     // number of possible cases for InfoCategory enum class
     private static int numCase = 4;
 
-    public Coms(RobotController r) {
-        rc = r;
+    public Coms() {
         senseRadius = rc.getType().sensorRadiusSquared;
     }
 
@@ -24,32 +22,33 @@ public class Coms {
     public enum InformationCategory {
         EDGE,
         ENEMY_EC,
-        EC,
+        FRIEND_EC,
         NEUTRAL_EC
     }
 
     public static int getMessage(InformationCategory cat, MapLocation coord) {
-        int message = 0;
+        System.out.println(cat.toString() + " " + coord.toString());
+        int message;
         switch (cat) {
-            case EDGE: message = 1; break;
-            case ENEMY_EC: message = 2; break;
-            case EC: message = 3; break;
+            case EDGE      : message = 1; break;
+            case ENEMY_EC  : message = 2; break;
+            case FRIEND_EC : message = 3; break;
             case NEUTRAL_EC: message = 4; break;
-            default: message = 5;
+            default        : message = 5;
         }
         message = addCoord(message, coord);
         return message;
     }
 
     public static int addCoord(int message, MapLocation coord) {
-        return message<<14+(coord.x % 128)<<7+(coord.y % 128);
+        return (message<<14)+((coord.x % 128)<<7)+(coord.y % 128);
     }
 
     public static InformationCategory getCat(int message) {
         switch (message>>14) {
             case 1: return InformationCategory.EDGE;
             case 2: return InformationCategory.ENEMY_EC;
-            case 3: return InformationCategory.EC;
+            case 3: return InformationCategory.FRIEND_EC;
             case 4: return InformationCategory.NEUTRAL_EC;
             default: return null;
         }
@@ -77,31 +76,32 @@ public class Coms {
     public void collectInfo() throws GameActionException {
         // first check for any edges
         for (int i = 0; i < 4; i++) {
+            if (edgesDetected[i]){continue;}
             Direction dir = Direction.cardinalDirections()[i];
-            System.out.println(dir.toString());
             MapLocation checkLoc = rc.getLocation().add(dir);
             while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
                 if (!rc.onTheMap(checkLoc)) {
                     System.out.println("I see an edge");
-                    if (!edges[i]) {
-                        // comm this information
-                        edges[i] = true;
-                        if (i == 0) {
-                            maxY = checkLoc.y-1;
-                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(30001, maxY)));
-                        }
-                        if (i == 1) {
-                            maxX = checkLoc.x-1;
-                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(maxX, 30001)));
-                        }
-                        if (i == 2) {
-                            minY = checkLoc.y+1;
-                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(9999, minY)));
-                        }
-                        if (i == 3) {
-                            minX = checkLoc.x+1;
-                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(minX, 9999)));
-                        }
+                    edgesDetected[i] = true;
+                    if (i == 0) {
+                        maxY = checkLoc.y-1;
+                        edgesValue[i]=maxY;
+                        signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(30001, maxY)));
+                    }
+                    if (i == 1) {
+                        maxX = checkLoc.x-1;
+                        edgesValue[i]=maxX;
+                        signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(maxX, 30001)));
+                    }
+                    if (i == 2) {
+                        minY = checkLoc.y+1;
+                        edgesValue[i]=minY;
+                        signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(9999, minY)));
+                    }
+                    if (i == 3) {
+                        minX = checkLoc.x+1;
+                        edgesValue[i]=minX;
+                        signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(minX, 9999)));
                     }
                     break;
                 }
@@ -109,11 +109,63 @@ public class Coms {
             }
         }
         // check for any ECs
+        // todo: allow for ecs to switch teams (maybe when trying to read the flag of all ecs?)
         RobotInfo[] robots = rc.senseNearbyRobots();
         for (RobotInfo r: robots) {
             if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                // stuff
+                int id = r.getID();
+                if (!ECLoc.containsKey(r.getID())) {
+                    // discuss: are you sure you want to pass the location instead of id?
+                    MapLocation loc = r.getLocation();
+                    ECLoc.put(id, loc);
+                    if (r.getTeam() == team) {
+                        friendECs.add(id);
+                        signalQueue.add(getMessage(InformationCategory.FRIEND_EC, loc));
+                    }
+                    else if (r.getTeam() == team.opponent()) {
+                        enemyECs.add(id);
+                        signalQueue.add(getMessage(InformationCategory.ENEMY_EC, loc));
+                    }
+                    else {
+                        neutralECs.add(id);
+                        signalQueue.add(getMessage(InformationCategory.NEUTRAL_EC, loc));
+                    }
+                }
             }
+        }
+        System.out.println(signalQueue.toString());
+    }
+
+    // get information from flags
+    public void getInfo(int flag) throws GameActionException {
+        InformationCategory cat = getCat(flag);
+        if (cat==null){return;}
+        MapLocation loc =getCoord(flag);
+        switch (cat){
+            case EDGE:
+                if      (loc.x==30001 & !edgesDetected[0]){edgesValue[0]=loc.y;}
+                else if (loc.y==30001 & !edgesDetected[1]){edgesValue[1]=loc.x;}
+                else if (loc.x== 9999 & !edgesDetected[2]){edgesValue[2]=loc.y;}
+                else if (loc.y== 9999 & !edgesDetected[3]){edgesValue[3]=loc.x;}
+            /*
+            case   ENEMY_EC:   enemyECs.add(id); break;
+            case  FRIEND_EC:  friendECs.add(id); break;
+            case NEUTRAL_EC: neutralECs.add(id); break;
+             */
+            default: break;
+
+        }
+    }
+
+    public void displaySignal() throws GameActionException {
+        if (signalQueue.size()==0){
+            //DISCUSS: is this a good idea to clear stuff in the next turn?
+            rc.setFlag(0);
+            return;
+        }
+        int signal=signalQueue.remove();
+        if(rc.canSetFlag(signal)){
+            rc.setFlag(signal);
         }
     }
 

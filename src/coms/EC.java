@@ -1,9 +1,6 @@
 package coms;
 
-import battlecode.common.Direction;
-import battlecode.common.GameActionException;
-import battlecode.common.RobotController;
-import battlecode.common.RobotType;
+import battlecode.common.*;
 
 public class EC extends Robot {
 
@@ -18,6 +15,12 @@ public class EC extends Robot {
         for (Direction dir : directions) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
                 rc.buildRobot(toBuild, dir, influence);
+                RobotInfo[] rbs=rc.senseNearbyRobots(2,team);
+                for (RobotInfo rb:rbs){
+                    if(!eccoms.knownRobotId.contains(rb.ID)){
+                        eccoms.appendNewUnit(rb.ID);
+                    }
+                }
             } else {
                 break;
             }

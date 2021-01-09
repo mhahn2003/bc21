@@ -5,110 +5,97 @@ import static coms.Robot.*;
 
 public class Nav {
     private int patience;
-    private static RobotController rc;
     private MapLocation currentDest;
     private int closestDist;
 
+    public static int[][] cardinalNewSense;
+    public static int[][] interCardinalNewSense;
 
     private static Direction[] directions = Direction.cardinalDirections();
 
     // constants
     private static double THRESHOLD = 0.45;
 
-    public Nav(RobotController rc) {
-        this.rc = rc;
+    public Nav() {
         patience = 0;
         currentDest = null;
         closestDist = 1000000;
+
+
+        try {
+            initializingSurroundingMap();
+        } catch (GameActionException e) {
+            System.out.println("oops, intialization failed");
+        }
+
+        //the following is a look up table that makes updating map from 4*x^2 bytecode to 4*x bytecode
+        switch(rc.getType()) {
+            case ENLIGHTENMENT_CENTER:
+                cardinalNewSense = new int[][]{{-6, 2}, {-5, 3}, {-4, 4}, {-3, 5}, {-2, 6}, {-1, 6}, {0, 6}, {1, 6}, {2, 6}, {3, 5}, {4, 4}, {5, 3}, {6, 2}};
+                interCardinalNewSense = new int[][]{{-2, 6}, {-1, 6}, {0, 6}, {1, 6}, {2, 6}, {2, 5}, {3, 5}, {3, 4}, {4, 4}, {4, 3}, {5, 3}, {5, 2}, {6, 2}, {6, 1}, {6, 0}, {6, -1}, {6, -2}};
+                break;
+            case MUCKRAKER:
+                cardinalNewSense = new int[][]{{-5, 2}, {-4, 3}, {-3, 4}, {-2, 5}, {-1, 5}, {-0, 5}, {1, 5}, {2, 5}, {3, 4}, {4, 3}, {5, 2}};
+                interCardinalNewSense = new int[][]{{-2, 5}, {-1, 5}, {0, 5}, {1, 5}, {2, 5}, {2, 4}, {3, 4}, {3, 3}, {4, 3}, {4, 2}, {5, 2}, {5, 1}, {5, 0}, {5, -1}, {5, -2}};
+                break;
+            case POLITICIAN:
+                cardinalNewSense = new int[][]{{-4, 3}, {-3, 4}, {-2, 4}, {-1, 4}, {-0, 4}, {1, 4}, {2, 4}, {3, 4}, {4, 3}};
+                interCardinalNewSense = new int[][]{{-3, 4}, {-2, 4}, {-1, 4}, {-0, 4}, {1, 4}, {2, 4}, {3, 4}, {3, 3}, {4, 3}, {4, 2}, {4, 1}, {4, 0}, {4, -1}, {4, -2}, {4, -3}};
+                break;
+            case SLANDERER:
+                cardinalNewSense = new int[][]{{-4, 2}, {-3, 3}, {-2, 4}, {-1, 4}, {-0, 4}, {1, 4}, {2, 4}, {3, 3}, {4, 2}};
+                interCardinalNewSense = new int[][]{{-2, 4}, {-1, 4}, {-0, 4}, {1, 4}, {2, 4}, {2, 3}, {3, 3}, {3, 2}, {4, 2}, {4, 1}, {4, 0}, {4, -1}, {4, -2}};
+                break;
+        }
+        System.out.println("made nav");
     }
 
-//    public void goTo(MapLocation dest) throws GameActionException {
-//        // reset if new destination
-//        if (currentDest != dest) {
-//            currentDest = dest;
-//            closestDist = 1000000;
-//        }
-//        System.out.println("Going towards" + dest.toString());
-//        rc.setIndicatorDot(dest, 0, 255, 0);
-//        closestDist = Math.min(closestDist, rc.getLocation().distanceSquaredTo(dest));
-//        if (!rc.isReady()) return;
-//        // if adjacent to it just move
-//        if (dest.isAdjacentTo(rc.getLocation())) {
-//            if (rc.canMove(rc.getLocation().directionTo(dest))) {
-//                rc.move(rc.getLocation().directionTo(dest));
-//            }
-//        }
-//        // straight
-//        Direction str = rc.getLocation().directionTo(dest);
-//        MapLocation opt = rc.getLocation().add(str);
-//        if (((rc.onTheMap(opt) && rc.sensePassability(opt) > PASS) || patience > IMPATIENCE) && rc.canMove(str)) {
-//            rc.move(str);
-//            patience--;
-//            if (patience < 0) patience = 0;
-//        }
-//        // left
-//        Direction strLeft = str.rotateLeft();
-//        MapLocation optLeft = rc.getLocation().add(strLeft);
-//        if (((rc.onTheMap(optLeft) && rc.sensePassability(optLeft) > PASS_DIAG) || patience > IMPATIENCE) && rc.canMove(strLeft)) {
-//            rc.move(strLeft);
-//            patience--;
-//            if (patience < 0) patience = 0;
-//        }
-//        // right
-//        Direction strRight = str.rotateRight();
-//        MapLocation optRight = rc.getLocation().add(strRight);
-//        if (((rc.onTheMap(optRight) && rc.sensePassability(optRight) > PASS_DIAG) || patience > IMPATIENCE) && rc.canMove(strRight)) {
-//            rc.move(strRight);
-//            patience--;
-//            if (patience < 0) patience = 0;
-//        }
-//        // leftLeft
-//        Direction strLeftLeft = strLeft.rotateLeft();
-//        MapLocation optLeftLeft = rc.getLocation().add(strLeftLeft);
-//        if (((rc.onTheMap(optLeftLeft) && rc.sensePassability(optLeftLeft) > PASS_PERP) || patience > IMPATIENCE) && rc.canMove(strLeftLeft)) {
-//            rc.move(strLeftLeft);
-//            if (closestDist <= optLeftLeft.distanceSquaredTo(dest)) {
-//                patience++;
-//            }
-//        }
-//        // rightRight
-//        Direction strRightRight = strRight.rotateRight();
-//        MapLocation optRightRight = rc.getLocation().add(strRightRight);
-//        if (((rc.onTheMap(optRightRight) && rc.sensePassability(optRightRight) > PASS_PERP) || patience > IMPATIENCE) && rc.canMove(strRightRight)) {
-//            rc.move(strRightRight);
-//            if (closestDist <= optRightRight.distanceSquaredTo(dest)) {
-//                patience++;
-//            }
-//        }
-//        // leftLeftLeft
-//        Direction strLLL = strLeftLeft.rotateLeft();
-//        MapLocation optLLL = rc.getLocation().add(strLLL);
-//        if (((rc.onTheMap(optLLL) && rc.sensePassability(optLLL) > PASS_OPP_DIAG) || patience > IMPATIENCE) && rc.canMove(strLLL)) {
-//            rc.move(strLLL);
-//            patience++;
-//        }
-//        // rightRightRight
-//        Direction strRRR = strRightRight.rotateRight();
-//        MapLocation optRRR = rc.getLocation().add(strRRR);
-//        if (((rc.onTheMap(optRRR) && rc.sensePassability(optRRR) > PASS_OPP_DIAG) || patience > IMPATIENCE) && rc.canMove(strRRR)) {
-//            rc.move(strRRR);
-//            patience++;
-//        }
-//        // opp
-//        Direction strOpp = str.opposite();
-//        MapLocation optOpp = rc.getLocation().add(strOpp);
-//        if (((rc.onTheMap(optOpp) && rc.sensePassability(optOpp) > PASS_OPP) || patience > IMPATIENCE) && rc.canMove(strOpp)) {
-//            rc.move(strOpp);
-//            patience += 2;
-//        }
-//        // if still not moved, just go straight
-//        if (rc.canMove(str)) {
-//            rc.move(str);
-//            patience += 3;
-//        }
-//        lookAround();
-//    }
+    public static void move(Direction dir) throws GameActionException {
+        rc.move(dir);
 
+        MapLocation loc = rc.getLocation();
+        MapLocation nloc;
+        int[][]template;
+        int dirID = directionToInt(dir);
+        if (directionToInt(dir)%2==0){template = cardinalNewSense;}
+        else {template = interCardinalNewSense;};
+        int rotation=dirID>>1;
+        int nx;
+        int ny;
+        for(int[] xypair : template){
+            switch ( rotation%4){
+                case 0: nloc = loc.translate( xypair[0], xypair[1]); break;
+                case 1: nloc = loc.translate( xypair[1],-xypair[0]); break;
+                case 2: nloc = loc.translate(-xypair[0],-xypair[1]); break;
+                case 3: nloc = loc.translate(-xypair[1], xypair[0]); break;
+                default: nloc = loc.translate( xypair[0], xypair[1]); System.out.println("nav move wrong");
+            }
+            nx=nloc.x%128;
+            ny=nloc.y%128;
+            if (mapPassibility[nx][ny]==0 && rc.canSenseLocation(nloc)){
+                if(!rc.onTheMap(nloc)){mapPassibility[nx][ny]=-1;};
+                mapPassibility[nx][ny]=rc.sensePassability(nloc);
+            }
+        }
+    }
+
+    public void initializingSurroundingMap() throws GameActionException {
+        MapLocation loc = rc.getLocation();
+        MapLocation nloc;
+        int nx;
+        int ny;
+        for(int x = -sqrtSensorRadius; x<= sqrtSensorRadius; x++){
+            for(int y = -sqrtSensorRadius; y<= sqrtSensorRadius; y++){
+                nloc = loc.translate(x,y);
+                nx=nloc.x%128;
+                ny=nloc.y%128;
+                if (mapPassibility[nx][ny]==0 && rc.canSenseLocation(nloc)){
+                    if(!rc.onTheMap(nloc)){mapPassibility[nx][ny]=-1;};
+                    mapPassibility[nx][ny]=rc.sensePassability(nloc);
+                }
+            }
+        }
+    }
 
     // chase a unit based on their ID
     public void chase(RobotInfo ri) throws GameActionException {
@@ -142,13 +129,12 @@ public class Nav {
 
     /*
     Tries to move in the target direction
-    If we are not a drone, it does not move into flooded tiles
     Returns the Direction that we moved in
     Returns null if did not move
     */
     public static Direction tryMoveInDirection (Direction dir) throws GameActionException {
         if (checkDirMoveable(dir)) {
-            rc.move(dir);
+            move(dir);
             return dir;
         }
         return null;
@@ -161,6 +147,7 @@ public class Nav {
 	Uses the bug pathfinding algorithm to navigate around obstacles towards a target MapLocation
 	Details here: https://www.cs.cmu.edu/~motionplanning/lecture/Chap2-Bug-Alg_howie.pdf
 	Taken/adapted from TheDuck314 Battlecode 2016
+	Which was taken/adapted from Kryptonite Battlecode 2020
 	Assumes that we are ready to move
 	Returns the Direction we moved in
 	Returns null if did not move
@@ -320,7 +307,7 @@ public class Nav {
                 return bugTraceMove(true);
             }
             if (checkDirMoveable(curDir)) {
-                rc.move(curDir);
+                move(curDir);
                 for (int x = 0; x < bugVisitedLocationsLength; x++) {
                     if (bugVisitedLocations[x].equals(curDest)) {
                         System.out.println("Resetting bugTracing");
@@ -340,4 +327,13 @@ public class Nav {
     public static boolean checkDirMoveable(Direction dir) throws GameActionException {
         return rc.canMove(dir) && rc.sensePassability(rc.getLocation().add(dir)) > THRESHOLD;
     }
+
+
+    /*
+    ---------------
+    try bf distjra
+    ---------------
+     */
+
+
 }
