@@ -6,6 +6,7 @@ public class Muckraker extends Robot {
 
 
     private MapLocation wandLoc;
+    private int offset = 0;
 
     public Muckraker(RobotController rc) {
         super(rc);
@@ -101,7 +102,12 @@ public class Muckraker extends Robot {
     // wander around
     // TODO: what if you're already at a corner/side and you want to explore more
     public void wander() throws GameActionException {
-        wandLoc = new MapLocation(nav.getEnds()[rc.getID() % 8][0], nav.getEnds()[rc.getID() % 8][1]);
+        wandLoc = new MapLocation(nav.getEnds()[(rc.getID()+offset) % 8][0], nav.getEnds()[(rc.getID()+offset) % 8][1]);
+        if (rc.getLocation().isWithinDistanceSquared(wandLoc, 8)) {
+            offset++;
+            wander();
+            return;
+        }
         nav.bugNavigate(wandLoc);
     }
 }
