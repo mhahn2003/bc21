@@ -37,6 +37,12 @@ public class Coms {
     public Coms(RobotController r){
         rc=r;
         senseRadius=Coms.getSenseRadius(rc.getType());
+        for(RobotInfo rb : rc.senseNearbyRobots(2,rc.getTeam())){
+            if( rb.type == RobotType.ENLIGHTENMENT_CENTER ){
+                enlightenmentCenterIds[0] = rb.ID;
+                break;
+            }
+        }
     }
 
     static int directionToInt(Direction dir) {
