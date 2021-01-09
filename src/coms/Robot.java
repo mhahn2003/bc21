@@ -10,9 +10,9 @@ public class Robot {
     static Coms coms;
 
     static int minX = 9999;
-    static int maxX = 30001;
+    static int maxX = 30065;
     static int minY = 9999;
-    static int maxY = 30001;
+    static int maxY = 30065;
     static int[][] ends;
     static boolean[] edges = {false, false, false, false};
     static Team team = rc.getTeam();
@@ -22,6 +22,8 @@ public class Robot {
     static MapLocation[] neutralECs = new MapLocation[12];
     static MapLocation[] enemyECs = new MapLocation[12];
     static HashMap<Integer, MapLocation> ECLoc = new HashMap<>();
+    // all robots in sensor radius
+    static RobotInfo[] robots;
 
     static final RobotType[] spawnableRobot = {
             RobotType.POLITICIAN,
@@ -47,6 +49,7 @@ public class Robot {
     }
 
     public void takeTurn() throws GameActionException {
+        coms.getInfo();
         coms.collectInfo();
     }
 }
