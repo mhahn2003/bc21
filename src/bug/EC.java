@@ -1,4 +1,4 @@
-package init;
+package bug;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;

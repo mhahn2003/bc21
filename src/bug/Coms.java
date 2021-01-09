@@ -1,6 +1,8 @@
-package init;
+package bug;
 
-import battlecode.common.*;
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.RobotController;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -10,8 +12,8 @@ public class Coms {
     private final int senseRadius;
     // 3 cols one for id one for genre, one for number of remaining rounds
     // 10 rows for accepting 10 inputs at ones.
-    private final int[][] ongoingConversations = new int[3][10];
-    private final int[] enlightenmentCenterIds =new int[3];
+//    private final int[][] ongoingConversations = new int[3][10];
+    private final int[] enlightenmentCenterIds = new int[12];
     private final Queue<Integer> signalQueue = new LinkedList<>();
 
     /* code look up table
@@ -37,12 +39,6 @@ public class Coms {
     public Coms(RobotController r){
         rc = r;
         senseRadius = rc.getType().sensorRadiusSquared;
-        for(RobotInfo rb : rc.senseNearbyRobots(2,rc.getTeam())){
-            if( rb.type == RobotType.ENLIGHTENMENT_CENTER ){
-                enlightenmentCenterIds[0] = rb.ID;
-                break;
-            }
-        }
     }
 
     static int directionToInt(Direction dir) {
@@ -81,25 +77,25 @@ public class Coms {
         return ((id ^ 0xAAAA *7)^0b11011011)&0xff;
     }
 
-    private boolean isConversing(int id){
-        for (int conversingId : ongoingConversations[0]){
-            if (id==conversingId){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private int findEmptyConversationSlot(){
-        for(int i=0;i<10;i++){
-            if (ongoingConversations[2][i]==0){
-                return i;
-            }
-        }
-        //todo: if more than 10 robots are trying to pass in a message that needs multiple rounds happen, do something.
-        assert (false);
-        return 0;
-    }
+//    private boolean isConversing(int id){
+//        for (int conversingId : ongoingConversations[0]){
+//            if (id==conversingId){
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
+//    private int findEmptyConversationSlot(){
+//        for(int i=0;i<10;i++){
+//            if (ongoingConversations[2][i]==0){
+//                return i;
+//            }
+//        }
+//        //todo: if more than 10 robots are trying to pass in a message that needs multiple rounds happen, do something.
+//        assert (false);
+//        return 0;
+//    }
 
     // one function for short messages
     private int processShort(int genre, int info){
@@ -129,12 +125,13 @@ public class Coms {
                 case 0b0000001:
                     break; //do stuff, do what ever stuff that needs to be done, don't return.
             }
-        }else {
-            int slot = findEmptyConversationSlot();
-            ongoingConversations[0][slot] = id;
-            ongoingConversations[1][slot] = message >> 8;
-            ongoingConversations[2][slot] = message & 0x00ff;
         }
+//        else {
+//            int slot = findEmptyConversationSlot();
+//            ongoingConversations[0][slot] = id;
+//            ongoingConversations[1][slot] = message >> 8;
+//            ongoingConversations[2][slot] = message & 0x00ff;
+//        }
     }
 
     // reverse long messages
@@ -151,7 +148,7 @@ public class Coms {
     public void sendPath(int id, Direction[] path) throws GameActionException {
         int[] path_value = new int[path.length/8+1];
         for (int i =0; i<path.length; i++){
-            path_value[i/8]+=Coms.directionToInt(path[i])  <<(3*(i%8) );
+            path_value[i/8]+= Coms.directionToInt(path[i])  <<(3*(i%8) );
         }
         queueSignal(id,0b10000001,path_value);
     }
@@ -195,39 +192,39 @@ public class Coms {
         }
     }
 
-    public void goOverVisibleFlags() throws GameActionException {
-        int key = getKey(rc.getID());
+//    public void goOverVisibleFlags() throws GameActionException {
+//        int key = getKey(rc.getID());
+//
+//        for (RobotInfo rb : rc.senseNearbyRobots( senseRadius, rc.getTeam() ) ){
+//            if (isConversing(rb.ID) || rc.canGetFlag(rb.ID)){break;}
+//
+//            int v = rc.getFlag(rb.ID);
+//            if( v>>16 == key | v>>16 == getKey(9999) ){
+//                reverseProcess16(rb.ID,v&0x00ffff);
+//            }
+//        }
+//
+//        for (int ECid : enlightenmentCenterIds){
+//            if (ECid==0 || isConversing(ECid) || !rc.canGetFlag(ECid)){break;}
+//
+//            int v = rc.getFlag(ECid);
+//            if( v>>16 == key | v>>16 == getKey(9999) ){
+//                reverseProcess16(ECid,v&0x00ffff);
+//            }
+//        }
+//    }
 
-        for (RobotInfo rb : rc.senseNearbyRobots( senseRadius, rc.getTeam() ) ){
-            if (isConversing(rb.ID) || rc.canGetFlag(rb.ID)){break;}
-
-            int v = rc.getFlag(rb.ID);
-            if( v>>16 == key | v>>16 == getKey(9999) ){
-                reverseProcess16(rb.ID,v&0x00ffff);
-            }
-        }
-
-        for (int ECid : enlightenmentCenterIds){
-            if (ECid==0 || isConversing(ECid) || !rc.canGetFlag(ECid)){break;}
-
-            int v = rc.getFlag(ECid);
-            if( v>>16 == key | v>>16 == getKey(9999) ){
-                reverseProcess16(ECid,v&0x00ffff);
-            }
-        }
-    }
-
-    public void goOverOngoingConversation() throws GameActionException {
-        for(int i =0; i<10;i++){
-            if (ongoingConversations[2][i]!=0){
-                if (rc.canGetFlag(ongoingConversations[0][i])) {
-                    reverseProcess24(ongoingConversations[1][i], rc.getFlag(ongoingConversations[0][i]));
-                    ongoingConversations[2][i]--;
-                }else{
-                    ongoingConversations[2][i]=0;
-                }
-            }
-        }
-    }
+//    public void goOverOngoingConversation() throws GameActionException {
+//        for(int i =0; i<10;i++){
+//            if (ongoingConversations[2][i]!=0){
+//                if (rc.canGetFlag(ongoingConversations[0][i])) {
+//                    reverseProcess24(ongoingConversations[1][i], rc.getFlag(ongoingConversations[0][i]));
+//                    ongoingConversations[2][i]--;
+//                }else{
+//                    ongoingConversations[2][i]=0;
+//                }
+//            }
+//        }
+//    }
 
 }
