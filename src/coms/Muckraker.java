@@ -48,10 +48,48 @@ public class Muckraker extends Robot {
                     }
                 }
             }
-            // move to the closest slanderer if not
+            int closestECDist = 100000;
+            MapLocation closestEC = null;
+            for (int i = 0; i < 12; i++) {
+                if (enemyECs[i] != null) {
+                    int dist = rc.getLocation().distanceSquaredTo(enemyECs[i]);
+                    if (dist < closestECDist) {
+                        closestECDist = dist;
+                        closestEC = enemyECs[i];
+                    }
+                }
+            }
+            // move to the closest slanderer
             if (closestSlandererDist != 100000) {
                 nav.bugNavigate(closestSlanderer);
-            } else {
+            }
+            // else move to the closest enemy HQ if known
+            else if (closestEC != null) {
+                if (!rc.getLocation().isAdjacentTo(closestEC)) {
+                    if (rc.getLocation().isWithinDistanceSquared(closestEC, 13)) {
+                        // move to an adjacent spot
+                        int closestSpotDist = 100000;
+                        MapLocation closestSpot = null;
+                        for (Direction dir: directions) {
+                            MapLocation loc = closestEC.add(dir);
+                            if (!rc.isLocationOccupied(loc)) {
+                                int dist = rc.getLocation().distanceSquaredTo(loc);
+                                if (dist < closestSpotDist) {
+                                    closestSpotDist = dist;
+                                    closestSpot = loc;
+                                }
+                            }
+                        }
+                        if (closestSpot != null) {
+                            nav.bugNavigate(closestSpot);
+                        } else {
+                            // TODO: call for attack
+                        }
+                    }
+                    else nav.bugNavigate(closestEC);
+                }
+            }
+            else {
                 // else move to the nearest politician not adjacent
                 if (closestPolitician != null) nav.bugNavigate(closestPolitician);
                     // otherwise wander
