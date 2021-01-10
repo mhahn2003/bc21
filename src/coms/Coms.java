@@ -45,7 +45,7 @@ public class Coms {
             case EDGE_W    : message = 8; break;
             default        : message = 9;
         }
-        message = addCoord(message, coord);
+        message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
     }
 
@@ -62,21 +62,41 @@ public class Coms {
             case EDGE_W    : message = 8; break;
             default        : message = 9;
         }
-        message = addID(message, ID);
+        message = addID(message, ID) + typeInt(rc.getType());
         return message;
     }
 
+    public static int typeInt(RobotType type) {
+        switch (type) {
+            case POLITICIAN: return 1000000;
+            case SLANDERER: return 2000000;
+            case MUCKRAKER: return 3000000;
+            case ENLIGHTENMENT_CENTER: return 4000000;
+        }
+        return 0;
+    }
     public static int addCoord(int message, MapLocation coord) {
-        return (message<<15)+((coord.x % 128)<<7)+(coord.y % 128);
+        return (message << 15) + ((coord.x % 128) << 7) + (coord.y % 128);
     }
 
     public static int addID(int message, int ID) {
-        return (message<<15)+ID;
+        return (message << 15)+ID;
+    }
+
+    public static RobotType getTyp(int message) {
+        switch (message/1000000) {
+            case 1: return RobotType.POLITICIAN;
+            case 2: return RobotType.SLANDERER;
+            case 3: return RobotType.MUCKRAKER;
+            case 4: return RobotType.ENLIGHTENMENT_CENTER;
+        }
+        return null;
     }
 
 
     public static InformationCategory getCat(int message) {
-        switch (message>>15) {
+        message = message % 1000000;
+        switch (message >> 15) {
             case 1: return InformationCategory.FRIEND_EC;
             case 2: return InformationCategory.EC_ID;
             case 3: return InformationCategory.ENEMY_EC;
@@ -90,24 +110,26 @@ public class Coms {
     }
 
     public static int getID(int message) {
+        message = message % 1000000;
         return message % 32768;
     }
 
     public static MapLocation getCoord(int message) {
+        message = message % 1000000;
         MapLocation here = rc.getLocation();
         int remX = here.x % 128;
         int remY = here.y % 128;
         message = message % 32768;
-        int x = message>>7;
+        int x = message >> 7;
         int y = message % 128;
-        if (Math.abs(x-remX) >= 64) {
-            if (x > remX) x = here.x-remX-128+x;
-            else x = here.x-remX+x+128;
-        } else x = here.x-remX+x;
-        if (Math.abs(y-remY) >= 64) {
-            if (y > remY) y = here.y-remY-128+y;
-            else y = here.y+y+128-remY;
-        } else y = here.y-remY+y;
+        if (Math.abs(x - remX) >= 64) {
+            if (x > remX) x = here.x - remX - 128 + x;
+            else x = here.x - remX + x + 128;
+        } else x = here.x - remX + x;
+        if (Math.abs(y - remY) >= 64) {
+            if (y > remY) y = here.y - remY - 128 + y;
+            else y = here.y + y + 128 - remY;
+        } else y = here.y - remY + y;
         return new MapLocation(x, y);
     }
 
@@ -278,7 +300,7 @@ public class Coms {
     // process the information gained from flag
     public void processFlag(int flag) {
         InformationCategory cat = getCat(flag);
-        if (flag == 0 || cat == null) return;
+        if (flag % 1000000 == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
         Debug.p("Signal type: " + cat.toString());
         Debug.p("Signal Coords: " + coord.toString());
@@ -404,7 +426,7 @@ public class Coms {
             int flag = signalQueue.poll();
             rc.setFlag(flag);
         } else {
-            rc.setFlag(0);
+            rc.setFlag(typeInt(rc.getType()));
         }
     }
 }

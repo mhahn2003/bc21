@@ -3,6 +3,7 @@ package coms;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
+import battlecode.common.RobotType;
 import coms.utils.*;
 
 import static coms.Robot.*;
@@ -44,16 +45,15 @@ public class ECComs extends Coms {
             robotIDs = tempIDs;
             Debug.p("new size: " + robotIDs.size);
         }
-        // TODO: THIS IS EXTREMELY BUGGED, NEED TO FIX
-        int counter = 0;
-        Debug.p("Size: " + robotIDs.size);
+//        int counter = 0;
+//        Debug.p("Size: " + robotIDs.size);
         for (int i = 0; i < 50; i++) {
             LinkedList<Integer> list = robotIDs.table[i];
             if (list.size != 0) {
                 Node<Integer> temp = list.head;
                 while (temp != null) {
                     int ID = temp.val;
-                    counter++;
+//                    counter++;
                     if (rc.canGetFlag(ID)) {
                         processFlag(rc.getFlag(ID));
                         temp = temp.next;
@@ -67,7 +67,7 @@ public class ECComs extends Coms {
                 }
             }
         }
-        Debug.p("Counter: " + counter);
+//        Debug.p("Counter: " + counter);
 
     }
 
@@ -90,27 +90,26 @@ public class ECComs extends Coms {
         while (Clock.getBytecodesLeft() >= 4000 && IDcheck <= 14096) {
             if (rc.canGetFlag(IDcheck)) {
                 int flag = rc.getFlag(IDcheck);
-                if (getCat(flag) == InformationCategory.EC_ID) {
+                if (getTyp(flag) == RobotType.ENLIGHTENMENT_CENTER) {
                     // found an EC!
-                    int ID = getID(flag);
                     boolean knownID = false;
                     for (int i = 0; i < 12; i++) {
-                        if (ECIds[i] == ID) {
+                        if (ECIds[i] == IDcheck) {
                             knownID = true;
                             break;
                         }
                     }
                     if (!knownID) {
-                        Debug.p("Found a new ID: " + ID);
+                        Debug.p("Found a new ID: " + IDcheck);
                         for (int i = 0; i < 12; i++) {
                             if (ECIds[i] == 0) {
-                                ECIds[i] = ID;
-                                relevantFlags[relevantSize] = getMessage(InformationCategory.EC_ID, ID);
+                                ECIds[i] = IDcheck;
+                                relevantFlags[relevantSize] = getMessage(InformationCategory.EC_ID, IDcheck);
                                 relevantSize++;
                                 break;
                             }
                         }
-                        signalQueue.add(getMessage(InformationCategory.EC_ID, ID));
+                        signalQueue.add(getMessage(InformationCategory.EC_ID, IDcheck));
                     }
                 }
             }
@@ -128,8 +127,8 @@ public class ECComs extends Coms {
     public void getInfo() throws GameActionException {
         loopBots();
         loopECS();
-        if (turnCount < 10) {
-            lastFlags[9] = getMessage(InformationCategory.EC_ID, rc.getID());
+        if (turnCount < 7) {
+            lastFlags[9] = getMessage(InformationCategory.EC_ID, rc.getID()) % 1000000;
             rc.setFlag(getMessage(InformationCategory.EC_ID, rc.getID()));
             loopFlags();
         } else {
@@ -137,7 +136,7 @@ public class ECComs extends Coms {
                 // add it to a list of last displayed flags to reduce redundancy between ecs
                 int flag = signalQueue.poll();
                 Debug.p("getting from signalQueue");
-                lastFlags[flagIndex % 10] = flag;
+                lastFlags[flagIndex % 10] = flag % 1000000;
                 flagIndex++;
                 rc.setFlag(flag);
             } else {
@@ -149,10 +148,10 @@ public class ECComs extends Coms {
 
     public void processFlag(int flag) {
         InformationCategory cat = getCat(flag);
-        if (flag == 0 || cat == null) return;
+        if (flag % 1000000 == 0 || cat == null) return;
         boolean processed = false;
         for (int i = 0; i < 10; i++) {
-            if (lastFlags[i] == flag) {
+            if (lastFlags[i] == flag % 1000000) {
                 processed = true;
                 break;
             }
@@ -160,9 +159,14 @@ public class ECComs extends Coms {
         if (!processed) {
             Debug.p("not processed yet, adding to queue: " + flag);
 
-            signalQueue.add(flag);
+            signalQueue.add(convertFlag(flag));
         }
         super.processFlag(flag);
+    }
+
+    public int convertFlag(int flag) {
+        flag = flag % 1000000;
+        return flag + typeInt(rc.getType());
     }
 
 }
