@@ -23,7 +23,8 @@ public class EC extends Robot {
 //        build(RobotType.MUCKRAKER, 1);
         if (turnCount < 250) {
             if (rc.getInfluence() < 150) {
-                build(RobotType.MUCKRAKER, 1);
+                if (turnCount % 15 == 0) build(RobotType.SLANDERER, rc.getInfluence());
+                else build(RobotType.MUCKRAKER, 1);
             } else {
                 build(RobotType.POLITICIAN, rc.getInfluence());
             }

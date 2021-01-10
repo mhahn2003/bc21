@@ -1,9 +1,7 @@
 package coms;
 
-import battlecode.common.Clock;
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
+import battlecode.common.*;
+import coms.utils.HashSet;
 
 import static coms.Robot.*;
 import static coms.RobotPlayer.turnCount;
@@ -14,12 +12,19 @@ public class ECComs extends Coms {
     private static boolean allSearched = false;
     private int[] lastFlags = new int[10];
     private int flagIndex = 0;
+    // edges, ec id and locations, enemy loc
+    private int relevantSize = 0;
+    private int relevantInd = 0;
+    private int[] relevantFlags = new int[20];
+    private HashSet<Integer> robotIDs = new HashSet<>(16);
 
     public ECComs(RobotController r) {
         super(r);
         ECLoc.put(rc.getID(), rc.getLocation());
         ECIds[0] = rc.getID();
         ECs[0] = rc.getLocation();
+        relevantSize = 1;
+        relevantFlags[0] = getMessage(InformationCategory.EC_ID, rc.getID());
     }
 
     // can perform computation through multiple turns, but needs to be called once per turn until it is all done
@@ -45,6 +50,8 @@ public class ECComs extends Coms {
                         for (int i = 0; i < 12; i++) {
                             if (ECIds[i] == 0) {
                                 ECIds[i] = ID;
+                                relevantFlags[relevantSize] = ID;
+                                relevantSize++;
                                 break;
                             }
                         }
@@ -73,12 +80,16 @@ public class ECComs extends Coms {
                 lastFlags[flagIndex % 10] = flag;
                 flagIndex++;
                 rc.setFlag(flag);
+            } else {
+                rc.setFlag(relevantFlags[relevantInd % relevantSize]);
+                relevantInd++;
             }
         }
     }
 
 
     public void getInfo() throws GameActionException {
+        robots = rc.senseNearbyRobots();
         // process ECs
         for (int i = 0; i < 12; i++) {
             if (ECIds[i] != 0 && ECIds[i] != rc.getID()) {
@@ -87,6 +98,14 @@ public class ECComs extends Coms {
                 }
             }
         }
+        // add known IDs
+        for (RobotInfo r: robots) {
+            if (r.getTeam() == team) {
+                robotIDs.add(r.getID());
+            }
+        }
+        // process known robot IDs
+        // TODO: do this
     }
 
     public void processFlag(int flag) {
