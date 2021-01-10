@@ -38,30 +38,37 @@ public class ECComs extends Coms {
         if (robotIDs.size >= 200) {
             Debug.p("pruning robot ID array");
             HashSet<Integer> tempIDs = new HashSet<>(50);
-            for (int i = 0; i < 40; i++) {
+            for (int i = 0; i < 50; i++) {
                 if (robotIDs.table[i].size != 0) tempIDs.add((int) robotIDs.table[i].end.val);
             }
             robotIDs = tempIDs;
             Debug.p("new size: " + robotIDs.size);
         }
+        // TODO: THIS IS EXTREMELY BUGGED, NEED TO FIX
+        int counter = 0;
+        Debug.p("Size: " + robotIDs.size);
         for (int i = 0; i < 50; i++) {
             LinkedList<Integer> list = robotIDs.table[i];
             if (list.size != 0) {
                 Node<Integer> temp = list.head;
-                while (!temp.equals(list.end)) {
+                while (temp != null) {
                     int ID = temp.val;
+                    counter++;
                     if (rc.canGetFlag(ID)) {
                         processFlag(rc.getFlag(ID));
                         temp = temp.next;
                     } else {
                         // this might cause a lot of bugs, will see
+                        Node<Integer> temp2 = temp;
                         temp = temp.next;
-                        list.remove(temp.prev);
+                        list.remove(temp2);
                         robotIDs.size--;
                     }
                 }
             }
         }
+        Debug.p("Counter: " + counter);
+
     }
 
     public void loopECS() throws GameActionException {

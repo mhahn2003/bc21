@@ -150,11 +150,13 @@ public class Coms {
             }
         }
         // check for any ECs
-        RobotInfo[] robots = rc.senseNearbyRobots();
         for (RobotInfo r: robots) {
             if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+                Debug.p("Found an EC!");
                 int id = r.getID();
+                Debug.p("ID is: " + id);
                 MapLocation loc = r.getLocation();
+                Debug.p("Location is: " + loc);
                 if (r.getTeam() == team) {
                     int minInd = -1;
                     boolean seen = false;
@@ -162,12 +164,18 @@ public class Coms {
                         if (ECIds[i] == 0) {
                             minInd = i;
                         }
-                        if (ECIds[i] == r.getID()) {
+                        if (ECIds[i] == id) {
                             seen = true;
                             break;
                         }
                     }
-                    if (minInd != -1 && !seen) ECIds[minInd] = r.getID();
+                    if (minInd != -1 && !seen) {
+                        ECIds[minInd] = id;
+                        Debug.p("ID: Adding to signal queue");
+                        signalQueue.add(getMessage(InformationCategory.EC_ID, id));
+                        relevantFlags[relevantSize] = getMessage(InformationCategory.EC_ID, id);
+                        relevantSize++;
+                    }
                     for (int i = 0; i < 12; i++) {
                         if (loc.equals(enemyECs[i])) {
                             enemyECs[i] = null;
@@ -190,6 +198,7 @@ public class Coms {
                     }
                     if (minInd != -1 && !seen) {
                         friendECs[minInd] = r.getLocation();
+                        Debug.p("FRIENDLY: Adding to signal queue");
                         signalQueue.add(getMessage(InformationCategory.FRIEND_EC, loc));
                         relevantFlags[relevantSize] = getMessage(InformationCategory.FRIEND_EC, loc);
                         relevantSize++;
@@ -210,13 +219,14 @@ public class Coms {
                     for (int i = 11; i >= 0; i--) {
                         if (enemyECs[i] == null) {
                             minInd = i;
-                        } else if (enemyECs[i].equals(r.getLocation())) {
+                        } else if (enemyECs[i].equals(loc)) {
                             seen = true;
                             break;
                         }
                     }
                     if (minInd != -1 && !seen) {
                         enemyECs[minInd] = r.getLocation();
+                        Debug.p("ENEMY: Adding to signal queue");
                         signalQueue.add(getMessage(InformationCategory.ENEMY_EC, loc));
                         relevantFlags[relevantSize] = getMessage(InformationCategory.ENEMY_EC, loc);
                         relevantSize++;
@@ -235,6 +245,7 @@ public class Coms {
                     if (minInd != -1 && !seen) {
                         ECIds[minInd] = r.getID();
                         signalQueue.add(getMessage(InformationCategory.NEUTRAL_EC, loc));
+                        Debug.p("NEUTRAL: Adding to signal queue");
                         relevantFlags[relevantSize] = getMessage(InformationCategory.NEUTRAL_EC, loc);
                         relevantSize++;
                     }
@@ -391,7 +402,6 @@ public class Coms {
     public void displaySignal() throws GameActionException {
         if (!signalQueue.isEmpty()) {
             int flag = signalQueue.poll();
-            System.out.println("showing:" + flag);
             rc.setFlag(flag);
         } else {
             rc.setFlag(0);
