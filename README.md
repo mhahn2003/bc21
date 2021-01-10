@@ -33,3 +33,11 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - `./gradlew update`
     Update to the newest version! Run every so often
 
+
+### To-do list
+
+- Fix EC coms
+- Politician AI
+- Slanderer AI
+- General attack plan on enemy EC
+- EC building logic

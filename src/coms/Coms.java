@@ -250,7 +250,7 @@ public class Coms {
     }
 
 
-    //todo: allow ec swithcing sides
+    // todo: allow ec swithcing sides
     // process the information gained from flag
     public void processFlag(int flag) {
         InformationCategory cat = getCat(flag);
