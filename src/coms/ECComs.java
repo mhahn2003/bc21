@@ -1,10 +1,15 @@
 package coms;
 
-import battlecode.common.*;
+import battlecode.common.Clock;
+import battlecode.common.GameActionException;
+import battlecode.common.RobotInfo;
 import coms.utils.HashSet;
+
+import java.util.ArrayList;
 
 import static coms.Robot.*;
 import static coms.RobotPlayer.turnCount;
+
 
 public class ECComs extends Coms {
 
@@ -18,13 +23,36 @@ public class ECComs extends Coms {
     private int[] relevantFlags = new int[20];
     private HashSet<Integer> robotIDs = new HashSet<>(16);
 
-    public ECComs(RobotController r) {
-        super(r);
+    public ArrayList<Integer> knownRobotId = new ArrayList<Integer>();
+
+    public ECComs() {
+        super();
         ECLoc.put(rc.getID(), rc.getLocation());
         ECIds[0] = rc.getID();
-        ECs[0] = rc.getLocation();
         relevantSize = 1;
         relevantFlags[0] = getMessage(InformationCategory.EC_ID, rc.getID());
+        friendECs[0] = rc.getLocation();
+    }
+
+    public void appendNewUnit(int unitid){
+        knownRobotId.add(unitid);
+    }
+
+    public void loopBots() throws GameActionException {
+        //todo: the bytecode effciency is way way way too low
+        if (knownRobotId.size()>0) {
+            System.out.println(knownRobotId.toString());
+            for (int unitid_dex=0 ; unitid_dex<knownRobotId.size();unitid_dex++) {
+                int unitid = knownRobotId.get(unitid_dex);
+                if (rc.canGetFlag(unitid)) {
+                    System.out.println("processing: " + unitid);
+                    processFlag(rc.getFlag(unitid));
+                } else {
+                    knownRobotId.remove(knownRobotId.indexOf(unitid));
+                    unitid_dex--;
+                }
+            }
+        }
     }
 
     // can perform computation through multiple turns, but needs to be called once per turn until it is all done
@@ -61,19 +89,39 @@ public class ECComs extends Coms {
             }
             IDcheck++;
         }
+        // a brutal way to find all friendEC
+        /*
+        if (loopingIndex<14096) {
+            System.out.println("loopingIndex " + loopingIndex);
+            rc.setFlag(rc.getID() ^ 0xaaaa);
+            int soft_max=10000 + 512 * rc.getRoundNum();
+            while (loopingIndex < soft_max && Clock.getBytecodesLeft() > 1000) {
+                if (rc.canGetFlag(loopingIndex)) {
+                    if (loopingIndex == (rc.getFlag(loopingIndex) ^ 0xaaaa)) {
+                        friendECs.add(loopingIndex);
+                    }
+                }
+                loopingIndex += 1;
+            }
+            System.out.println("loopingIndex " + loopingIndex);
+        }
+         */
         if (IDcheck == 14097) {
             allSearched = true;
         }
         return allSearched;
     }
 
-    public void collectInfo() throws GameActionException {
+    // todo: a new instance of robot ec is created when a new ec is occupied.
+    // get from flags, collect from environment.
+    public void getInfo() throws GameActionException {
+        loopBots();
+        loopECS();
         if (turnCount < 10) {
             lastFlags[9] = getMessage(InformationCategory.EC_ID, rc.getID());
             rc.setFlag(getMessage(InformationCategory.EC_ID, rc.getID()));
             loopFlags();
-        }
-        else {
+        } else {
             if (!signalQueue.isEmpty()) {
                 // add it to a list of last displayed flags to reduce redundancy between ecs
                 int flag = signalQueue.poll();
@@ -87,8 +135,7 @@ public class ECComs extends Coms {
         }
     }
 
-
-    public void getInfo() throws GameActionException {
+    public void loopECS() throws GameActionException {
         robots = rc.senseNearbyRobots();
         // process ECs
         for (int i = 0; i < 12; i++) {
@@ -116,6 +163,12 @@ public class ECComs extends Coms {
                 break;
             }
         }
+        if (!processed) {
+            signalQueue.add(flag);
+        }
+        super.processFlag(flag);
+
+        /*
         if (processed) {
             super.processFlag(flag);
         } else {
@@ -125,25 +178,10 @@ public class ECComs extends Coms {
             int minInd;
             boolean seen;
             switch (getCat(flag)) {
-                case EDGE:
-                    if (coord.x == 9999) {
-                        edges[2] = true;
-                        minY = coord.y;
-                    }
-                    if (coord.x == 30065) {
-                        edges[0] = true;
-                        maxY = coord.y;
-                    }
-                    if (coord.y == 9999) {
-                        edges[3] = true;
-                        minX = coord.x;
-                    }
-                    if (coord.y == 30065) {
-                        edges[1] = true;
-                        maxX = coord.x;
-                    }
-                    signalQueue.add(flag);
-                    break;
+                case EDGE_N : if(!edges[0]){edges[0]=true;maxY=ID;System.out.println("updated "+0+"th edge");signalQueue.add(flag);}break;
+                case EDGE_E : if(!edges[1]){edges[1]=true;maxX=ID;System.out.println("updated "+1+"st edge");signalQueue.add(flag);}break;
+                case EDGE_S : if(!edges[2]){edges[2]=true;minY=ID;System.out.println("updated "+2+"nd edge");signalQueue.add(flag);}break;
+                case EDGE_W : if(!edges[3]){edges[3]=true;minX=ID;System.out.println("updated "+3+"rd edge");signalQueue.add(flag);}break;
                 case ENEMY_EC:
                     minInd = -1;
                     seen = false;
@@ -161,20 +199,20 @@ public class ECComs extends Coms {
                         signalQueue.add(flag);
                     }
                     break;
-                case EC:
+                case FRIEND_EC:
                     minInd = -1;
                     seen = false;
                     for (int i = 11; i >= 0; i--) {
-                        if (ECs[i] == null) {
+                        if (friendECs[i] == null) {
                             minInd = i;
                         }
-                        else if (ECs[i].equals(coord)) {
+                        else if (friendECs[i].equals(coord)) {
                             seen = true;
                             break;
                         }
                     }
                     if (minInd != -1 && !seen) {
-                        ECs[minInd] = coord;
+                        friendECs[minInd] = coord;
                         signalQueue.add(flag);
                     }
                     break;
@@ -214,5 +252,8 @@ public class ECComs extends Coms {
                     break;
             }
         }
+
+         */
     }
+
 }

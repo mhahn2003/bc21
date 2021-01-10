@@ -1,9 +1,6 @@
 package coms;
 
-import battlecode.common.Direction;
-import battlecode.common.GameActionException;
-import battlecode.common.RobotController;
-import battlecode.common.RobotType;
+import battlecode.common.*;
 
 import static coms.RobotPlayer.turnCount;
 
@@ -15,6 +12,7 @@ public class EC extends Robot {
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
+
         if (turnCount == 1) {
             // build a slanderer
             build(RobotType.SLANDERER, 150);
@@ -40,6 +38,12 @@ public class EC extends Robot {
                 if (rc.getInfluence() > 150) {
                     build(RobotType.POLITICIAN, rc.getInfluence());
                 }
+            }
+        }
+        RobotInfo[] rbs=rc.senseNearbyRobots(2,team);
+        for (RobotInfo rb:rbs){
+            if(!eccoms.knownRobotId.contains(rb.ID)){
+                eccoms.appendNewUnit(rb.ID);
             }
         }
     }

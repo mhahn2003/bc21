@@ -7,68 +7,82 @@ import java.util.PriorityQueue;
 import static coms.Robot.*;
 
 public class Coms {
-    public static RobotController rc;
-    public static PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
+    protected final PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
 
     // number of possible cases for InfoCategory enum class
-    private static int numCase = 4;
+    private static int numCase = 8;
 
-    public Coms(RobotController r) {
-        rc = r;
+    public Coms() {
     }
 
     // TODO: need to order in terms of priority
     public enum InformationCategory {
-        EDGE,
+        EDGE_N,
+        EDGE_E,
+        EDGE_S,
+        EDGE_W,
         ENEMY_EC,
-        EC,
+        FRIEND_EC,
         NEUTRAL_EC,
         EC_ID,
     }
 
     public static int getMessage(InformationCategory cat, MapLocation coord) {
-        int message = 0;
+        System.out.println(cat.toString() + " " + coord.toString());
+        int message;
         switch (cat) {
-            case EDGE: message = 1; break;
-            case ENEMY_EC: message = 2; break;
-            case EC: message = 3; break;
-            case NEUTRAL_EC: message = 4; break;
-            case EC_ID: message = 5; break;
-            default: message = 6;
+            case EDGE_N    : message = 1; break;
+            case EDGE_E    : message = 2; break;
+            case EDGE_S    : message = 3; break;
+            case EDGE_W    : message = 4; break;
+            case ENEMY_EC  : message = 5; break;
+            case FRIEND_EC : message = 6; break;
+            case NEUTRAL_EC: message = 7; break;
+            case EC_ID     : message = 8; break;
+            default        : message = 9;
         }
         message = addCoord(message, coord);
         return message;
     }
 
     public static int getMessage(InformationCategory cat, int ID) {
-        int message = 0;
+        int message;
         switch (cat) {
-            case EDGE: message = 1; break;
-            case ENEMY_EC: message = 2; break;
-            case EC: message = 3; break;
-            case NEUTRAL_EC: message = 4; break;
-            case EC_ID: message = 5; break;
-            default: message = 6;
+            case EDGE_N    : message = 1; break;
+            case EDGE_E    : message = 2; break;
+            case EDGE_S    : message = 3; break;
+            case EDGE_W    : message = 4; break;
+            case ENEMY_EC  : message = 5; break;
+            case FRIEND_EC : message = 6; break;
+            case NEUTRAL_EC: message = 7; break;
+            case EC_ID     : message = 8; break;
+            default        : message = 9;
         }
+        System.out.println(message);
         message = addID(message, ID);
+        System.out.println("converting:\n" +cat.toString() + "+" + ID + "\n=>\n" + message);
         return message;
     }
 
     public static int addCoord(int message, MapLocation coord) {
-        return message*32768+(coord.x % 128)*128+(coord.y % 128);
+        return (message<<15)+((coord.x % 128)<<7)+(coord.y % 128);
     }
 
     public static int addID(int message, int ID) {
-        return message*32768+ID;
+        return (message<<15)+ID;
     }
 
+
     public static InformationCategory getCat(int message) {
-        switch (message/32768) {
-            case 1: return InformationCategory.EDGE;
-            case 2: return InformationCategory.ENEMY_EC;
-            case 3: return InformationCategory.EC;
-            case 4: return InformationCategory.NEUTRAL_EC;
-            case 5: return InformationCategory.EC_ID;
+        switch (message>>15) {
+            case 1: return InformationCategory.EDGE_N;
+            case 2: return InformationCategory.EDGE_E;
+            case 3: return InformationCategory.EDGE_S;
+            case 4: return InformationCategory.EDGE_W;
+            case 5: return InformationCategory.ENEMY_EC;
+            case 6: return InformationCategory.FRIEND_EC;
+            case 7: return InformationCategory.NEUTRAL_EC;
+            case 8: return InformationCategory.EC_ID;
             default: return null;
         }
     }
@@ -82,11 +96,11 @@ public class Coms {
         int remX = here.x % 128;
         int remY = here.y % 128;
         message = message % 32768;
-        int x = message/128;
+        int x = message>>7;
         int y = message % 128;
         if (Math.abs(x-remX) >= 64) {
             if (x > remX) x = here.x-remX-128+x;
-            else x = here.x+x+128-remX;
+            else x = here.x-remX+x+128;
         } else x = here.x-remX+x;
         if (Math.abs(y-remY) >= 64) {
             if (y > remY) y = here.y-remY-128+y;
@@ -99,39 +113,34 @@ public class Coms {
     public void collectInfo() throws GameActionException {
         // first check for any edges
         for (int i = 0; i < 4; i++) {
+            if (edges[i]){continue;}
             Direction dir = Direction.cardinalDirections()[i];
-            System.out.println(dir.toString());
             MapLocation checkLoc = rc.getLocation().add(dir);
             while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
                 if (!rc.onTheMap(checkLoc)) {
                     System.out.println("I see an edge");
-                    if (!edges[i]) {
-                        // comm this information
-                        edges[i] = true;
-                        if (i == 0) {
-                            maxY = checkLoc.y-1;
-                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(30065, maxY)));
-                        }
-                        if (i == 1) {
-                            maxX = checkLoc.x-1;
-                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(maxX, 30065)));
-                        }
-                        if (i == 2) {
-                            minY = checkLoc.y+1;
-                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(9999, minY)));
-                        }
-                        if (i == 3) {
-                            minX = checkLoc.x+1;
-                            signalQueue.add(getMessage(InformationCategory.EDGE, new MapLocation(minX, 9999)));
-                        }
+                    edges[i] = true;
+                    if       (i == 0) {
+                        maxY = checkLoc.y-1;
+                        signalQueue.add(getMessage(InformationCategory.EDGE_N, maxY));
+                    }else if (i == 1) {
+                        maxX = checkLoc.x-1;
+                        signalQueue.add(getMessage(InformationCategory.EDGE_E, maxX));
+                    }else if (i == 2) {
+                        minY = checkLoc.y+1;
+                        signalQueue.add(getMessage(InformationCategory.EDGE_S, minY));
+                    }else if (i == 3) {
+                        minX = checkLoc.x+1;
+                        signalQueue.add(getMessage(InformationCategory.EDGE_W, minX));
                     }
+                    System.out.println("updated "+i+"th edge");
                     break;
                 }
                 checkLoc = checkLoc.add(dir);
             }
         }
         // check for any ECs
-
+        RobotInfo[] robots = rc.senseNearbyRobots();
         for (RobotInfo r: robots) {
             if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                 int id = r.getID();
@@ -164,21 +173,21 @@ public class Coms {
                         minInd = -1;
                         seen = false;
                         for (int i = 11; i >= 0; i--) {
-                            if (ECs[i] == null) {
+                            if (friendECs[i] == null) {
                                 minInd = i;
-                            } else if (ECs[i].equals(r.getLocation())) {
+                            } else if (friendECs[i].equals(r.getLocation())) {
                                 seen = true;
                                 break;
                             }
                         }
                         if (minInd != -1 && !seen) {
-                            ECs[minInd] = r.getLocation();
-                            signalQueue.add(getMessage(InformationCategory.EC, loc));
+                            friendECs[minInd] = r.getLocation();
+                            signalQueue.add(getMessage(InformationCategory.FRIEND_EC, loc));
                         }
                     } else if (r.getTeam() == team.opponent()) {
                         for (int i = 0; i < 12; i++) {
-                            if (loc.equals(ECs[i])) {
-                                ECs[i] = null;
+                            if (loc.equals(friendECs[i])) {
+                                friendECs[i] = null;
                                 break;
                             }
                             if (loc.equals(neutralECs[i])) {
@@ -219,11 +228,6 @@ public class Coms {
                 }
             }
         }
-        // set flag
-        if (!signalQueue.isEmpty()) {
-            int flag = signalQueue.poll();
-            rc.setFlag(flag);
-        }
     }
 
     // get information from flags
@@ -245,32 +249,23 @@ public class Coms {
         }
     }
 
+
+    //todo: allow ec swithcing sides
     // process the information gained from flag
     public void processFlag(int flag) {
-        if (flag == 0 || getCat(flag) == null) return;
+        InformationCategory cat = getCat(flag);
+        if (flag == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
+        System.out.println("processing signal:" + cat.toString());
+        System.out.println("processing signal:" + coord.toString());
         int ID = getID(flag);
         int minInd;
         boolean seen;
-        switch (getCat(flag)) {
-            case EDGE:
-                if (coord.x == 9999) {
-                    edges[2] = true;
-                    minY = coord.y;
-                }
-                if (coord.x == 30065) {
-                    edges[0] = true;
-                    maxY = coord.y;
-                }
-                if (coord.y == 9999) {
-                    edges[3] = true;
-                    minX = coord.x;
-                }
-                if (coord.y == 30065) {
-                    edges[1] = true;
-                    maxX = coord.x;
-                }
-                break;
+        switch (cat) {
+            case EDGE_N : if(!edges[0]){edges[0]=true;maxY=ID;System.out.println("updated "+0+"th edge");}break;
+            case EDGE_E : if(!edges[1]){edges[1]=true;maxX=ID;System.out.println("updated "+1+"st edge");}break;
+            case EDGE_S : if(!edges[2]){edges[2]=true;minY=ID;System.out.println("updated "+2+"nd edge");}break;
+            case EDGE_W : if(!edges[3]){edges[3]=true;minX=ID;System.out.println("updated "+3+"rd edge");}break;
             case ENEMY_EC:
                 minInd = -1;
                 seen = false;
@@ -285,19 +280,19 @@ public class Coms {
                 }
                 if (minInd != -1 && !seen) enemyECs[minInd] = coord;
                 break;
-            case EC:
+            case FRIEND_EC:
                 minInd = -1;
                 seen = false;
                 for (int i = 11; i >= 0; i--) {
-                    if (ECs[i] == null) {
+                    if (friendECs[i] == null) {
                         minInd = i;
                     }
-                    else if (ECs[i].equals(coord)) {
+                    else if (friendECs[i].equals(coord)) {
                         seen = true;
                         break;
                     }
                 }
-                if (minInd != -1 && !seen) ECs[minInd] = coord;
+                if (minInd != -1 && !seen) friendECs[minInd] = coord;
                 break;
             case NEUTRAL_EC:
                 minInd = -1;
@@ -330,4 +325,12 @@ public class Coms {
         }
     }
 
+
+    public void displaySignal() throws GameActionException {
+        if (!signalQueue.isEmpty()) {
+            int flag = signalQueue.poll();
+            System.out.println("showing:" + flag);
+            rc.setFlag(flag);
+        }
+    }
 }
