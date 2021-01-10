@@ -3,9 +3,7 @@ package coms;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
-import coms.utils.HashSet;
-
-import java.util.ArrayList;
+import coms.utils.*;
 
 import static coms.Robot.*;
 import static coms.RobotPlayer.turnCount;
@@ -21,9 +19,7 @@ public class ECComs extends Coms {
     private int relevantSize = 0;
     private int relevantInd = 0;
     private int[] relevantFlags = new int[20];
-    private HashSet<Integer> robotIDs = new HashSet<>(16);
-
-    public ArrayList<Integer> knownRobotId = new ArrayList<Integer>();
+    private HashSet<Integer> robotIDs = new HashSet<>(50);
 
     public ECComs() {
         super();
@@ -34,22 +30,23 @@ public class ECComs extends Coms {
         friendECs[0] = rc.getLocation();
     }
 
-    public void appendNewUnit(int unitid){
-        knownRobotId.add(unitid);
-    }
-
     public void loopBots() throws GameActionException {
         //todo: the bytecode effciency is way way way too low
-        if (knownRobotId.size()>0) {
-            System.out.println(knownRobotId.toString());
-            for (int unitid_dex=0 ; unitid_dex<knownRobotId.size();unitid_dex++) {
-                int unitid = knownRobotId.get(unitid_dex);
-                if (rc.canGetFlag(unitid)) {
-                    System.out.println("processing: " + unitid);
-                    processFlag(rc.getFlag(unitid));
-                } else {
-                    knownRobotId.remove(knownRobotId.indexOf(unitid));
-                    unitid_dex--;
+        for (int i = 0; i < 50; i++) {
+            LinkedList<Integer> list = robotIDs.table[i];
+            if (list.size != 0) {
+                Node<Integer> temp = list.head;
+                while (!temp.equals(list.end)) {
+                    int ID = temp.val;
+                    if (rc.canGetFlag(ID)) {
+                        processFlag(rc.getFlag(ID));
+                        temp = temp.next;
+                    } else {
+                        // this might cause a lot of bugs, will see
+                        temp = temp.next;
+                        list.remove(temp.prev);
+                        robotIDs.size--;
+                    }
                 }
             }
         }
@@ -146,10 +143,9 @@ public class ECComs extends Coms {
             }
         }
         // add known IDs
-        for (RobotInfo r: robots) {
-            if (r.getTeam() == team) {
-                robotIDs.add(r.getID());
-            }
+        RobotInfo[] adjRobots = rc.senseNearbyRobots(2, team);
+        for (RobotInfo r: adjRobots) {
+            robotIDs.add(r.getID());
         }
         // process known robot IDs
         // TODO: do this

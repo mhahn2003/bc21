@@ -40,12 +40,6 @@ public class EC extends Robot {
                 }
             }
         }
-        RobotInfo[] rbs=rc.senseNearbyRobots(2,team);
-        for (RobotInfo rb:rbs){
-            if(!eccoms.knownRobotId.contains(rb.ID)){
-                eccoms.appendNewUnit(rb.ID);
-            }
-        }
     }
 
     public void build(RobotType toBuild, int influence) throws GameActionException {

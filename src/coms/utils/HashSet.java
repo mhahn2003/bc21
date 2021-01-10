@@ -4,7 +4,7 @@
 package coms.utils;
 
 public class HashSet<T> {
-    LinkedList<T>[] table;
+    public LinkedList<T>[] table;
     int capacity;
     public int size = 0;
     int tabIndex = 0;
