@@ -19,7 +19,7 @@ public class ECComs extends Coms {
     private int relevantSize = 0;
     private int relevantInd = 0;
     private int[] relevantFlags = new int[20];
-    private HashSet<Integer> robotIDs = new HashSet<>(50);
+    private HashSet<Integer> robotIDs = new HashSet<>(40);
 
     public ECComs() {
         super();
@@ -31,8 +31,16 @@ public class ECComs extends Coms {
     }
 
     public void loopBots() throws GameActionException {
-        //todo: the bytecode effciency is way way way too low
-        for (int i = 0; i < 50; i++) {
+        // todo: the bytecode effciency is way way way too low
+        // if array too big, prune
+        if (robotIDs.size >= 80) {
+            HashSet<Integer> tempIDs = new HashSet<>(40);
+            for (int i = 0; i < 40; i++) {
+                if (robotIDs.table[i].size != 0) tempIDs.add((int) robotIDs.table[i].end.val);
+            }
+            robotIDs = tempIDs;
+        }
+        for (int i = 0; i < 40; i++) {
             LinkedList<Integer> list = robotIDs.table[i];
             if (list.size != 0) {
                 Node<Integer> temp = list.head;

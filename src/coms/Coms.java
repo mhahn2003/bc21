@@ -331,6 +331,8 @@ public class Coms {
             int flag = signalQueue.poll();
             System.out.println("showing:" + flag);
             rc.setFlag(flag);
+        } else {
+            rc.setFlag(0);
         }
     }
 }
