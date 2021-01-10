@@ -154,92 +154,89 @@ public class Coms {
         for (RobotInfo r: robots) {
             if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                 int id = r.getID();
-                if (!ECLoc.containsKey(r.getID())) {
-                    MapLocation loc = r.getLocation();
-                    ECLoc.put(id, loc);
-                    if (r.getTeam() == team) {
-                        int minInd = -1;
-                        boolean seen = false;
-                        for (int i = 11; i >= 0; i--) {
-                            if (ECIds[i] == 0) {
-                                minInd = i;
-                            }
-                            if (ECIds[i] == r.getID()) {
-                                seen = true;
-                                break;
-                            }
+                MapLocation loc = r.getLocation();
+                if (r.getTeam() == team) {
+                    int minInd = -1;
+                    boolean seen = false;
+                    for (int i = 11; i >= 0; i--) {
+                        if (ECIds[i] == 0) {
+                            minInd = i;
                         }
-                        if (minInd != -1 && !seen) ECIds[minInd] = r.getID();
-                        for (int i = 0; i < 12; i++) {
-                            if (loc.equals(enemyECs[i])) {
-                                enemyECs[i] = null;
-                                break;
-                            }
-                            if (loc.equals(neutralECs[i])) {
-                                neutralECs[i] = null;
-                                break;
-                            }
+                        if (ECIds[i] == r.getID()) {
+                            seen = true;
+                            break;
                         }
-                        minInd = -1;
-                        seen = false;
-                        for (int i = 11; i >= 0; i--) {
-                            if (friendECs[i] == null) {
-                                minInd = i;
-                            } else if (friendECs[i].equals(r.getLocation())) {
-                                seen = true;
-                                break;
-                            }
+                    }
+                    if (minInd != -1 && !seen) ECIds[minInd] = r.getID();
+                    for (int i = 0; i < 12; i++) {
+                        if (loc.equals(enemyECs[i])) {
+                            enemyECs[i] = null;
+                            break;
                         }
-                        if (minInd != -1 && !seen) {
-                            friendECs[minInd] = r.getLocation();
-                            signalQueue.add(getMessage(InformationCategory.FRIEND_EC, loc));
-                            relevantFlags[relevantSize] = getMessage(InformationCategory.FRIEND_EC, loc);
-                            relevantSize++;
+                        if (loc.equals(neutralECs[i])) {
+                            neutralECs[i] = null;
+                            break;
                         }
-                    } else if (r.getTeam() == team.opponent()) {
-                        for (int i = 0; i < 12; i++) {
-                            if (loc.equals(friendECs[i])) {
-                                friendECs[i] = null;
-                                break;
-                            }
-                            if (loc.equals(neutralECs[i])) {
-                                neutralECs[i] = null;
-                                break;
-                            }
+                    }
+                    minInd = -1;
+                    seen = false;
+                    for (int i = 11; i >= 0; i--) {
+                        if (friendECs[i] == null) {
+                            minInd = i;
+                        } else if (friendECs[i].equals(r.getLocation())) {
+                            seen = true;
+                            break;
                         }
-                        int minInd = -1;
-                        boolean seen = false;
-                        for (int i = 11; i >= 0; i--) {
-                            if (enemyECs[i] == null) {
-                                minInd = i;
-                            } else if (enemyECs[i].equals(r.getLocation())) {
-                                seen = true;
-                                break;
-                            }
+                    }
+                    if (minInd != -1 && !seen) {
+                        friendECs[minInd] = r.getLocation();
+                        signalQueue.add(getMessage(InformationCategory.FRIEND_EC, loc));
+                        relevantFlags[relevantSize] = getMessage(InformationCategory.FRIEND_EC, loc);
+                        relevantSize++;
+                    }
+                } else if (r.getTeam() == team.opponent()) {
+                    for (int i = 0; i < 12; i++) {
+                        if (loc.equals(friendECs[i])) {
+                            friendECs[i] = null;
+                            break;
                         }
-                        if (minInd != -1 && !seen) {
-                            enemyECs[minInd] = r.getLocation();
-                            signalQueue.add(getMessage(InformationCategory.ENEMY_EC, loc));
-                            relevantFlags[relevantSize] = getMessage(InformationCategory.ENEMY_EC, loc);
-                            relevantSize++;
+                        if (loc.equals(neutralECs[i])) {
+                            neutralECs[i] = null;
+                            break;
                         }
-                    } else {
-                        int minInd = -1;
-                        boolean seen = false;
-                        for (int i = 11; i >= 0; i--) {
-                            if (neutralECs[i] == null) {
-                                minInd = i;
-                            } else if (neutralECs[i].equals(r.getLocation())) {
-                                seen = true;
-                                break;
-                            }
+                    }
+                    int minInd = -1;
+                    boolean seen = false;
+                    for (int i = 11; i >= 0; i--) {
+                        if (enemyECs[i] == null) {
+                            minInd = i;
+                        } else if (enemyECs[i].equals(r.getLocation())) {
+                            seen = true;
+                            break;
                         }
-                        if (minInd != -1 && !seen) {
-                            ECIds[minInd] = r.getID();
-                            signalQueue.add(getMessage(InformationCategory.NEUTRAL_EC, loc));
-                            relevantFlags[relevantSize] = getMessage(InformationCategory.NEUTRAL_EC, loc);
-                            relevantSize++;
+                    }
+                    if (minInd != -1 && !seen) {
+                        enemyECs[minInd] = r.getLocation();
+                        signalQueue.add(getMessage(InformationCategory.ENEMY_EC, loc));
+                        relevantFlags[relevantSize] = getMessage(InformationCategory.ENEMY_EC, loc);
+                        relevantSize++;
+                    }
+                } else {
+                    int minInd = -1;
+                    boolean seen = false;
+                    for (int i = 11; i >= 0; i--) {
+                        if (neutralECs[i] == null) {
+                            minInd = i;
+                        } else if (neutralECs[i].equals(r.getLocation())) {
+                            seen = true;
+                            break;
                         }
+                    }
+                    if (minInd != -1 && !seen) {
+                        ECIds[minInd] = r.getID();
+                        signalQueue.add(getMessage(InformationCategory.NEUTRAL_EC, loc));
+                        relevantFlags[relevantSize] = getMessage(InformationCategory.NEUTRAL_EC, loc);
+                        relevantSize++;
                     }
                 }
             }

@@ -17,11 +17,10 @@ public class ECComs extends Coms {
     private int flagIndex = 0;
     // edges, ec id and locations, enemy loc
 
-    private HashSet<Integer> robotIDs = new HashSet<>(40);
+    private HashSet<Integer> robotIDs = new HashSet<>(50);
 
     public ECComs() {
         super();
-        ECLoc.put(rc.getID(), rc.getLocation());
         ECIds[0] = rc.getID();
         relevantSize = 1;
         relevantFlags[0] = getMessage(InformationCategory.EC_ID, rc.getID());
@@ -36,16 +35,16 @@ public class ECComs extends Coms {
         }
         // process known robot IDs
         // if array too big, prune
-        if (robotIDs.size >= 80) {
+        if (robotIDs.size >= 200) {
             Debug.p("pruning robot ID array");
-            HashSet<Integer> tempIDs = new HashSet<>(40);
+            HashSet<Integer> tempIDs = new HashSet<>(50);
             for (int i = 0; i < 40; i++) {
                 if (robotIDs.table[i].size != 0) tempIDs.add((int) robotIDs.table[i].end.val);
             }
             robotIDs = tempIDs;
             Debug.p("new size: " + robotIDs.size);
         }
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 50; i++) {
             LinkedList<Integer> list = robotIDs.table[i];
             if (list.size != 0) {
                 Node<Integer> temp = list.head;

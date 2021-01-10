@@ -2,8 +2,6 @@ package coms;
 
 import battlecode.common.*;
 
-import java.util.HashMap;
-
 public class Robot {
     static RobotController rc;
     static Nav nav;
@@ -30,7 +28,7 @@ public class Robot {
     static MapLocation[] friendECs = new MapLocation[12];
     static MapLocation[] neutralECs = new MapLocation[12];
     static MapLocation[] enemyECs = new MapLocation[12];
-    static HashMap<Integer, MapLocation> ECLoc = new HashMap<>();
+//    static HashMap<Integer, MapLocation> ECLoc = new HashMap<>();
 
     // all robots in sensor radius
     static RobotInfo[] robots;
