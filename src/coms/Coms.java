@@ -17,28 +17,28 @@ public class Coms {
 
     // TODO: need to order in terms of priority
     public enum InformationCategory {
+        FRIEND_EC,
+        EC_ID,
+        ENEMY_EC,
+        NEUTRAL_EC,
         EDGE_N,
         EDGE_E,
         EDGE_S,
         EDGE_W,
-        ENEMY_EC,
-        FRIEND_EC,
-        NEUTRAL_EC,
-        EC_ID,
     }
 
     public static int getMessage(InformationCategory cat, MapLocation coord) {
         System.out.println(cat.toString() + " " + coord.toString());
         int message;
         switch (cat) {
-            case EDGE_N    : message = 1; break;
-            case EDGE_E    : message = 2; break;
-            case EDGE_S    : message = 3; break;
-            case EDGE_W    : message = 4; break;
-            case ENEMY_EC  : message = 5; break;
-            case FRIEND_EC : message = 6; break;
-            case NEUTRAL_EC: message = 7; break;
-            case EC_ID     : message = 8; break;
+            case FRIEND_EC : message = 1; break;
+            case EC_ID     : message = 2; break;
+            case ENEMY_EC  : message = 3; break;
+            case NEUTRAL_EC: message = 4; break;
+            case EDGE_N    : message = 5; break;
+            case EDGE_E    : message = 6; break;
+            case EDGE_S    : message = 7; break;
+            case EDGE_W    : message = 8; break;
             default        : message = 9;
         }
         message = addCoord(message, coord);
@@ -48,14 +48,14 @@ public class Coms {
     public static int getMessage(InformationCategory cat, int ID) {
         int message;
         switch (cat) {
-            case EDGE_N    : message = 1; break;
-            case EDGE_E    : message = 2; break;
-            case EDGE_S    : message = 3; break;
-            case EDGE_W    : message = 4; break;
-            case ENEMY_EC  : message = 5; break;
-            case FRIEND_EC : message = 6; break;
-            case NEUTRAL_EC: message = 7; break;
-            case EC_ID     : message = 8; break;
+            case FRIEND_EC : message = 1; break;
+            case EC_ID     : message = 2; break;
+            case ENEMY_EC  : message = 3; break;
+            case NEUTRAL_EC: message = 4; break;
+            case EDGE_N    : message = 5; break;
+            case EDGE_E    : message = 6; break;
+            case EDGE_S    : message = 7; break;
+            case EDGE_W    : message = 8; break;
             default        : message = 9;
         }
         System.out.println(message);
@@ -75,14 +75,14 @@ public class Coms {
 
     public static InformationCategory getCat(int message) {
         switch (message>>15) {
-            case 1: return InformationCategory.EDGE_N;
-            case 2: return InformationCategory.EDGE_E;
-            case 3: return InformationCategory.EDGE_S;
-            case 4: return InformationCategory.EDGE_W;
-            case 5: return InformationCategory.ENEMY_EC;
-            case 6: return InformationCategory.FRIEND_EC;
-            case 7: return InformationCategory.NEUTRAL_EC;
-            case 8: return InformationCategory.EC_ID;
+            case 1: return InformationCategory.FRIEND_EC;
+            case 2: return InformationCategory.EC_ID;
+            case 3: return InformationCategory.ENEMY_EC;
+            case 4: return InformationCategory.NEUTRAL_EC;
+            case 5: return InformationCategory.EDGE_N;
+            case 6: return InformationCategory.EDGE_E;
+            case 7: return InformationCategory.EDGE_S;
+            case 8: return InformationCategory.EDGE_W;
             default: return null;
         }
     }
