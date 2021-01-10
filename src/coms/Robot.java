@@ -10,6 +10,7 @@ public class Robot {
     static Coms coms;
     static ECComs eccoms;
 
+    public static boolean debugOn = true;
     static int minX = 9999;
     static int maxX = 30065;
     static int minY = 9999;
@@ -82,7 +83,7 @@ public class Robot {
     }
 
     public Robot(RobotController r) {
-        System.out.println("bytecode before initialization " + Clock.getBytecodesLeft());
+        System.out.println("bytecode before initialization: " + Clock.getBytecodesLeft());
         rc = r;
         if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
             eccoms = new ECComs();
@@ -94,13 +95,13 @@ public class Robot {
         enemy = rc.getTeam().opponent();
         actionRadius = rc.getType().actionRadiusSquared;
         sqrtSensorRadius = getSqrtSensorRadius(rc.getType());
-        System.out.println("bytecode after initialization" + Clock.getBytecodesLeft());
+        System.out.println("bytecode after initialization: " + Clock.getBytecodesLeft());
     }
 
 
     public void takeTurn() throws GameActionException {
 
-        System.out.println("before taking super.turn" + Clock.getBytecodesLeft());
+        System.out.println("before taking super.turn: " + Clock.getBytecodesLeft());
         if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
             eccoms.getInfo();
             eccoms.displaySignal();
@@ -110,7 +111,7 @@ public class Robot {
             coms.displaySignal();
         }
 
-        System.out.println("after taking super.turn" + Clock.getBytecodesLeft());
+        System.out.println("after taking super.turn: " + Clock.getBytecodesLeft());
         System.out.println("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
         rc.setIndicatorLine(rc.getLocation(),new MapLocation(maxX, maxY), 255, 255, 255);
         rc.setIndicatorLine(rc.getLocation(),new MapLocation(minX, minY), 255, 255, 255);

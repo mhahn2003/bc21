@@ -31,7 +31,6 @@ public class ECComs extends Coms {
     }
 
     public void loopBots() throws GameActionException {
-        // todo: the bytecode effciency is way way way too low
         // if array too big, prune
         if (robotIDs.size >= 80) {
             HashSet<Integer> tempIDs = new HashSet<>(40);
