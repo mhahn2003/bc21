@@ -20,8 +20,8 @@ public class Muckraker extends Robot {
         MapLocation closestSlanderer = null;
         int maxSlanderer = -1;
         MapLocation maxSlandererLocation = null;
-        for (RobotInfo robot : rc.senseNearbyRobots(rc.getType().sensorRadiusSquared, enemy)) {
-            if (robot.type.canBeExposed()) {
+        for (RobotInfo robot : robots) {
+            if (robot.getTeam() == enemy && robot.type.canBeExposed()) {
                 int dist = rc.getLocation().distanceSquaredTo(robot.getLocation());
                 if (dist <= closestSlandererDist) {
                     closestSlandererDist = dist;
@@ -32,7 +32,7 @@ public class Muckraker extends Robot {
                     maxSlandererLocation=robot.location;
                 }
             }
-            if (robot.type == RobotType.POLITICIAN) {
+            if (robot.getTeam() == enemy && robot.type == RobotType.POLITICIAN) {
                 int dist = rc.getLocation().distanceSquaredTo(robot.getLocation());
                 if (dist > 2 && dist <= closestPoliticianDist) {
                     closestPoliticianDist = dist;

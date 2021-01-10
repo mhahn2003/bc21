@@ -31,13 +31,21 @@ public class ECComs extends Coms {
     }
 
     public void loopBots() throws GameActionException {
+        // add known IDs
+        RobotInfo[] adjRobots = rc.senseNearbyRobots(2, team);
+        for (RobotInfo r: adjRobots) {
+            robotIDs.add(r.getID());
+        }
+        // process known robot IDs
         // if array too big, prune
         if (robotIDs.size >= 80) {
+            Debug.p("pruning robot ID array");
             HashSet<Integer> tempIDs = new HashSet<>(40);
             for (int i = 0; i < 40; i++) {
                 if (robotIDs.table[i].size != 0) tempIDs.add((int) robotIDs.table[i].end.val);
             }
             robotIDs = tempIDs;
+            Debug.p("new size: " + robotIDs.size);
         }
         for (int i = 0; i < 40; i++) {
             LinkedList<Integer> list = robotIDs.table[i];
@@ -59,13 +67,24 @@ public class ECComs extends Coms {
         }
     }
 
+    public void loopECS() throws GameActionException {
+        // process ECs
+        for (int i = 0; i < 12; i++) {
+            if (ECIds[i] != 0 && ECIds[i] != rc.getID()) {
+                Debug.p("checking EC: " + ECIds[i]);
+                if (rc.canGetFlag(ECIds[i])) {
+                    Debug.p("got flag from EC!");
+                    processFlag(rc.getFlag(ECIds[i]));
+                }
+            }
+        }
+    }
+
     // can perform computation through multiple turns, but needs to be called once per turn until it is all done
     // returns whether the looping through flags process has finished
     public boolean loopFlags() throws GameActionException {
         while (Clock.getBytecodesLeft() >= 4000 && IDcheck <= 14096) {
             if (rc.canGetFlag(IDcheck)) {
-                System.out.println("Hi I'm here");
-                System.out.println(IDcheck);
                 int flag = rc.getFlag(IDcheck);
                 if (getCat(flag) == InformationCategory.EC_ID) {
                     // found an EC!
@@ -78,7 +97,7 @@ public class ECComs extends Coms {
                         }
                     }
                     if (!knownID) {
-                        System.out.println("Found a new ID: " + ID);
+                        Debug.p("Found a new ID: " + ID);
                         for (int i = 0; i < 12; i++) {
                             if (ECIds[i] == 0) {
                                 ECIds[i] = ID;
@@ -87,29 +106,12 @@ public class ECComs extends Coms {
                                 break;
                             }
                         }
+                        signalQueue.add(getMessage(InformationCategory.EC_ID, ID));
                     }
-                    signalQueue.add(getMessage(InformationCategory.EC_ID, ID));
                 }
             }
             IDcheck++;
         }
-        // a brutal way to find all friendEC
-        /*
-        if (loopingIndex<14096) {
-            System.out.println("loopingIndex " + loopingIndex);
-            rc.setFlag(rc.getID() ^ 0xaaaa);
-            int soft_max=10000 + 512 * rc.getRoundNum();
-            while (loopingIndex < soft_max && Clock.getBytecodesLeft() > 1000) {
-                if (rc.canGetFlag(loopingIndex)) {
-                    if (loopingIndex == (rc.getFlag(loopingIndex) ^ 0xaaaa)) {
-                        friendECs.add(loopingIndex);
-                    }
-                }
-                loopingIndex += 1;
-            }
-            System.out.println("loopingIndex " + loopingIndex);
-        }
-         */
         if (IDcheck == 14097) {
             allSearched = true;
         }
@@ -118,6 +120,7 @@ public class ECComs extends Coms {
 
     // todo: a new instance of robot ec is created when a new ec is occupied.
     // get from flags, collect from environment.
+    // also displays flag
     public void getInfo() throws GameActionException {
         loopBots();
         loopECS();
@@ -129,6 +132,7 @@ public class ECComs extends Coms {
             if (!signalQueue.isEmpty()) {
                 // add it to a list of last displayed flags to reduce redundancy between ecs
                 int flag = signalQueue.poll();
+                Debug.p("getting from signalQueue");
                 lastFlags[flagIndex % 10] = flag;
                 flagIndex++;
                 rc.setFlag(flag);
@@ -137,26 +141,6 @@ public class ECComs extends Coms {
                 relevantInd++;
             }
         }
-    }
-
-    public void loopECS() throws GameActionException {
-        robots = rc.senseNearbyRobots();
-        // process ECs
-        for (int i = 0; i < 12; i++) {
-            if (ECIds[i] != 0 && ECIds[i] != rc.getID()) {
-                if (rc.canGetFlag(ECIds[i])) {
-                    processFlag(rc.getFlag(ECIds[i]));
-                }
-            }
-        }
-        // add known IDs
-        RobotInfo[] adjRobots = rc.senseNearbyRobots(2, team);
-        for (RobotInfo r: adjRobots) {
-            robotIDs.add(r.getID());
-        }
-        // process known robot IDs
-        // TODO: do this
-        loopBots();
     }
 
     public void processFlag(int flag) {
@@ -168,6 +152,8 @@ public class ECComs extends Coms {
             }
         }
         if (!processed) {
+            Debug.p("not processed yet, adding to queue: " + flag);
+
             signalQueue.add(flag);
         }
         super.processFlag(flag);

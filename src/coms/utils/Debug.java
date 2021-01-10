@@ -3,7 +3,8 @@ package coms.utils;
 import static coms.Robot.debugOn;
 
 public class Debug {
-    static void debug(String msg) {
+
+    public static void p(Object msg) {
         if (debugOn) System.out.println(msg);
     }
 }

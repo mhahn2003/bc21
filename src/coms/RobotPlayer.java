@@ -15,12 +15,10 @@ public strictfp class RobotPlayer {
      **/
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {
-        System.out.println("bytecode at the beginning " + Clock.getBytecodesLeft());
         // This is the RobotController object. You use it to perform actions from this robot,
         // and to get information on its current status.
         RobotPlayer.rc = rc;
         Robot me = null;
-        System.out.println("bytecode second" + Clock.getBytecodesLeft());
         switch (rc.getType()) {
             case ENLIGHTENMENT_CENTER: me = new EC(rc); break;
             case POLITICIAN: me = new Politician(rc); break;
@@ -29,14 +27,12 @@ public strictfp class RobotPlayer {
         }
         turnCount = 0;
 
-        System.out.println("I'm a " + rc.getType() + " and I just got created!");
         while (true) {
             turnCount += 1;
             // Try/catch blocks stop unhandled exceptions, which cause your robot to freeze
             try {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You may rewrite this into your own control structure if you wish.
-                System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
                 me.takeTurn();
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();

@@ -1,6 +1,7 @@
 package coms;
 
 import battlecode.common.*;
+import coms.utils.Debug;
 
 import java.util.PriorityQueue;
 
@@ -28,7 +29,6 @@ public class Coms {
     }
 
     public static int getMessage(InformationCategory cat, MapLocation coord) {
-        System.out.println(cat.toString() + " " + coord.toString());
         int message;
         switch (cat) {
             case FRIEND_EC : message = 1; break;
@@ -58,9 +58,7 @@ public class Coms {
             case EDGE_W    : message = 8; break;
             default        : message = 9;
         }
-        System.out.println(message);
         message = addID(message, ID);
-        System.out.println("converting:\n" +cat.toString() + "+" + ID + "\n=>\n" + message);
         return message;
     }
 
@@ -262,10 +260,10 @@ public class Coms {
         int minInd;
         boolean seen;
         switch (cat) {
-            case EDGE_N : if(!edges[0]){edges[0]=true;maxY=ID;System.out.println("updated "+0+"th edge");}break;
-            case EDGE_E : if(!edges[1]){edges[1]=true;maxX=ID;System.out.println("updated "+1+"st edge");}break;
-            case EDGE_S : if(!edges[2]){edges[2]=true;minY=ID;System.out.println("updated "+2+"nd edge");}break;
-            case EDGE_W : if(!edges[3]){edges[3]=true;minX=ID;System.out.println("updated "+3+"rd edge");}break;
+            case EDGE_N : if(!edges[0]){edges[0]=true;maxY=ID; Debug.p("updated "+0+"th edge");}break;
+            case EDGE_E : if(!edges[1]){edges[1]=true;maxX=ID; Debug.p("updated "+1+"st edge");}break;
+            case EDGE_S : if(!edges[2]){edges[2]=true;minY=ID; Debug.p("updated "+2+"nd edge");}break;
+            case EDGE_W : if(!edges[3]){edges[3]=true;minX=ID; Debug.p("updated "+3+"rd edge");}break;
             case ENEMY_EC:
                 minInd = -1;
                 seen = false;
