@@ -3,7 +3,6 @@ package coms;
 import battlecode.common.*;
 
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class Robot {
     static RobotController rc;
@@ -12,21 +11,29 @@ public class Robot {
     static ECComs eccoms;
 
     static int minX = 9999;
-    static int maxX = 30001;
+    static int maxX = 30065;
     static int minY = 9999;
-    static int maxY = 30001;
+    static int maxY = 30065;
     static int[][] ends;
-    static boolean[] edgesDetected = {false, false, false, false};
-    static int[] edgesValue = {30001, 30001, 9999, 9999};
+
+    static Team team;
+
+    static boolean[] edges = {false, false, false, false};
 
     static double[][] mapPassibility = new double[128][128];
     static int sqrtSensorRadius;
 
-    static Team team;
-    static HashSet<Integer> friendECs = new HashSet<>();
-    static HashSet<Integer> neutralECs = new HashSet<>();
-    static HashSet<Integer> enemyECs = new HashSet<>();
+
+    // ECIds may not necessarily correspond to EC MapLocations
+    // discuss: 3 by 12 array?
+    static int[] ECIds = new int[12];
+    static MapLocation[] friendECs = new MapLocation[12];
+    static MapLocation[] neutralECs = new MapLocation[12];
+    static MapLocation[] enemyECs = new MapLocation[12];
     static HashMap<Integer, MapLocation> ECLoc = new HashMap<>();
+
+    // all robots in sensor radius
+    static RobotInfo[] robots;
 
     protected Team enemy;
     protected int actionRadius;
@@ -91,36 +98,22 @@ public class Robot {
         System.out.println("bytecode after initialization" + Clock.getBytecodesLeft());
     }
 
+
     public void takeTurn() throws GameActionException {
+
         System.out.println("before taking super.turn" + Clock.getBytecodesLeft());
         if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
-            eccoms.collectInfo();
+            eccoms.getInfo();
+            eccoms.displaySignal();
         }else{
+            coms.getInfo();
             coms.collectInfo();
             coms.displaySignal();
         }
-        System.out.println("after taking super.turn" + Clock.getBytecodesLeft());
 
-        MapLocation corner;
-        if (edgesDetected[0] && edgesDetected[1]){
-            corner = new MapLocation(edgesValue[1],edgesValue[0]);
-            System.out.println("q1" + corner.toString());
-            rc.setIndicatorLine(rc.getLocation(),corner,255,255,255);
-        }
-        if (edgesDetected[2] && edgesDetected[1]){
-            corner = new MapLocation(edgesValue[1],edgesValue[2]);
-            System.out.println("q2" + corner.toString());
-            rc.setIndicatorLine(rc.getLocation(),corner,255,255,255);
-        }
-        if (edgesDetected[0] && edgesDetected[3]){
-            corner = new MapLocation(edgesValue[3],edgesValue[0]);
-            System.out.println("q3" + corner.toString());
-            rc.setIndicatorLine(rc.getLocation(),corner,255,255,255);
-        }
-        if (edgesDetected[2] && edgesDetected[3]){
-            corner = new MapLocation(edgesValue[3],edgesValue[2]);
-            System.out.println("q4" + corner.toString());
-            rc.setIndicatorLine(rc.getLocation(),corner,255,255,255);
-        }
+        System.out.println("after taking super.turn" + Clock.getBytecodesLeft());
+        System.out.println("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
+        rc.setIndicatorLine(rc.getLocation(),new MapLocation(maxX, maxY), 255, 255, 255);
+        rc.setIndicatorLine(rc.getLocation(),new MapLocation(minX, minY), 255, 255, 255);
     }
 }

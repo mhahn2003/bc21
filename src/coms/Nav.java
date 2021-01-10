@@ -104,14 +104,14 @@ public class Nav {
 
     public int[][] getEnds() {
         int midX, midY;
-        if (minX == 9999 && maxX == 30001) midX = 20000;
+        if (minX == 9999 && maxX == 30065) midX = 20000;
         else if (minX == 9999) midX = maxX-32;
-        else if (maxX == 30001) midX = minX+32;
+        else if (maxX == 30065) midX = minX+32;
         else midX = (minX+maxX)/2;
 
-        if (minY == 9999 && maxY == 30001) midY = 20000;
+        if (minY == 9999 && maxY == 30065) midY = 20000;
         else if (minY == 9999) midY = maxY-32;
-        else if (maxY == 30001) midY = minY+32;
+        else if (maxY == 30065) midY = minY+32;
         else midY = (minY+maxY)/2;
 
         ends = new int[][]{{minX, minY}, {minX, midY}, {minX, maxY}, {midX, maxY}, {maxX, maxY}, {maxX, midY}, {maxX, minY}, {midX, minY}};

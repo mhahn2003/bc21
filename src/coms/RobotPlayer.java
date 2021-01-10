@@ -7,7 +7,7 @@ import battlecode.common.RobotController;
 public strictfp class RobotPlayer {
     static RobotController rc;
 
-    static int turnCount;
+    public static int turnCount;
 
     /**
      * run() is the method that is called when a robot is instantiated in the Battlecode world.
