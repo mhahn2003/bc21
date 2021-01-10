@@ -149,6 +149,7 @@ public class ECComs extends Coms {
         }
         // process known robot IDs
         // TODO: do this
+        loopBots();
     }
 
     public void processFlag(int flag) {
@@ -163,93 +164,6 @@ public class ECComs extends Coms {
             signalQueue.add(flag);
         }
         super.processFlag(flag);
-
-        /*
-        if (processed) {
-            super.processFlag(flag);
-        } else {
-            if (flag == 0 || getCat(flag) == null) return;
-            MapLocation coord = getCoord(flag);
-            int ID = getID(flag);
-            int minInd;
-            boolean seen;
-            switch (getCat(flag)) {
-                case EDGE_N : if(!edges[0]){edges[0]=true;maxY=ID;System.out.println("updated "+0+"th edge");signalQueue.add(flag);}break;
-                case EDGE_E : if(!edges[1]){edges[1]=true;maxX=ID;System.out.println("updated "+1+"st edge");signalQueue.add(flag);}break;
-                case EDGE_S : if(!edges[2]){edges[2]=true;minY=ID;System.out.println("updated "+2+"nd edge");signalQueue.add(flag);}break;
-                case EDGE_W : if(!edges[3]){edges[3]=true;minX=ID;System.out.println("updated "+3+"rd edge");signalQueue.add(flag);}break;
-                case ENEMY_EC:
-                    minInd = -1;
-                    seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (enemyECs[i] == null) {
-                            minInd = i;
-                        }
-                        else if (enemyECs[i].equals(coord)) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        enemyECs[minInd] = coord;
-                        signalQueue.add(flag);
-                    }
-                    break;
-                case FRIEND_EC:
-                    minInd = -1;
-                    seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (friendECs[i] == null) {
-                            minInd = i;
-                        }
-                        else if (friendECs[i].equals(coord)) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        friendECs[minInd] = coord;
-                        signalQueue.add(flag);
-                    }
-                    break;
-                case NEUTRAL_EC:
-                    minInd = -1;
-                    seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (neutralECs[i] == null) {
-                            minInd = i;
-                        }
-                        else if (neutralECs[i].equals(coord)) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        neutralECs[minInd] = coord;
-                        signalQueue.add(flag);
-                    }
-                    break;
-                case EC_ID:
-                    minInd = -1;
-                    seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (ECIds[i] == 0) {
-                            minInd = i;
-                        }
-                        if (ECIds[i] == ID) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        ECIds[minInd] = ID;
-                        signalQueue.add(flag);
-                    }
-                    break;
-            }
-        }
-
-         */
     }
 
 }

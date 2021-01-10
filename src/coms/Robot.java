@@ -20,7 +20,6 @@ public class Robot {
 
     static boolean[] edges = {false, false, false, false};
 
-    static double[][] mapPassibility = new double[128][128];
     static int sqrtSensorRadius;
 
 

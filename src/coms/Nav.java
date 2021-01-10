@@ -22,11 +22,11 @@ public class Nav {
         closestDist = 1000000;
 
 
-        try {
-            initializingSurroundingMap();
-        } catch (GameActionException e) {
-            System.out.println("oops, intialization failed");
-        }
+//        try {
+//            initializingSurroundingMap();
+//        } catch (GameActionException e) {
+//            System.out.println("oops, intialization failed");
+//        }
 
         //the following is a look up table that makes updating map from 4*x^2 bytecode to 4*x bytecode
         switch(rc.getType()) {
@@ -50,52 +50,52 @@ public class Nav {
         System.out.println("made nav");
     }
 
-    public static void move(Direction dir) throws GameActionException {
-        rc.move(dir);
+//    public static void move(Direction dir) throws GameActionException {
+//        rc.move(dir);
+//
+//        MapLocation loc = rc.getLocation();
+//        MapLocation nloc;
+//        int[][]template;
+//        int dirID = directionToInt(dir);
+//        if (directionToInt(dir)%2==0){template = cardinalNewSense;}
+//        else {template = interCardinalNewSense;};
+//        int rotation=dirID>>1;
+//        int nx;
+//        int ny;
+//        for(int[] xypair : template){
+//            switch ( rotation%4){
+//                case 0: nloc = loc.translate( xypair[0], xypair[1]); break;
+//                case 1: nloc = loc.translate( xypair[1],-xypair[0]); break;
+//                case 2: nloc = loc.translate(-xypair[0],-xypair[1]); break;
+//                case 3: nloc = loc.translate(-xypair[1], xypair[0]); break;
+//                default: nloc = loc.translate( xypair[0], xypair[1]); System.out.println("nav move wrong");
+//            }
+//            nx=nloc.x%128;
+//            ny=nloc.y%128;
+//            if (mapPassibility[nx][ny]==0 && rc.canSenseLocation(nloc)){
+//                if(!rc.onTheMap(nloc)){mapPassibility[nx][ny]=-1;};
+//                mapPassibility[nx][ny]=rc.sensePassability(nloc);
+//            }
+//        }
+//    }
 
-        MapLocation loc = rc.getLocation();
-        MapLocation nloc;
-        int[][]template;
-        int dirID = directionToInt(dir);
-        if (directionToInt(dir)%2==0){template = cardinalNewSense;}
-        else {template = interCardinalNewSense;};
-        int rotation=dirID>>1;
-        int nx;
-        int ny;
-        for(int[] xypair : template){
-            switch ( rotation%4){
-                case 0: nloc = loc.translate( xypair[0], xypair[1]); break;
-                case 1: nloc = loc.translate( xypair[1],-xypair[0]); break;
-                case 2: nloc = loc.translate(-xypair[0],-xypair[1]); break;
-                case 3: nloc = loc.translate(-xypair[1], xypair[0]); break;
-                default: nloc = loc.translate( xypair[0], xypair[1]); System.out.println("nav move wrong");
-            }
-            nx=nloc.x%128;
-            ny=nloc.y%128;
-            if (mapPassibility[nx][ny]==0 && rc.canSenseLocation(nloc)){
-                if(!rc.onTheMap(nloc)){mapPassibility[nx][ny]=-1;};
-                mapPassibility[nx][ny]=rc.sensePassability(nloc);
-            }
-        }
-    }
-
-    public void initializingSurroundingMap() throws GameActionException {
-        MapLocation loc = rc.getLocation();
-        MapLocation nloc;
-        int nx;
-        int ny;
-        for(int x = -sqrtSensorRadius; x<= sqrtSensorRadius; x++){
-            for(int y = -sqrtSensorRadius; y<= sqrtSensorRadius; y++){
-                nloc = loc.translate(x,y);
-                nx=nloc.x%128;
-                ny=nloc.y%128;
-                if (mapPassibility[nx][ny]==0 && rc.canSenseLocation(nloc)){
-                    if(!rc.onTheMap(nloc)){mapPassibility[nx][ny]=-1;};
-                    mapPassibility[nx][ny]=rc.sensePassability(nloc);
-                }
-            }
-        }
-    }
+//    public void initializingSurroundingMap() throws GameActionException {
+//        MapLocation loc = rc.getLocation();
+//        MapLocation nloc;
+//        int nx;
+//        int ny;
+//        for(int x = -sqrtSensorRadius; x<= sqrtSensorRadius; x++){
+//            for(int y = -sqrtSensorRadius; y<= sqrtSensorRadius; y++){
+//                nloc = loc.translate(x,y);
+//                nx=nloc.x%128;
+//                ny=nloc.y%128;
+//                if (mapPassibility[nx][ny]==0 && rc.canSenseLocation(nloc)){
+//                    if(!rc.onTheMap(nloc)){mapPassibility[nx][ny]=-1;};
+//                    mapPassibility[nx][ny]=rc.sensePassability(nloc);
+//                }
+//            }
+//        }
+//    }
 
     // chase a unit based on their ID
     public void chase(RobotInfo ri) throws GameActionException {
@@ -134,7 +134,7 @@ public class Nav {
     */
     public static Direction tryMoveInDirection (Direction dir) throws GameActionException {
         if (checkDirMoveable(dir)) {
-            move(dir);
+            rc.move(dir);
             return dir;
         }
         return null;
@@ -307,7 +307,7 @@ public class Nav {
                 return bugTraceMove(true);
             }
             if (checkDirMoveable(curDir)) {
-                move(curDir);
+                rc.move(curDir);
                 for (int x = 0; x < bugVisitedLocationsLength; x++) {
                     if (bugVisitedLocations[x].equals(curDest)) {
                         System.out.println("Resetting bugTracing");

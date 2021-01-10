@@ -20,6 +20,7 @@ public strictfp class RobotPlayer {
         // and to get information on its current status.
         RobotPlayer.rc = rc;
         Robot me = null;
+        System.out.println("bytecode second" + Clock.getBytecodesLeft());
         switch (rc.getType()) {
             case ENLIGHTENMENT_CENTER: me = new EC(rc); break;
             case POLITICIAN: me = new Politician(rc); break;
