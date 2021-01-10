@@ -6,6 +6,7 @@ public class Muckraker extends Robot {
 
 
     private MapLocation wandLoc;
+    private int offset = 0;
 
     public Muckraker(RobotController rc) {
         super(rc);
@@ -46,10 +47,48 @@ public class Muckraker extends Robot {
                     rc.expose(maxSlandererLocation);
                 }
             }
-            // move to the closest slanderer if not
+            int closestECDist = 100000;
+            MapLocation closestEC = null;
+            for (int i = 0; i < 12; i++) {
+                if (enemyECs[i] != null) {
+                    int dist = rc.getLocation().distanceSquaredTo(enemyECs[i]);
+                    if (dist < closestECDist) {
+                        closestECDist = dist;
+                        closestEC = enemyECs[i];
+                    }
+                }
+            }
+            // move to the closest slanderer
             if (closestSlandererDist != 100000) {
                 nav.bugNavigate(closestSlanderer);
-            } else {
+            }
+            // else move to the closest enemy HQ if known
+            else if (closestEC != null) {
+                if (!rc.getLocation().isAdjacentTo(closestEC)) {
+                    if (rc.getLocation().isWithinDistanceSquared(closestEC, 13)) {
+                        // move to an adjacent spot
+                        int closestSpotDist = 100000;
+                        MapLocation closestSpot = null;
+                        for (Direction dir: directions) {
+                            MapLocation loc = closestEC.add(dir);
+                            if (!rc.isLocationOccupied(loc)) {
+                                int dist = rc.getLocation().distanceSquaredTo(loc);
+                                if (dist < closestSpotDist) {
+                                    closestSpotDist = dist;
+                                    closestSpot = loc;
+                                }
+                            }
+                        }
+                        if (closestSpot != null) {
+                            nav.bugNavigate(closestSpot);
+                        } else {
+                            // TODO: call for attack
+                        }
+                    }
+                    else nav.bugNavigate(closestEC);
+                }
+            }
+            else {
                 // else move to the nearest politician not adjacent
                 if (closestPolitician != null) nav.bugNavigate(closestPolitician);
                     // otherwise wander
@@ -61,7 +100,12 @@ public class Muckraker extends Robot {
     // wander around
     // TODO: what if you're already at a corner/side and you want to explore more (+3 to the end to explore?)
     public void wander() throws GameActionException {
-        wandLoc = new MapLocation(nav.getEnds()[rc.getID() % 8][0], nav.getEnds()[rc.getID() % 8][1]);
+        wandLoc = new MapLocation(nav.getEnds()[(rc.getID()+offset) % 8][0], nav.getEnds()[(rc.getID()+offset) % 8][1]);
+        if (rc.getLocation().isWithinDistanceSquared(wandLoc, 8)) {
+            offset++;
+            wander();
+            return;
+        }
         nav.bugNavigate(wandLoc);
     }
 }

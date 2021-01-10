@@ -254,7 +254,7 @@ public class Coms {
     // process the information gained from flag
     public void processFlag(int flag) {
         InformationCategory cat = getCat(flag);
-        if (cat == null){return;}
+        if (flag == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
         System.out.println("processing signal:" + cat.toString());
         System.out.println("processing signal:" + coord.toString());
@@ -267,15 +267,6 @@ public class Coms {
             case EDGE_S : if(!edges[2]){edges[2]=true;minY=ID;System.out.println("updated "+2+"nd edge");}break;
             case EDGE_W : if(!edges[3]){edges[3]=true;minX=ID;System.out.println("updated "+3+"rd edge");}break;
             case ENEMY_EC:
-                // add the coordinate into the list at the first empty slot
-                if (!ECLoc.containsValue(coord)) {
-                    for (int i = 0; i < 12; i++) {
-                        if (enemyECs[i] == null) {
-                            enemyECs[i] = coord;
-                            break;
-                        }
-                    }
-                }
                 minInd = -1;
                 seen = false;
                 for (int i = 11; i >= 0; i--) {
