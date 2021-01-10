@@ -16,9 +16,7 @@ public class ECComs extends Coms {
     private int[] lastFlags = new int[10];
     private int flagIndex = 0;
     // edges, ec id and locations, enemy loc
-    private int relevantSize = 0;
-    private int relevantInd = 0;
-    private int[] relevantFlags = new int[20];
+
     private HashSet<Integer> robotIDs = new HashSet<>(40);
 
     public ECComs() {
@@ -101,7 +99,7 @@ public class ECComs extends Coms {
                         for (int i = 0; i < 12; i++) {
                             if (ECIds[i] == 0) {
                                 ECIds[i] = ID;
-                                relevantFlags[relevantSize] = ID;
+                                relevantFlags[relevantSize] = getMessage(InformationCategory.EC_ID, ID);
                                 relevantSize++;
                                 break;
                             }
@@ -144,6 +142,8 @@ public class ECComs extends Coms {
     }
 
     public void processFlag(int flag) {
+        InformationCategory cat = getCat(flag);
+        if (flag == 0 || cat == null) return;
         boolean processed = false;
         for (int i = 0; i < 10; i++) {
             if (lastFlags[i] == flag) {

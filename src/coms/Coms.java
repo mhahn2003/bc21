@@ -9,6 +9,10 @@ import static coms.Robot.*;
 
 public class Coms {
     protected final PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
+    protected int relevantSize = 0;
+    protected int relevantInd = 0;
+    protected int[] relevantFlags = new int[20];
+
 
     // number of possible cases for InfoCategory enum class
     private static int numCase = 8;
@@ -111,25 +115,33 @@ public class Coms {
     public void collectInfo() throws GameActionException {
         // first check for any edges
         for (int i = 0; i < 4; i++) {
-            if (edges[i]){continue;}
+            if (edges[i]) continue;
             Direction dir = Direction.cardinalDirections()[i];
             MapLocation checkLoc = rc.getLocation().add(dir);
             while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
                 if (!rc.onTheMap(checkLoc)) {
                     System.out.println("I see an edge");
                     edges[i] = true;
-                    if       (i == 0) {
+                    if (i == 0) {
                         maxY = checkLoc.y-1;
                         signalQueue.add(getMessage(InformationCategory.EDGE_N, maxY));
-                    }else if (i == 1) {
+                        relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_N, maxY);
+                        relevantSize++;
+                    } else if (i == 1) {
                         maxX = checkLoc.x-1;
                         signalQueue.add(getMessage(InformationCategory.EDGE_E, maxX));
-                    }else if (i == 2) {
+                        relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_E, maxX);
+                        relevantSize++;
+                    } else if (i == 2) {
                         minY = checkLoc.y+1;
                         signalQueue.add(getMessage(InformationCategory.EDGE_S, minY));
-                    }else if (i == 3) {
+                        relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_S, minY);
+                        relevantSize++;
+                    } else if (i == 3) {
                         minX = checkLoc.x+1;
                         signalQueue.add(getMessage(InformationCategory.EDGE_W, minX));
+                        relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_W, minX);
+                        relevantSize++;
                     }
                     System.out.println("updated "+i+"th edge");
                     break;
@@ -181,6 +193,8 @@ public class Coms {
                         if (minInd != -1 && !seen) {
                             friendECs[minInd] = r.getLocation();
                             signalQueue.add(getMessage(InformationCategory.FRIEND_EC, loc));
+                            relevantFlags[relevantSize] = getMessage(InformationCategory.FRIEND_EC, loc);
+                            relevantSize++;
                         }
                     } else if (r.getTeam() == team.opponent()) {
                         for (int i = 0; i < 12; i++) {
@@ -206,6 +220,8 @@ public class Coms {
                         if (minInd != -1 && !seen) {
                             enemyECs[minInd] = r.getLocation();
                             signalQueue.add(getMessage(InformationCategory.ENEMY_EC, loc));
+                            relevantFlags[relevantSize] = getMessage(InformationCategory.ENEMY_EC, loc);
+                            relevantSize++;
                         }
                     } else {
                         int minInd = -1;
@@ -221,6 +237,8 @@ public class Coms {
                         if (minInd != -1 && !seen) {
                             ECIds[minInd] = r.getID();
                             signalQueue.add(getMessage(InformationCategory.NEUTRAL_EC, loc));
+                            relevantFlags[relevantSize] = getMessage(InformationCategory.NEUTRAL_EC, loc);
+                            relevantSize++;
                         }
                     }
                 }
@@ -248,22 +266,55 @@ public class Coms {
     }
 
 
-    // todo: allow ec swithcing sides
+    // todo: allow ec switching sides
     // process the information gained from flag
     public void processFlag(int flag) {
         InformationCategory cat = getCat(flag);
         if (flag == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
-        System.out.println("processing signal:" + cat.toString());
-        System.out.println("processing signal:" + coord.toString());
+        Debug.p("Signal type: " + cat.toString());
+        Debug.p("Signal Coords: " + coord.toString());
         int ID = getID(flag);
+        Debug.p("Signal ID: " + ID);
         int minInd;
         boolean seen;
         switch (cat) {
-            case EDGE_N : if(!edges[0]){edges[0]=true;maxY=ID; Debug.p("updated "+0+"th edge");}break;
-            case EDGE_E : if(!edges[1]){edges[1]=true;maxX=ID; Debug.p("updated "+1+"st edge");}break;
-            case EDGE_S : if(!edges[2]){edges[2]=true;minY=ID; Debug.p("updated "+2+"nd edge");}break;
-            case EDGE_W : if(!edges[3]){edges[3]=true;minX=ID; Debug.p("updated "+3+"rd edge");}break;
+            case EDGE_N:
+                if (!edges[0]) {
+                    edges[0] = true;
+                    maxY = ID;
+                    Debug.p("updated "+0+"th edge");
+                    relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_N, maxY);
+                    relevantSize++;
+                }
+                break;
+            case EDGE_E:
+                if (!edges[1]) {
+                    edges[1] = true;
+                    maxX = ID;
+                    Debug.p("updated "+1+"st edge");
+                    relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_E, maxX);
+                    relevantSize++;
+                }
+                break;
+            case EDGE_S:
+                if (!edges[2]) {
+                    edges[2] = true;
+                    minY = ID;
+                    Debug.p("updated "+2+"nd edge");
+                    relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_S, minY);
+                    relevantSize++;
+                }
+                break;
+            case EDGE_W:
+                if (!edges[3]) {
+                    edges[3] = true;
+                    minX = ID;
+                    Debug.p("updated "+3+"rd edge");
+                    relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_W, minX);
+                    relevantSize++;
+                }
+                break;
             case ENEMY_EC:
                 minInd = -1;
                 seen = false;
@@ -276,7 +327,11 @@ public class Coms {
                         break;
                     }
                 }
-                if (minInd != -1 && !seen) enemyECs[minInd] = coord;
+                if (minInd != -1 && !seen) {
+                    enemyECs[minInd] = coord;
+                    relevantFlags[relevantSize] = getMessage(InformationCategory.ENEMY_EC, coord);
+                    relevantSize++;
+                }
                 break;
             case FRIEND_EC:
                 minInd = -1;
@@ -290,7 +345,11 @@ public class Coms {
                         break;
                     }
                 }
-                if (minInd != -1 && !seen) friendECs[minInd] = coord;
+                if (minInd != -1 && !seen) {
+                    friendECs[minInd] = coord;
+                    relevantFlags[relevantSize] = getMessage(InformationCategory.FRIEND_EC, coord);
+                    relevantSize++;
+                }
                 break;
             case NEUTRAL_EC:
                 minInd = -1;
@@ -304,7 +363,11 @@ public class Coms {
                         break;
                     }
                 }
-                if (minInd != -1 && !seen) neutralECs[minInd] = coord;
+                if (minInd != -1 && !seen) {
+                    neutralECs[minInd] = coord;
+                    relevantFlags[relevantSize] = getMessage(InformationCategory.NEUTRAL_EC, coord);
+                    relevantSize++;
+                }
                 break;
             case EC_ID:
                 minInd = -1;
@@ -318,7 +381,11 @@ public class Coms {
                         break;
                     }
                 }
-                if (minInd != -1 && !seen) ECIds[minInd] = ID;
+                if (minInd != -1 && !seen) {
+                    ECIds[minInd] = ID;
+                    relevantFlags[relevantSize] = getMessage(InformationCategory.EC_ID, ID);
+                    relevantSize++;
+                }
                 break;
         }
     }
