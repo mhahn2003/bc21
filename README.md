@@ -36,7 +36,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
-- Fix EC coms
+- ~~Fix EC coms~~
 - Politician AI
 - Slanderer AI
 - General attack plan on enemy EC
