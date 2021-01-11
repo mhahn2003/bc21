@@ -1,6 +1,7 @@
 package coms;
 
 import battlecode.common.*;
+import coms.utils.Debug;
 
 public class Politician extends Robot {
 
@@ -35,17 +36,21 @@ public class Politician extends Robot {
             }
         }
         if (closestEC != null) {
+            Debug.p("Going to closest EC: " + closestEC);
             if (closestECDist <= 9) {
+                Debug.p("Within empower distance");
                 // check if can kill
                 RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
                 int size = empowered.length;
                 int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
                 RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
                 if (enemyEC.getConviction()+1 <= effect) {
+                    Debug.p("Can kill, will kill");
                     if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                 } else {
                     // signal that you're attacking, so move out of the way
-                    rc.setFlag(Coms.getMessage(Coms.InformationCategory.ATTACK, closestEC));
+                    Debug.p("Signalling attack");
+                    rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
                     // check if we can get closer, or if there's a lot of our own units in the way
                     int closerDist = rc.getLocation().distanceSquaredTo(closestEC);
                     Direction optDir = null;
@@ -56,14 +61,21 @@ public class Politician extends Robot {
                             optDir = directions[i];
                         }
                     }
-                    if (optDir != null) rc.move(optDir);
+                    if (optDir != null) {
+                        Debug.p("The optimal direction to move is: " + optDir);
+                        rc.move(optDir);
+                    }
                     else {
                         // if can't move, then try to see whether it's good to just blast away
                         int teamCount = 0;
                         for (RobotInfo r : empowered) {
                             if (r.getTeam() == team) teamCount++;
                         }
-                        if (teamCount <= 2 && attackEffect(closestECDist) > effThreshold) {
+                        Debug.p("There's teammates around me: " + teamCount);
+                        int eff = attackEffect(closestECDist);
+                        Debug.p("Efficiency: " + eff);
+                        if (teamCount <= 2 && eff > effThreshold) {
+                            Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                         } else {
                             // wait for others to move
@@ -72,6 +84,7 @@ public class Politician extends Robot {
                     }
                 }
             } else {
+                Debug.p("navbugging");
                 nav.bugNavigate(closestEC);
             }
         } else {

@@ -22,7 +22,7 @@ public class Coms {
     }
 
     // TODO: need to order in terms of priority
-    public enum InformationCategory {
+    public enum IC {
         FRIEND_EC,
         EC_ID,
         ENEMY_EC,
@@ -34,7 +34,7 @@ public class Coms {
         ATTACK,
     }
 
-    public static int getMessage(InformationCategory cat, MapLocation coord) {
+    public static int getMessage(IC cat, MapLocation coord) {
         int message;
         switch (cat) {
             case FRIEND_EC : message = 1; break;
@@ -52,7 +52,7 @@ public class Coms {
         return message;
     }
 
-    public static int getMessage(InformationCategory cat, int ID) {
+    public static int getMessage(IC cat, int ID) {
         int message;
         switch (cat) {
             case FRIEND_EC : message = 1; break;
@@ -98,18 +98,18 @@ public class Coms {
     }
 
 
-    public static InformationCategory getCat(int message) {
+    public static IC getCat(int message) {
         message = message % 1000000;
         switch (message >> 15) {
-            case 1: return InformationCategory.FRIEND_EC;
-            case 2: return InformationCategory.EC_ID;
-            case 3: return InformationCategory.ENEMY_EC;
-            case 4: return InformationCategory.NEUTRAL_EC;
-            case 5: return InformationCategory.EDGE_N;
-            case 6: return InformationCategory.EDGE_E;
-            case 7: return InformationCategory.EDGE_S;
-            case 8: return InformationCategory.EDGE_W;
-            case 9: return InformationCategory.ATTACK;
+            case 1: return IC.FRIEND_EC;
+            case 2: return IC.EC_ID;
+            case 3: return IC.ENEMY_EC;
+            case 4: return IC.NEUTRAL_EC;
+            case 5: return IC.EDGE_N;
+            case 6: return IC.EDGE_E;
+            case 7: return IC.EDGE_S;
+            case 8: return IC.EDGE_W;
+            case 9: return IC.ATTACK;
             default: return null;
         }
     }
@@ -151,24 +151,20 @@ public class Coms {
                     edges[i] = true;
                     if (i == 0) {
                         maxY = checkLoc.y-1;
-                        signalQueue.add(getMessage(InformationCategory.EDGE_N, maxY));
-                        relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_N, maxY);
-                        relevantSize++;
+                        signalQueue.add(getMessage(IC.EDGE_N, maxY));
+                        addRelevantFlag(getMessage(IC.EDGE_N, maxY));
                     } else if (i == 1) {
                         maxX = checkLoc.x-1;
-                        signalQueue.add(getMessage(InformationCategory.EDGE_E, maxX));
-                        relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_E, maxX);
-                        relevantSize++;
+                        signalQueue.add(getMessage(IC.EDGE_E, maxX));
+                        addRelevantFlag(getMessage(IC.EDGE_E, maxX));
                     } else if (i == 2) {
                         minY = checkLoc.y+1;
-                        signalQueue.add(getMessage(InformationCategory.EDGE_S, minY));
-                        relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_S, minY);
-                        relevantSize++;
+                        signalQueue.add(getMessage(IC.EDGE_S, minY));
+                        addRelevantFlag(getMessage(IC.EDGE_S, minY));
                     } else if (i == 3) {
                         minX = checkLoc.x+1;
-                        signalQueue.add(getMessage(InformationCategory.EDGE_W, minX));
-                        relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_W, minX);
-                        relevantSize++;
+                        signalQueue.add(getMessage(IC.EDGE_W, minX));
+                        addRelevantFlag(getMessage(IC.EDGE_W, minX));
                     }
                     System.out.println("updated "+i+"th edge");
                     break;
@@ -199,17 +195,18 @@ public class Coms {
                     if (minInd != -1 && !seen) {
                         ECIds[minInd] = id;
                         Debug.p("ID: Adding to signal queue");
-                        signalQueue.add(getMessage(InformationCategory.EC_ID, id));
-                        relevantFlags[relevantSize] = getMessage(InformationCategory.EC_ID, id);
-                        relevantSize++;
+                        signalQueue.add(getMessage(IC.EC_ID, id));
+                        addRelevantFlag(getMessage(IC.EC_ID, id));
                     }
                     for (int i = 0; i < 12; i++) {
                         if (loc.equals(enemyECs[i])) {
                             enemyECs[i] = null;
+                            removeRelevantFlag(getMessage(IC.ENEMY_EC, loc));
                             break;
                         }
                         if (loc.equals(neutralECs[i])) {
                             neutralECs[i] = null;
+                            removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
                             break;
                         }
                     }
@@ -226,18 +223,19 @@ public class Coms {
                     if (minInd != -1 && !seen) {
                         friendECs[minInd] = r.getLocation();
                         Debug.p("FRIENDLY: Adding to signal queue");
-                        signalQueue.add(getMessage(InformationCategory.FRIEND_EC, loc));
-                        relevantFlags[relevantSize] = getMessage(InformationCategory.FRIEND_EC, loc);
-                        relevantSize++;
+                        signalQueue.add(getMessage(IC.FRIEND_EC, loc));
+                        addRelevantFlag(getMessage(IC.FRIEND_EC, loc));
                     }
                 } else if (r.getTeam() == team.opponent()) {
                     for (int i = 0; i < 12; i++) {
                         if (loc.equals(friendECs[i])) {
                             friendECs[i] = null;
+                            removeRelevantFlag(getMessage(IC.FRIEND_EC, loc));
                             break;
                         }
                         if (loc.equals(neutralECs[i])) {
                             neutralECs[i] = null;
+                            removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
                             break;
                         }
                     }
@@ -254,9 +252,8 @@ public class Coms {
                     if (minInd != -1 && !seen) {
                         enemyECs[minInd] = r.getLocation();
                         Debug.p("ENEMY: Adding to signal queue");
-                        signalQueue.add(getMessage(InformationCategory.ENEMY_EC, loc));
-                        relevantFlags[relevantSize] = getMessage(InformationCategory.ENEMY_EC, loc);
-                        relevantSize++;
+                        signalQueue.add(getMessage(IC.ENEMY_EC, loc));
+                        addRelevantFlag(getMessage(IC.ENEMY_EC, loc));
                     }
                 } else {
                     int minInd = -1;
@@ -270,11 +267,9 @@ public class Coms {
                         }
                     }
                     if (minInd != -1 && !seen) {
-                        ECIds[minInd] = r.getID();
-                        signalQueue.add(getMessage(InformationCategory.NEUTRAL_EC, loc));
                         Debug.p("NEUTRAL: Adding to signal queue");
-                        relevantFlags[relevantSize] = getMessage(InformationCategory.NEUTRAL_EC, loc);
-                        relevantSize++;
+                        signalQueue.add(getMessage(IC.NEUTRAL_EC, loc));
+                        addRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
                     }
                 }
             }
@@ -305,7 +300,7 @@ public class Coms {
     // todo: allow ec switching sides
     // process the information gained from flag
     public void processFlag(int flag) {
-        InformationCategory cat = getCat(flag);
+        IC cat = getCat(flag);
         if (flag % 1000000 == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
         Debug.p("Signal type: " + cat.toString());
@@ -320,8 +315,7 @@ public class Coms {
                     edges[0] = true;
                     maxY = ID;
                     Debug.p("updated "+0+"th edge");
-                    relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_N, maxY);
-                    relevantSize++;
+                    addRelevantFlag(getMessage(IC.EDGE_N, maxY));
                 }
                 break;
             case EDGE_E:
@@ -329,8 +323,7 @@ public class Coms {
                     edges[1] = true;
                     maxX = ID;
                     Debug.p("updated "+1+"st edge");
-                    relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_E, maxX);
-                    relevantSize++;
+                    addRelevantFlag(getMessage(IC.EDGE_E, maxX));
                 }
                 break;
             case EDGE_S:
@@ -338,8 +331,7 @@ public class Coms {
                     edges[2] = true;
                     minY = ID;
                     Debug.p("updated "+2+"nd edge");
-                    relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_S, minY);
-                    relevantSize++;
+                    addRelevantFlag(getMessage(IC.EDGE_S, minY));
                 }
                 break;
             case EDGE_W:
@@ -347,44 +339,64 @@ public class Coms {
                     edges[3] = true;
                     minX = ID;
                     Debug.p("updated "+3+"rd edge");
-                    relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_W, minX);
-                    relevantSize++;
+                    addRelevantFlag(getMessage(IC.EDGE_W, minX));
                 }
                 break;
             case ENEMY_EC:
+                for (int i = 0; i < 12; i++) {
+                    if (coord.equals(friendECs[i])) {
+                        friendECs[i] = null;
+                        removeRelevantFlag(getMessage(IC.FRIEND_EC, coord));
+                        break;
+                    }
+                    if (coord.equals(neutralECs[i])) {
+                        neutralECs[i] = null;
+                        removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
+                        break;
+                    }
+                }
                 minInd = -1;
                 seen = false;
                 for (int i = 11; i >= 0; i--) {
                     if (enemyECs[i] == null) {
                         minInd = i;
-                    }
-                    else if (enemyECs[i].equals(coord)) {
+                    } else if (enemyECs[i].equals(coord)) {
                         seen = true;
                         break;
                     }
                 }
                 if (minInd != -1 && !seen) {
                     enemyECs[minInd] = coord;
-                    relevantFlags[relevantSize] = getMessage(InformationCategory.ENEMY_EC, coord);
-                    relevantSize++;
+                    addRelevantFlag(getMessage(IC.ENEMY_EC, coord));
                 }
+
                 break;
             case FRIEND_EC:
+                for (int i = 0; i < 12; i++) {
+                    if (coord.equals(enemyECs[i])) {
+                        enemyECs[i] = null;
+                        removeRelevantFlag(getMessage(IC.ENEMY_EC, coord));
+                        break;
+                    }
+                    if (coord.equals(neutralECs[i])) {
+                        neutralECs[i] = null;
+                        removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
+                        break;
+                    }
+                }
                 minInd = -1;
                 seen = false;
                 for (int i = 11; i >= 0; i--) {
                     if (friendECs[i] == null) {
                         minInd = i;
-                    }
-                    else if (friendECs[i].equals(coord)) {
+                    } else if (friendECs[i].equals(coord)) {
                         seen = true;
                         break;
                     }
                 }
                 if (minInd != -1 && !seen) {
                     friendECs[minInd] = coord;
-                    relevantFlags[relevantSize] = getMessage(InformationCategory.FRIEND_EC, coord);
-                    relevantSize++;
+                    addRelevantFlag(getMessage(IC.FRIEND_EC, coord));
                 }
                 break;
             case NEUTRAL_EC:
@@ -401,8 +413,7 @@ public class Coms {
                 }
                 if (minInd != -1 && !seen) {
                     neutralECs[minInd] = coord;
-                    relevantFlags[relevantSize] = getMessage(InformationCategory.NEUTRAL_EC, coord);
-                    relevantSize++;
+                    addRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
                 }
                 break;
             case EC_ID:
@@ -419,8 +430,7 @@ public class Coms {
                 }
                 if (minInd != -1 && !seen) {
                     ECIds[minInd] = ID;
-                    relevantFlags[relevantSize] = getMessage(InformationCategory.EC_ID, ID);
-                    relevantSize++;
+                    addRelevantFlag(getMessage(IC.EC_ID, ID));
                 }
                 break;
             case ATTACK:
@@ -439,6 +449,26 @@ public class Coms {
             rc.setFlag(flag);
         } else {
             rc.setFlag(typeInt(rc.getType()));
+        }
+    }
+
+    public void addRelevantFlag(int flag) {
+        for (int i = 0; i < 20; i++) {
+            if (relevantFlags[i] == 0) {
+                relevantFlags[i] = flag;
+                relevantSize++;
+                break;
+            }
+        }
+    }
+
+    public void removeRelevantFlag(int flag) {
+        for (int i = 0; i < 20; i++) {
+            if (relevantFlags[i] == flag) {
+                relevantFlags[i] = 0;
+                relevantSize--;
+                break;
+            }
         }
     }
 }

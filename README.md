@@ -38,6 +38,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 - ~~Fix EC coms~~
 - ~~Add unit differentiation in coms~~
+- Potential bug - not recognizing when EC switches sides? Need to test/debug more
 - Politician AI
 - Slanderer AI
 - General attack plan on enemy EC

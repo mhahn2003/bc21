@@ -24,7 +24,7 @@ public class ECComs extends Coms {
         super();
         ECIds[0] = rc.getID();
         relevantSize = 1;
-        relevantFlags[0] = getMessage(InformationCategory.EC_ID, rc.getID());
+        relevantFlags[0] = getMessage(IC.EC_ID, rc.getID());
         friendECs[0] = rc.getLocation();
     }
 
@@ -104,12 +104,12 @@ public class ECComs extends Coms {
                         for (int i = 0; i < 12; i++) {
                             if (ECIds[i] == 0) {
                                 ECIds[i] = IDcheck;
-                                relevantFlags[relevantSize] = getMessage(InformationCategory.EC_ID, IDcheck);
+                                relevantFlags[relevantSize] = getMessage(IC.EC_ID, IDcheck);
                                 relevantSize++;
                                 break;
                             }
                         }
-                        signalQueue.add(getMessage(InformationCategory.EC_ID, IDcheck));
+                        signalQueue.add(getMessage(IC.EC_ID, IDcheck));
                     }
                 }
             }
@@ -128,8 +128,8 @@ public class ECComs extends Coms {
         loopBots();
         loopECS();
         if (turnCount < 7) {
-            lastFlags[9] = getMessage(InformationCategory.EC_ID, rc.getID()) % 1000000;
-            rc.setFlag(getMessage(InformationCategory.EC_ID, rc.getID()));
+            lastFlags[9] = getMessage(IC.EC_ID, rc.getID()) % 1000000;
+            rc.setFlag(getMessage(IC.EC_ID, rc.getID()));
             loopFlags();
         } else {
             if (!signalQueue.isEmpty()) {
@@ -147,7 +147,7 @@ public class ECComs extends Coms {
     }
 
     public void processFlag(int flag) {
-        InformationCategory cat = getCat(flag);
+        IC cat = getCat(flag);
         if (flag % 1000000 == 0 || cat == null) return;
         boolean processed = false;
         for (int i = 0; i < 10; i++) {
