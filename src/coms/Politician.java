@@ -100,6 +100,7 @@ public class Politician extends Robot {
                     if (rc.canMove(opp)) rc.move(opp);
                 }
             }
+            wander();
         }
     }
 
@@ -158,7 +159,26 @@ public class Politician extends Robot {
                         }
                     }
                 }
-                nav.bugNavigate(closestMuck);
+                if (closestMuck != null) nav.bugNavigate(closestMuck);
+                else {
+                    // if there's nothing, just patrol around slanderers
+                    int closestSlandererDist = 100000;
+                    MapLocation closestSlanderer = null;
+                    for (RobotInfo r : robots) {
+                        if (r.getTeam() == team) {
+                            if (Coms.getTyp(rc.getFlag(r.getID())) == RobotType.SLANDERER) {
+                                // slanderer is near
+                                int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
+                                if (dist < closestSlandererDist) {
+                                    closestSlandererDist = dist;
+                                    closestSlanderer = r.getLocation();
+                                }
+                            }
+                        }
+                    }
+                    if (closestSlanderer != null) nav.bugNavigate(closestSlanderer);
+                    else wander();
+                }
             }
         }
     }

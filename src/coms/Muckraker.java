@@ -5,9 +5,6 @@ import battlecode.common.*;
 public class Muckraker extends Robot {
 
 
-    private MapLocation wandLoc;
-    private int offset = 0;
-
     public Muckraker(RobotController rc) {
         super(rc);
     }
@@ -29,7 +26,7 @@ public class Muckraker extends Robot {
                 }
                 if (dist <= RobotType.MUCKRAKER.actionRadiusSquared) {
                     maxSlanderer = Math.max(maxSlanderer, robot.getInfluence());
-                    maxSlandererLocation=robot.location;
+                    maxSlandererLocation = robot.location;
                 }
             }
             if (robot.getTeam() == enemy && robot.type == RobotType.POLITICIAN) {
@@ -43,7 +40,7 @@ public class Muckraker extends Robot {
         if (rc.isReady()) {
             // expose the max slanderer in range
             if (maxSlanderer != -1) {
-                if (rc.senseNearbyRobots(maxSlandererLocation,1,enemy).length>0 & rc.canExpose(maxSlandererLocation)) {
+                if (rc.senseNearbyRobots(maxSlandererLocation, 1, enemy).length > 0 & rc.canExpose(maxSlandererLocation)) {
                     rc.expose(maxSlandererLocation);
                 }
             }
@@ -69,7 +66,7 @@ public class Muckraker extends Robot {
                         // move to an adjacent spot
                         int closestSpotDist = 100000;
                         MapLocation closestSpot = null;
-                        for (Direction dir: directions) {
+                        for (Direction dir : directions) {
                             MapLocation loc = closestEC.add(dir);
                             if (!rc.isLocationOccupied(loc)) {
                                 int dist = rc.getLocation().distanceSquaredTo(loc);
@@ -84,28 +81,14 @@ public class Muckraker extends Robot {
                         } else {
                             // TODO: call for attack
                         }
-                    }
-                    else nav.bugNavigate(closestEC);
+                    } else nav.bugNavigate(closestEC);
                 }
-            }
-            else {
+            } else {
                 // else move to the nearest politician not adjacent
                 if (closestPolitician != null) nav.bugNavigate(closestPolitician);
                     // otherwise wander
                 else wander();
             }
         }
-    }
-
-    // wander around
-    // TODO: what if you're already at a corner/side and you want to explore more (+3 to the end to explore?)
-    public void wander() throws GameActionException {
-        wandLoc = new MapLocation(nav.getEnds()[(rc.getID()+offset) % 8][0], nav.getEnds()[(rc.getID()+offset) % 8][1]);
-        if (rc.getLocation().isWithinDistanceSquared(wandLoc, 8)) {
-            offset++;
-            wander();
-            return;
-        }
-        nav.bugNavigate(wandLoc);
     }
 }

@@ -16,6 +16,8 @@ public class Robot {
     static int[][] ends;
     static Team team;
     static boolean[] edges = {false, false, false, false};
+    static MapLocation wandLoc;
+    static int offset = 0;
 
 
     // ECIds may not necessarily correspond to EC MapLocations
@@ -91,5 +93,18 @@ public class Robot {
         System.out.println("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
 //        rc.setIndicatorLine(rc.getLocation(),new MapLocation(maxX, maxY), 255, 255, 255);
 //        rc.setIndicatorLine(rc.getLocation(),new MapLocation(minX, minY), 255, 255, 255);
+    }
+
+
+    // wander around
+    // TODO: what if you're already at a corner/side and you want to explore more (+3 to the end to explore?)
+    public static void wander() throws GameActionException {
+        wandLoc = new MapLocation(nav.getEnds()[(rc.getID()+offset) % 8][0], nav.getEnds()[(rc.getID()+offset) % 8][1]);
+        if (rc.getLocation().isWithinDistanceSquared(wandLoc, 8)) {
+            offset++;
+            wander();
+            return;
+        }
+        nav.bugNavigate(wandLoc);
     }
 }
