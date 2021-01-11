@@ -100,7 +100,7 @@ public class Politician extends Robot {
                     if (rc.canMove(opp)) rc.move(opp);
                 }
             }
-            wander();
+            if (friendECs[0] != null) patrol(friendECs[0]);
         }
     }
 

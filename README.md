@@ -44,10 +44,10 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - ~~Defender~~
     - Assistor
 - Slanderer AI
-    - Stay close to EC & muckraker
+    - ~~Stay close to EC & muckraker~~
     - Pathfind to an edge, not going through enemy ECs
 - Muckraker AI
-    - Defend slanderers by sticking next to them
+    - ~~Defend slanderers by sticking next to them~~
     - Spacing out when politicians are near
 - General attack plan on enemy EC
     - Attackers + Assistors + Muckraker dilution/retreat

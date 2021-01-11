@@ -33,6 +33,8 @@ public class Robot {
     static int attackDist = 0;
     static boolean defendSlanderer = false;
     static MapLocation enemyMuck = null;
+    static boolean runAway = false;
+    static MapLocation danger = null;
 
     // all robots in sensor radius
     static RobotInfo[] robots;
@@ -106,5 +108,22 @@ public class Robot {
             return;
         }
         nav.bugNavigate(wandLoc);
+    }
+
+    // patrol around center
+    public static void patrol(MapLocation center) throws GameActionException {
+        Direction rotateDir = rc.getLocation().directionTo(center);
+        int distHQ = rc.getLocation().distanceSquaredTo(center);
+        if (distHQ < 10) {
+            rotateDir = rotateDir.opposite();
+        } else if (distHQ <= 10) {
+            rotateDir = rotateDir.rotateLeft();
+            rotateDir = rotateDir.rotateLeft();
+        }
+        for (int i = 0; i < 8; i++) {
+            if (rc.canMove(rotateDir)) rc.move(rotateDir);
+            else rotateDir = rotateDir.rotateRight();
+        }
+        if (rc.canMove(rotateDir)) rc.move(rotateDir);
     }
 }

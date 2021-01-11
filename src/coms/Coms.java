@@ -472,11 +472,10 @@ public class Coms {
                 break;
             case MUCKRAKER:
                 if (rc.getType() == RobotType.SLANDERER) {
-                    // do stuff
-                    // TODO: implement
+                    runAway = true;
+                    danger = coord;
                 }
                 if (rc.getType() == RobotType.POLITICIAN) {
-                    // TODO: implement
                     defendSlanderer = true;
                     enemyMuck = coord;
                 }
@@ -517,5 +516,6 @@ public class Coms {
     public static void resetVariables() {
         moveAway = false;
         defendSlanderer = false;
+        runAway = false;
     }
 }
