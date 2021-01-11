@@ -14,12 +14,11 @@ public class Robot {
     static int minY = 9999;
     static int maxY = 30065;
     static int[][] ends;
-
+    static boolean moveAway = false;
+    static MapLocation attacker = null;
+    static int attackDist = 0;
     static Team team;
-
     static boolean[] edges = {false, false, false, false};
-
-    static int sqrtSensorRadius;
 
 
     // ECIds may not necessarily correspond to EC MapLocations
@@ -28,19 +27,12 @@ public class Robot {
     static MapLocation[] friendECs = new MapLocation[12];
     static MapLocation[] neutralECs = new MapLocation[12];
     static MapLocation[] enemyECs = new MapLocation[12];
-//    static HashMap<Integer, MapLocation> ECLoc = new HashMap<>();
 
     // all robots in sensor radius
     static RobotInfo[] robots;
 
     protected Team enemy;
     protected int actionRadius;
-
-    static final RobotType[] spawnableRobot = {
-            RobotType.POLITICIAN,
-            RobotType.SLANDERER,
-            RobotType.MUCKRAKER,
-    };
 
     static final Direction[] directions = {
             Direction.NORTH,
@@ -53,33 +45,6 @@ public class Robot {
             Direction.NORTHWEST,
     };
 
-    static int getSqrtSensorRadius(RobotType rt){
-        switch (rt){
-            case ENLIGHTENMENT_CENTER:
-            case            MUCKRAKER:
-                return 6;
-            case           POLITICIAN:
-            case            SLANDERER:
-                return 4;
-        };
-        return 0;
-    };
-
-    static int directionToInt(Direction dir) {
-        switch(dir) {
-            case NORTH    : return 0;
-            case NORTHEAST: return 1;
-            case EAST     : return 2;
-            case SOUTHEAST: return 3;
-            case SOUTH    : return 4;
-            case SOUTHWEST: return 5;
-            case WEST     : return 6;
-            case NORTHWEST: return 7;
-        }
-        assert (false);
-        return -1;
-    }
-
     public Robot(RobotController r) {
         rc = r;
         if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
@@ -91,11 +56,11 @@ public class Robot {
         team = rc.getTeam();
         enemy = rc.getTeam().opponent();
         actionRadius = rc.getType().actionRadiusSquared;
-        sqrtSensorRadius = getSqrtSensorRadius(rc.getType());
     }
 
 
     public void takeTurn() throws GameActionException {
+        moveAway = false;
         robots = rc.senseNearbyRobots();
         if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
             eccoms.getInfo();
@@ -103,8 +68,22 @@ public class Robot {
             coms.getInfo();
             coms.collectInfo();
             coms.displaySignal();
+            if (moveAway) {
+                // move away from the attacker if needed
+                if (rc.getLocation().isWithinDistanceSquared(attacker, attackDist)) {
+                    int furthestDist = rc.getLocation().distanceSquaredTo(attacker);
+                    Direction optDir = null;
+                    for (int i = 0; i < 8; i++) {
+                        int dist = attacker.distanceSquaredTo(rc.getLocation().add(directions[i]));
+                        if (dist > furthestDist && rc.canMove(directions[i])) {
+                            furthestDist = dist;
+                            optDir = directions[i];
+                        }
+                    }
+                    if (optDir != null) rc.move(optDir);
+                }
+            }
         }
-
         System.out.println("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
 //        rc.setIndicatorLine(rc.getLocation(),new MapLocation(maxX, maxY), 255, 255, 255);
 //        rc.setIndicatorLine(rc.getLocation(),new MapLocation(minX, minY), 255, 255, 255);

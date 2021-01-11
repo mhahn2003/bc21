@@ -12,10 +12,11 @@ public class Coms {
     protected int relevantSize = 0;
     protected int relevantInd = 0;
     protected int[] relevantFlags = new int[20];
+    protected RobotInfo processingRobot = null;
 
 
     // number of possible cases for InfoCategory enum class
-    private static int numCase = 8;
+    private static int numCase = 9;
 
     public Coms() {
     }
@@ -30,6 +31,7 @@ public class Coms {
         EDGE_E,
         EDGE_S,
         EDGE_W,
+        ATTACK,
     }
 
     public static int getMessage(InformationCategory cat, MapLocation coord) {
@@ -43,7 +45,8 @@ public class Coms {
             case EDGE_E    : message = 6; break;
             case EDGE_S    : message = 7; break;
             case EDGE_W    : message = 8; break;
-            default        : message = 9;
+            case ATTACK    : message = 9; break;
+            default        : message = 10;
         }
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
@@ -60,7 +63,8 @@ public class Coms {
             case EDGE_E    : message = 6; break;
             case EDGE_S    : message = 7; break;
             case EDGE_W    : message = 8; break;
-            default        : message = 9;
+            case ATTACK    : message = 9; break;
+            default        : message = 10;
         }
         message = addID(message, ID) + typeInt(rc.getType());
         return message;
@@ -105,6 +109,7 @@ public class Coms {
             case 6: return InformationCategory.EDGE_E;
             case 7: return InformationCategory.EDGE_S;
             case 8: return InformationCategory.EDGE_W;
+            case 9: return InformationCategory.ATTACK;
             default: return null;
         }
     }
@@ -290,6 +295,7 @@ public class Coms {
         // get the flags from other nearby units
         for (RobotInfo r : robots) {
             if (r.getTeam() == team && rc.canGetFlag(r.getID())) {
+                processingRobot = r;
                 processFlag(rc.getFlag(r.getID()));
             }
         }
@@ -416,6 +422,12 @@ public class Coms {
                     relevantFlags[relevantSize] = getMessage(InformationCategory.EC_ID, ID);
                     relevantSize++;
                 }
+                break;
+            case ATTACK:
+                if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER) break;
+                moveAway = true;
+                attacker = processingRobot.getLocation();
+                attackDist = attacker.distanceSquaredTo(coord);
                 break;
         }
     }
