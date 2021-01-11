@@ -9,6 +9,7 @@ public class Politician extends Robot {
     private static boolean attack = false;
     private static int[] attackRadii = {1, 2, 4, 5, 8, 9};
     private static int effThreshold = 50;
+    private static int effect;
 
 
     public Politician(RobotController rc) {
@@ -107,15 +108,66 @@ public class Politician extends Robot {
 
     }
 
-    static void defend() {
-
+    static void defend() throws GameActionException {
+        // check if it should just explode
+        int maxEff = 0;
+        int maxRadius = 0;
+        for (int i = 0; i < 6; i++) {
+            int radius = attackRadii[i];
+            int eff = attackEffect(radius);
+            if (eff > maxEff) {
+                maxEff = eff;
+                maxRadius = radius;
+            }
+        }
+        if (maxEff >= 25) {
+            if (rc.canEmpower(maxRadius)) rc.empower(maxRadius);
+        } else {
+            // check if any slanderers are in danger
+            if (defendSlanderer) {
+                // search for muckraker
+                RobotInfo muck = null;
+                for (RobotInfo r : robots) {
+                    if (r.getType() == RobotType.MUCKRAKER &&
+                        r.getTeam() == team.opponent() &&
+                        (r.getLocation().isAdjacentTo(enemyMuck) || r.getLocation().equals(enemyMuck))) {
+                        muck = r;
+                        break;
+                    }
+                }
+                int locDist = rc.getLocation().distanceSquaredTo(enemyMuck);
+                attackEffect(locDist);
+                // either blow up the muckraker, or go closer to it
+                if (muck != null && effect >= muck.getConviction()+1) {
+                    if (locDist <= RobotType.POLITICIAN.actionRadiusSquared) {
+                        if (rc.canEmpower(locDist)) rc.empower(locDist);
+                    }
+                }
+                else if (muck != null) nav.bugNavigate(muck.getLocation());
+                else nav.bugNavigate(enemyMuck);
+            } else {
+                // otherwise, chase nearby muckrakers
+                int closestMuckDist = 100000;
+                MapLocation closestMuck = null;
+                for (RobotInfo r : robots) {
+                    if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER) {
+                        int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
+                        if (dist < closestMuckDist) {
+                            closestMuckDist = dist;
+                            closestMuck = r.getLocation();
+                        }
+                    }
+                }
+                nav.bugNavigate(closestMuck);
+            }
+        }
     }
 
     // calculates the efficiency of the attack
     static int attackEffect(int radius) {
         RobotInfo[] empowered = rc.senseNearbyRobots(radius);
         int size = empowered.length;
-        int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
+        effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
         int eff = 0;
         for (RobotInfo r : empowered) {
             if (r.getTeam() == team.opponent()) {

@@ -27,6 +27,8 @@ public class Coms {
         EC_ID,
         ENEMY_EC,
         NEUTRAL_EC,
+        MUCKRAKER,
+        SLANDERER,
         EDGE_N,
         EDGE_E,
         EDGE_S,
@@ -41,12 +43,14 @@ public class Coms {
             case EC_ID     : message = 2; break;
             case ENEMY_EC  : message = 3; break;
             case NEUTRAL_EC: message = 4; break;
-            case EDGE_N    : message = 5; break;
-            case EDGE_E    : message = 6; break;
-            case EDGE_S    : message = 7; break;
-            case EDGE_W    : message = 8; break;
-            case ATTACK    : message = 9; break;
-            default        : message = 10;
+            case MUCKRAKER : message = 5; break;
+            case SLANDERER : message = 6; break;
+            case EDGE_N    : message = 7; break;
+            case EDGE_E    : message = 8; break;
+            case EDGE_S    : message = 9; break;
+            case EDGE_W    : message = 10; break;
+            case ATTACK    : message = 11; break;
+            default        : message = 12;
         }
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
@@ -59,12 +63,14 @@ public class Coms {
             case EC_ID     : message = 2; break;
             case ENEMY_EC  : message = 3; break;
             case NEUTRAL_EC: message = 4; break;
-            case EDGE_N    : message = 5; break;
-            case EDGE_E    : message = 6; break;
-            case EDGE_S    : message = 7; break;
-            case EDGE_W    : message = 8; break;
-            case ATTACK    : message = 9; break;
-            default        : message = 10;
+            case MUCKRAKER : message = 5; break;
+            case SLANDERER : message = 6; break;
+            case EDGE_N    : message = 7; break;
+            case EDGE_E    : message = 8; break;
+            case EDGE_S    : message = 9; break;
+            case EDGE_W    : message = 10; break;
+            case ATTACK    : message = 11; break;
+            default        : message = 12;
         }
         message = addID(message, ID) + typeInt(rc.getType());
         return message;
@@ -105,11 +111,13 @@ public class Coms {
             case 2: return IC.EC_ID;
             case 3: return IC.ENEMY_EC;
             case 4: return IC.NEUTRAL_EC;
-            case 5: return IC.EDGE_N;
-            case 6: return IC.EDGE_E;
-            case 7: return IC.EDGE_S;
-            case 8: return IC.EDGE_W;
-            case 9: return IC.ATTACK;
+            case 5: return IC.MUCKRAKER;
+            case 6: return IC.SLANDERER;
+            case 7: return IC.EDGE_N;
+            case 8: return IC.EDGE_E;
+            case 9: return IC.EDGE_S;
+            case 10: return IC.EDGE_W;
+            case 11: return IC.ATTACK;
             default: return null;
         }
     }
@@ -172,8 +180,17 @@ public class Coms {
                 checkLoc = checkLoc.add(dir);
             }
         }
-        // check for any ECs
+        // whether you're a muckraker guarding a slanderer
+        RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
+        boolean guard = false;
+        for (RobotInfo rob : closeRobots) {
+            if (rob.getType() == RobotType.SLANDERER) {
+                guard = true;
+                break;
+            }
+        }
         for (RobotInfo r: robots) {
+            // check for any ECs
             if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
                 Debug.p("Found an EC!");
                 int id = r.getID();
@@ -272,6 +289,20 @@ public class Coms {
                         addRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
                     }
                 }
+            }
+            // if you're a muckraker, check for units
+            if (rc.getType() == RobotType.MUCKRAKER) {
+                if (guard) {
+                    // then relay info about any muckrakers you see
+                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
+                        signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
+                        guard = false;
+                    }
+                }
+                // discuss: do we even need to signal slanderers?
+//                if (r.getType() == RobotType.SLANDERER && r.getTeam() == team.opponent()) {
+//                    signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
+//                }
             }
         }
     }
@@ -439,6 +470,16 @@ public class Coms {
                 attacker = processingRobot.getLocation();
                 attackDist = attacker.distanceSquaredTo(coord);
                 break;
+            case MUCKRAKER:
+                if (rc.getType() == RobotType.SLANDERER) {
+                    // do stuff
+                    // TODO: implement
+                }
+                if (rc.getType() == RobotType.POLITICIAN) {
+                    // TODO: implement
+                    defendSlanderer = true;
+                    enemyMuck = coord;
+                }
         }
     }
 
@@ -470,5 +511,11 @@ public class Coms {
                 break;
             }
         }
+    }
+
+    // reset all the variables
+    public static void resetVariables() {
+        moveAway = false;
+        defendSlanderer = false;
     }
 }

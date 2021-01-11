@@ -14,9 +14,6 @@ public class Robot {
     static int minY = 9999;
     static int maxY = 30065;
     static int[][] ends;
-    static boolean moveAway = false;
-    static MapLocation attacker = null;
-    static int attackDist = 0;
     static Team team;
     static boolean[] edges = {false, false, false, false};
 
@@ -27,6 +24,13 @@ public class Robot {
     static MapLocation[] friendECs = new MapLocation[12];
     static MapLocation[] neutralECs = new MapLocation[12];
     static MapLocation[] enemyECs = new MapLocation[12];
+
+    // variables changed by coms
+    static boolean moveAway = false;
+    static MapLocation attacker = null;
+    static int attackDist = 0;
+    static boolean defendSlanderer = false;
+    static MapLocation enemyMuck = null;
 
     // all robots in sensor radius
     static RobotInfo[] robots;
@@ -60,7 +64,7 @@ public class Robot {
 
 
     public void takeTurn() throws GameActionException {
-        moveAway = false;
+        Coms.resetVariables();
         robots = rc.senseNearbyRobots();
         if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
             eccoms.getInfo();

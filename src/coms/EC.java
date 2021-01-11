@@ -29,7 +29,7 @@ public class EC extends Robot {
         } else {
             int rand = (int) (Math.random() * 4);
             if (rand == 0) {
-                build(RobotType.POLITICIAN, 15);
+                build(RobotType.POLITICIAN, 16);
             }
             else if (rand == 3) {
                 build(RobotType.MUCKRAKER, 1);

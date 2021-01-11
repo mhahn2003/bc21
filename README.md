@@ -48,9 +48,12 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - Pathfind to an edge, not going through enemy ECs
 - Muckraker AI
     - Defend slanderers by sticking next to them
+    - Spacing out when politicians are near
 - General attack plan on enemy EC
     - Attackers + Assistors + Muckraker dilution/retreat
 - EC building logic
     - Less muckraker spam
     - More politician building of cost ~15
     - More slanderer building
+- EC should bid if they are converted
+    - Ideas: bid the amount of passive income?
