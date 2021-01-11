@@ -38,8 +38,19 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 - ~~Fix EC coms~~
 - ~~Add unit differentiation in coms~~
-- Potential bug - not recognizing when EC switches sides? Need to test/debug more
+- ~~Potential bug - not recognizing when EC switches sides? Need to test/debug more~~
 - Politician AI
+    - ~~Attacker~~
+    - Defender
+    - Assistor
 - Slanderer AI
+    - Stay close to EC & muckraker
+    - Pathfind to an edge, not going through enemy ECs
+- Muckraker AI
+    - Defend slanderers by sticking next to them
 - General attack plan on enemy EC
+    - Attackers + Assistors + Muckraker dilution/retreat
 - EC building logic
+    - Less muckraker spam
+    - More politician building of cost ~15
+    - More slanderer building
