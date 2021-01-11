@@ -76,7 +76,7 @@ public class Robot {
             coms.displaySignal();
             if (moveAway) {
                 // move away from the attacker if needed
-                if (rc.getLocation().isWithinDistanceSquared(attacker, attackDist)) {
+                if (rc.getLocation().isWithinDistanceSquared(attacker, attackDist+4)) {
                     int furthestDist = rc.getLocation().distanceSquaredTo(attacker);
                     Direction optDir = null;
                     for (int i = 0; i < 8; i++) {

@@ -15,6 +15,9 @@ public class Muckraker extends Robot {
         MapLocation closestPolitician = null;
         int closestSlandererDist = 100000;
         MapLocation closestSlanderer = null;
+        // friendly slanderer
+        int closestProtectorDist = 100000;
+        MapLocation closestProtector = null;
         int maxSlanderer = -1;
         MapLocation maxSlandererLocation = null;
         for (RobotInfo robot : robots) {
@@ -34,6 +37,13 @@ public class Muckraker extends Robot {
                 if (dist > 2 && dist <= closestPoliticianDist) {
                     closestPoliticianDist = dist;
                     closestPolitician = robot.location;
+                }
+            }
+            if (robot.getTeam() == team && robot.type == RobotType.SLANDERER) {
+                int dist = rc.getLocation().distanceSquaredTo(robot.getLocation());
+                if (dist <= closestProtectorDist) {
+                    closestProtectorDist = dist;
+                    closestProtector = robot.location;
                 }
             }
         }
@@ -59,8 +69,32 @@ public class Muckraker extends Robot {
             if (closestSlandererDist != 100000) {
                 nav.bugNavigate(closestSlanderer);
             }
+            // else move to protect our slanderer
+            if (closestProtectorDist <= 8) {
+                boolean protect = true;
+                // first check if anybody else is on the slanderer
+                RobotInfo[] surroundSlanderer = rc.senseNearbyRobots(closestProtector, 2, team);
+                for (RobotInfo r : surroundSlanderer) {
+                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team) {
+                        protect = false;
+                        break;
+                    }
+                }
+                if (protect) {
+                    int closestDist = rc.getLocation().distanceSquaredTo(closestProtector);
+                    Direction optDir = null;
+                    for (int i = 0; i < 8; i++) {
+                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestProtector);
+                        if (dist < closestDist && rc.canMove(directions[i])) {
+                            closestDist = dist;
+                            optDir = directions[i];
+                        }
+                    }
+                    if (optDir != null) rc.move(optDir);
+                }
+            }
             // else move to the closest enemy HQ if known
-            else if (closestEC != null) {
+            if (closestEC != null) {
                 if (!rc.getLocation().isAdjacentTo(closestEC)) {
                     if (rc.getLocation().isWithinDistanceSquared(closestEC, 13)) {
                         // move to an adjacent spot
