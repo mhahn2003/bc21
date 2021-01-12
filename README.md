@@ -43,9 +43,11 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - ~~Attacker~~
     - ~~Defender~~
     - Assistor
+    - Fix running out of bytecode
 - Slanderer AI
     - ~~Stay close to EC & muckraker~~
     - Pathfind to an edge, not going through enemy ECs
+    - Convert and run politician code when it switches
 - Muckraker AI
     - ~~Defend slanderers by sticking next to them~~
     - Spacing out when politicians are near

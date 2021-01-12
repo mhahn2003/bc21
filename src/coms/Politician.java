@@ -187,6 +187,7 @@ public class Politician extends Robot {
     static int attackEffect(int radius) {
         RobotInfo[] empowered = rc.senseNearbyRobots(radius);
         int size = empowered.length;
+        if (size == 0 || rc.getConviction() == 0) return 0;
         effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
         int eff = 0;
         for (RobotInfo r : empowered) {
