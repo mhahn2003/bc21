@@ -52,8 +52,10 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - General attack plan on enemy EC
     - Attackers + Assistors + Muckraker dilution/retreat
 - EC building logic
-    - Less muckraker spam
-    - More politician building of cost ~15
-    - More slanderer building
+    - ~~Less muckraker spam~~
+    - ~~More politician building of cost ~15~~
+    - ~~More slanderer building~~
+    - Improve constants/round numbers
 - EC should bid if they are converted
     - Ideas: bid the amount of passive income?
+    - ~~Currently bids if over 600 influence~~
