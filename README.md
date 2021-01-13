@@ -43,7 +43,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - ~~Attacker~~
     - ~~Defender~~
     - Assistor
-    - Fix running out of bytecode
+    - ~~Fix running out of bytecode~~
 - Slanderer AI
     - ~~Stay close to EC & muckraker~~
     - Pathfind to an edge, not going through enemy ECs
@@ -61,3 +61,5 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - EC should bid if they are converted
     - Ideas: bid the amount of passive income?
     - ~~Currently bids if over 600 influence~~
+- Analyze top teams:
+    - Specifically: baby ducks
