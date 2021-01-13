@@ -23,6 +23,7 @@ public class Coms {
 
     // TODO: need to order in terms of priority
     public enum IC {
+        MUCKRAKER_HELP,
         FRIEND_EC,
         EC_ID,
         ENEMY_EC,
@@ -39,18 +40,19 @@ public class Coms {
     public static int getMessage(IC cat, MapLocation coord) {
         int message;
         switch (cat) {
-            case FRIEND_EC : message = 1; break;
-            case EC_ID     : message = 2; break;
-            case ENEMY_EC  : message = 3; break;
-            case NEUTRAL_EC: message = 4; break;
-            case MUCKRAKER : message = 5; break;
-            case SLANDERER : message = 6; break;
-            case EDGE_N    : message = 7; break;
-            case EDGE_E    : message = 8; break;
-            case EDGE_S    : message = 9; break;
-            case EDGE_W    : message = 10; break;
-            case ATTACK    : message = 11; break;
-            default        : message = 12;
+            case MUCKRAKER_HELP: message = 1; break;
+            case FRIEND_EC     : message = 2; break;
+            case EC_ID         : message = 3; break;
+            case ENEMY_EC      : message = 4; break;
+            case NEUTRAL_EC    : message = 5; break;
+            case MUCKRAKER     : message = 6; break;
+            case SLANDERER     : message = 7; break;
+            case EDGE_N        : message = 8; break;
+            case EDGE_E        : message = 9; break;
+            case EDGE_S        : message = 10; break;
+            case EDGE_W        : message = 11; break;
+            case ATTACK        : message = 12; break;
+            default            : message = 13;
         }
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
@@ -59,18 +61,19 @@ public class Coms {
     public static int getMessage(IC cat, int ID) {
         int message;
         switch (cat) {
-            case FRIEND_EC : message = 1; break;
-            case EC_ID     : message = 2; break;
-            case ENEMY_EC  : message = 3; break;
-            case NEUTRAL_EC: message = 4; break;
-            case MUCKRAKER : message = 5; break;
-            case SLANDERER : message = 6; break;
-            case EDGE_N    : message = 7; break;
-            case EDGE_E    : message = 8; break;
-            case EDGE_S    : message = 9; break;
-            case EDGE_W    : message = 10; break;
-            case ATTACK    : message = 11; break;
-            default        : message = 12;
+            case MUCKRAKER_HELP: message = 1; break;
+            case FRIEND_EC     : message = 2; break;
+            case EC_ID         : message = 3; break;
+            case ENEMY_EC      : message = 4; break;
+            case NEUTRAL_EC    : message = 5; break;
+            case MUCKRAKER     : message = 6; break;
+            case SLANDERER     : message = 7; break;
+            case EDGE_N        : message = 8; break;
+            case EDGE_E        : message = 9; break;
+            case EDGE_S        : message = 10; break;
+            case EDGE_W        : message = 11; break;
+            case ATTACK        : message = 12; break;
+            default            : message = 13;
         }
         message = addID(message, ID) + typeInt(rc.getType());
         return message;
@@ -107,17 +110,18 @@ public class Coms {
     public static IC getCat(int message) {
         message = message % 1000000;
         switch (message >> 15) {
-            case 1: return IC.FRIEND_EC;
-            case 2: return IC.EC_ID;
-            case 3: return IC.ENEMY_EC;
-            case 4: return IC.NEUTRAL_EC;
-            case 5: return IC.MUCKRAKER;
-            case 6: return IC.SLANDERER;
-            case 7: return IC.EDGE_N;
-            case 8: return IC.EDGE_E;
-            case 9: return IC.EDGE_S;
-            case 10: return IC.EDGE_W;
-            case 11: return IC.ATTACK;
+            case 1: return IC.MUCKRAKER_HELP;
+            case 2: return IC.FRIEND_EC;
+            case 3: return IC.EC_ID;
+            case 4: return IC.ENEMY_EC;
+            case 5: return IC.NEUTRAL_EC;
+            case 6: return IC.MUCKRAKER;
+            case 7: return IC.SLANDERER;
+            case 8: return IC.EDGE_N;
+            case 9: return IC.EDGE_E;
+            case 10: return IC.EDGE_S;
+            case 11: return IC.EDGE_W;
+            case 12: return IC.ATTACK;
             default: return null;
         }
     }
@@ -181,14 +185,14 @@ public class Coms {
             }
         }
         // whether you're a muckraker guarding a slanderer
-        RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
-        boolean guard = false;
-        for (RobotInfo rob : closeRobots) {
-            if (rob.getType() == RobotType.SLANDERER) {
-                guard = true;
-                break;
-            }
-        }
+//        RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
+//        boolean guard = false;
+//        for (RobotInfo rob : closeRobots) {
+//            if (rob.getType() == RobotType.SLANDERER) {
+//                guard = true;
+//                break;
+//            }
+//        }
         for (RobotInfo r: robots) {
             // check for any ECs
             if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
@@ -290,20 +294,24 @@ public class Coms {
                     }
                 }
             }
-            // if you're a muckraker, check for units
-            if (rc.getType() == RobotType.MUCKRAKER) {
-                if (guard) {
-                    // then relay info about any muckrakers you see
-                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
-                        signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
-                        guard = false;
-                    }
-                }
-                // discuss: do we even need to signal slanderers?
-//                if (r.getType() == RobotType.SLANDERER && r.getTeam() == team.opponent()) {
-//                    signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
-//                }
+            if (rc.getType() != RobotType.ENLIGHTENMENT_CENTER && r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
+                if (rc.getType() == RobotType.SLANDERER) signalQueue.add(getMessage(IC.MUCKRAKER_HELP, r.getLocation()));
+                else signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
             }
+//            // if you're a muckraker, check for units
+//            if (rc.getType() == RobotType.MUCKRAKER) {
+//                if (guard) {
+//                    // then relay info about any muckrakers you see
+//                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
+//                        signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
+//                        guard = false;
+//                    }
+//                }
+//                // discuss: do we even need to signal slanderers?
+////                if (r.getType() == RobotType.SLANDERER && r.getTeam() == team.opponent()) {
+////                    signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
+////                }
+//            }
         }
     }
 
@@ -475,6 +483,8 @@ public class Coms {
                     runAway = true;
                     danger = coord;
                 }
+                break;
+            case MUCKRAKER_HELP:
                 if (rc.getType() == RobotType.POLITICIAN) {
                     defendSlanderer = true;
                     enemyMuck = coord;

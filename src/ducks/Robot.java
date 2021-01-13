@@ -111,12 +111,12 @@ public class Robot {
     }
 
     // patrol around center
-    public static void patrol(MapLocation center) throws GameActionException {
+    public static void patrol(MapLocation center, int radius) throws GameActionException {
         Direction rotateDir = rc.getLocation().directionTo(center);
         int distHQ = rc.getLocation().distanceSquaredTo(center);
-        if (distHQ < 10) {
+        if (distHQ < radius) {
             rotateDir = rotateDir.opposite();
-        } else if (distHQ <= 10) {
+        } else if (distHQ <= radius) {
             rotateDir = rotateDir.rotateLeft();
             rotateDir = rotateDir.rotateLeft();
         }

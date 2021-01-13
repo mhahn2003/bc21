@@ -2,7 +2,7 @@ package ducks;
 
 import battlecode.common.*;
 
-public class Slanderer extends Robot {
+public class Slanderer extends Politician {
 
     private MapLocation[] dangers;
 
@@ -12,6 +12,7 @@ public class Slanderer extends Robot {
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
+        if (rc.getType() == RobotType.POLITICIAN) return;
         dangers = new MapLocation[10];
         int size = 0;
         // whether the danger variable from coms is included
@@ -58,9 +59,7 @@ public class Slanderer extends Robot {
                         dangerH += loc.distanceSquaredTo(dangers[j]);
                     }
                     if (closestPolitician != null) {
-                        // going closer to a politician is more important, which is why the 2 is there
-                        // can modify constant later
-                        dangerH -= 2 * loc.distanceSquaredTo(closestPolitician);
+                        dangerH -= loc.distanceSquaredTo(closestPolitician)/2;
                     }
                     if (dangerH > maxDist && rc.canMove(directions[i])) {
                         maxDist = dangerH;
@@ -70,8 +69,21 @@ public class Slanderer extends Robot {
             }
             if (optDir != null) rc.move(optDir);
         } else {
-            if (friendECs[0] != null) {
-                patrol(friendECs[0]);
+            int closestECDist = 1000000;
+            MapLocation closestEC = null;
+            for (int i = 0; i < 12; i++) {
+                if (friendECs[i] != null) {
+                    int dist = rc.getLocation().distanceSquaredTo(friendECs[i]);
+                    if (dist < closestECDist) {
+                        closestECDist = dist;
+                        closestEC = friendECs[i];
+                    }
+                }
+            }
+            if (closestEC != null) {
+                patrol(closestEC, 12);
+            } else {
+                // go to an edge maybe?
             }
         }
     }
