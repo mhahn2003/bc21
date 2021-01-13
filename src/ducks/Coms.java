@@ -5,7 +5,7 @@ import ducks.utils.Debug;
 
 import java.util.PriorityQueue;
 
-import static coms.Robot.*;
+import static ducks.Robot.*;
 
 public class Coms {
     protected final PriorityQueue<Integer> signalQueue = new PriorityQueue<>();

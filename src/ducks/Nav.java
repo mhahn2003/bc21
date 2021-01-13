@@ -5,7 +5,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 
-import static coms.Robot.*;
+import static ducks.Robot.*;
 
 public class Nav {
     private int patience;
@@ -172,6 +172,8 @@ public class Nav {
     public static int bugVisitedLocationsLength;
 
     public Direction bugNavigate (MapLocation target) throws GameActionException {
+        Direction just = justMove(target);
+        if (just != null) return just;
         System.out.println("Bug navigating to " + target);
 
         if (isTrapped()) {
@@ -332,12 +334,34 @@ public class Nav {
         return rc.canMove(dir) && rc.sensePassability(rc.getLocation().add(dir)) > THRESHOLD;
     }
 
-
-    /*
-    ---------------
-    try bf distjra
-    ---------------
-     */
-
+    public static Direction justMove(MapLocation target) throws GameActionException {
+        Direction optDir = rc.getLocation().directionTo(target);
+        Direction left = optDir.rotateLeft();
+        Direction right = optDir.rotateRight();
+        double pass;
+        double lPass;
+        double rPass;
+        if (rc.canMove(optDir)) pass = rc.sensePassability(rc.getLocation().add(optDir));
+        else pass = 0;
+        if (rc.canMove(left)) lPass = rc.sensePassability(rc.getLocation().add(left));
+        else lPass = 0;
+        if (rc.canMove(right)) rPass = rc.sensePassability(rc.getLocation().add(right));
+        else rPass = 0;
+        double max = Math.max(pass, Math.max(lPass, rPass));
+        if (max == 0) return null;
+        if (max == pass) {
+            rc.move(optDir);
+            return optDir;
+        }
+        if (max == lPass) {
+            rc.move(left);
+            return left;
+        }
+        if (max == rPass) {
+            rc.move(right);
+            return right;
+        }
+        return null;
+    }
 
 }

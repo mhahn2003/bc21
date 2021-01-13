@@ -9,8 +9,8 @@ import ducks.utils.HashSet;
 import ducks.utils.LinkedList;
 import ducks.utils.Node;
 
-import static coms.Robot.*;
-import static coms.RobotPlayer.turnCount;
+import static ducks.Robot.*;
+import static ducks.RobotPlayer.turnCount;
 
 
 public class ECComs extends Coms {
