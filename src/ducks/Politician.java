@@ -21,7 +21,18 @@ public class Politician extends Robot {
         super.takeTurn();
         if (rc.getType() == RobotType.SLANDERER) return;
         if (rc.getConviction() >= 300) attack();
-        else defend();
+        else {
+            if (rc.getRoundNum() <= 200) {
+                if (rc.getID() % 4 == 0) search();
+                else defend();
+            } else if (rc.getRoundNum() <= 400) {
+                if (rc.getID() % 4 == 0) attack();
+                else defend();
+            } else {
+                if (rc.getID() % 2 == 0) attack();
+                else defend();
+            }
+        }
     }
 
     // attack on the enemy ec
@@ -60,8 +71,11 @@ public class Politician extends Robot {
                     if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                 } else {
                     // signal that you're attacking, so move out of the way
-                    Debug.p("Signalling attack");
-                    rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
+                    // only signal if you're a fat politician
+                    if (rc.getConviction() >= 300) {
+                        Debug.p("Signalling attack");
+                        rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
+                    }
                     // check if we can get closer, or if there's a lot of our own units in the way
                     int closerDist = rc.getLocation().distanceSquaredTo(closestEC);
                     Direction optDir = null;
@@ -115,9 +129,54 @@ public class Politician extends Robot {
         }
     }
 
-    // assist with the attack by killing any muckrakers/politicians around the EC
-    static void assist() {
-
+    // search for nearby cheap neutral ECs
+    static void search() throws GameActionException {
+        int closestECDist = 100000;
+        MapLocation closestEC = null;
+        for (int i = 0; i < 12; i++) {
+            if (neutralECs[i] != null) {
+                int dist = rc.getLocation().distanceSquaredTo(neutralECs[i]);
+                if (dist < closestECDist) {
+                    closestECDist = dist;
+                    closestEC = neutralECs[i];
+                }
+            }
+        }
+        if (closestEC != null) {
+            if (closestECDist <= 9) {
+                Debug.p("Within empower distance");
+                // check if can kill
+                RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
+                int size = empowered.length;
+                int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10) / size;
+                RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
+                if (enemyEC.getConviction() + 1 <= effect) {
+                    Debug.p("Can kill, will kill");
+                    if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
+                } else {
+                    // signal that you're attacking, so move out of the way
+                    Debug.p("Signalling attack");
+                    rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
+                    // check if we can get closer, or if there's a lot of our own units in the way
+                    int closerDist = rc.getLocation().distanceSquaredTo(closestEC);
+                    Direction optDir = null;
+                    for (int i = 0; i < 8; i++) {
+                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestEC);
+                        if (dist < closerDist && rc.canMove(directions[i])) {
+                            closerDist = dist;
+                            optDir = directions[i];
+                        }
+                    }
+                    if (optDir != null) {
+                        Debug.p("The optimal direction to move is: " + optDir);
+                        rc.move(optDir);
+                    }
+                }
+            } else {
+                Debug.p("navbugging");
+                nav.bugNavigate(closestEC);
+            }
+        } else wander();
     }
 
     static void defend() throws GameActionException {

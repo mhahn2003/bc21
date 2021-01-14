@@ -52,6 +52,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - Pathfind to an edge, not going through enemy ECs
     - ~~Convert and run politician code when it switches~~
     - Fix running out of bytecode
+    - Stay in a lattic to allow others to path
 - Muckraker AI
     - ~~Spacing out when politicians are near~~
 - General attack plan on enemy EC
