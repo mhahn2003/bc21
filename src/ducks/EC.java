@@ -1,6 +1,7 @@
 package ducks;
 
 import battlecode.common.*;
+import ducks.utils.*;
 
 public class EC extends Robot {
     int voteCount = -1;
@@ -53,19 +54,53 @@ public class EC extends Robot {
         }
         // if muckraker nearby, signal for help
         if (muckHelp) Coms.signalQueue.add(Coms.getMessage(Coms.IC.MUCKRAKER_HELP, muckHelpLoc));
+        // scenario 1: if enemy units nearby
         if (muckCount > 0) {
-            if (muckHelp) {
-                build(RobotType.POLITICIAN, 25);
-            }
             if (polCount > 0) {
                 build(RobotType.POLITICIAN, 40);
             }
-        }
-        if (polCount > 0) {
-            if (fPolCount <= 4) {
-                build(RobotType.POLITICIAN, 30);
+            if (muckHelp) {
+                build(RobotType.POLITICIAN, 25);
             }
         }
+        else if (polCount > 0) {
+            build(RobotType.POLITICIAN, 30);
+        }
+        // scenario 2: no enemy units nearby
+        // initially build in a 1:2:1 ratio of p, s, m
+        // then build in a 2:2:1 ratio of p, s, m
+        // then build in a 4:2:1 ratio of p, s, m
+        if (rc.getRoundNum() <= 100) {
+            if (tP < 2*tS) {
+                if (rc.getInfluence() >= 600) build(RobotType.POLITICIAN, 400);
+                build(RobotType.POLITICIAN, 25);
+            }
+            if (tM < 2*tS) {
+                build(RobotType.MUCKRAKER, 1);
+            }
+            build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-40, 21)));
+        }
+        else if (rc.getRoundNum() <= 400) {
+            if (tP < tS) {
+                if (rc.getInfluence() >= 800) build(RobotType.POLITICIAN, 400);
+                build(RobotType.POLITICIAN, 40);
+            }
+            if (tM < 2*tS) {
+                build(RobotType.MUCKRAKER, 1);
+            }
+            build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-40, 21)));
+        }
+        else {
+            if (2*tP < 2*tS) {
+                if (rc.getInfluence() >= 800) build(RobotType.POLITICIAN, Math.max(400, rc.getInfluence()/20));
+                build(RobotType.POLITICIAN, 80);
+            }
+            if (tM < 2*tS) {
+                build(RobotType.MUCKRAKER, 1);
+            }
+            build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-200, 21)));
+        }
+
 //        if (muckCount > 0) {
 //            if (fPolCount <= 3) {
 //                build(RobotType.POLITICIAN, 15+muckCount);
