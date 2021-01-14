@@ -137,17 +137,26 @@ public class Robot {
 
     // patrol around center
     public static void patrol(MapLocation center, int minRadius, int maxRadius) throws GameActionException {
+        boolean left = (rc.getID() % 2) == 0;
         Direction rotateDir = rc.getLocation().directionTo(center);
         int distHQ = rc.getLocation().distanceSquaredTo(center);
         if (distHQ < minRadius) {
             rotateDir = rotateDir.opposite();
         } else if (distHQ <= maxRadius) {
-            rotateDir = rotateDir.rotateLeft();
-            rotateDir = rotateDir.rotateLeft();
+            if (left) {
+                rotateDir = rotateDir.rotateLeft();
+                rotateDir = rotateDir.rotateLeft();
+            } else {
+                rotateDir = rotateDir.rotateRight();
+                rotateDir = rotateDir.rotateRight();
+            }
         }
         for (int i = 0; i < 8; i++) {
             if (rc.canMove(rotateDir)) rc.move(rotateDir);
-            else rotateDir = rotateDir.rotateRight();
+            else {
+                if (left) rotateDir = rotateDir.rotateRight();
+                else rotateDir = rotateDir.rotateLeft();
+            }
         }
         if (rc.canMove(rotateDir)) rc.move(rotateDir);
     }

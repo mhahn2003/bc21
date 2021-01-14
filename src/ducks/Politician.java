@@ -29,7 +29,7 @@ public class Politician extends Robot {
                 if (rc.getID() % 4 == 0) attack();
                 else defend();
             } else {
-                if (rc.getID() % 2 == 0) attack();
+                if (rc.getID() % 3 == 0) attack();
                 else defend();
             }
         }
