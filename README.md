@@ -42,17 +42,17 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Politician AI
     - ~~Attacker~~
     - ~~Defender~~
-    - Assistor
     - ~~Fix running out of bytecode~~
+    - ~~Should kill lone muckrakers if they're too close to the EC, since it prevents them from spawning slanderers~~
+    - Check if running out of bytecode
 - Slanderer AI
     - ~~Stay close to EC & muckraker~~
     - Pathfind to an edge, not going through enemy ECs
-    - Convert and run politician code when it switches
+    - ~~Convert and run politician code when it switches~~
 - Muckraker AI
-    - ~~Defend slanderers by sticking next to them~~
-    - Spacing out when politicians are near
+    - ~~Spacing out when politicians are near~~
 - General attack plan on enemy EC
-    - Attackers + Assistors + Muckraker dilution/retreat
+    - Just spam politicians with conv 400, maybe add in lesser cost polis later
 - EC building logic
     - ~~Less muckraker spam~~
     - ~~More politician building of cost ~15~~
@@ -62,4 +62,4 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - Ideas: bid the amount of passive income?
     - ~~Currently bids if over 600 influence~~
 - Analyze top teams:
-    - Specifically: baby ducks
+    - Specifically: ~~baby ducks~~

@@ -8,7 +8,7 @@ import java.util.PriorityQueue;
 import static ducks.Robot.*;
 
 public class Coms {
-    protected final PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
+    public static PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
     protected int relevantSize = 0;
     protected int relevantInd = 0;
     protected int[] relevantFlags = new int[20];
@@ -485,7 +485,8 @@ public class Coms {
                 }
                 break;
             case MUCKRAKER_HELP:
-                if (rc.getType() == RobotType.POLITICIAN) {
+                if (rc.getType() == RobotType.POLITICIAN &&
+                    rc.getLocation().distanceSquaredTo(coord) <= RobotType.POLITICIAN.sensorRadiusSquared) {
                     defendSlanderer = true;
                     enemyMuck = coord;
                 }

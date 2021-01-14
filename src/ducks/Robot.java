@@ -101,13 +101,30 @@ public class Robot {
     // wander around
     // TODO: what if you're already at a corner/side and you want to explore more (+3 to the end to explore?)
     public static void wander() throws GameActionException {
-        wandLoc = new MapLocation(nav.getEnds()[(rc.getID()+offset) % 8][0], nav.getEnds()[(rc.getID()+offset) % 8][1]);
-        if (rc.getLocation().isWithinDistanceSquared(wandLoc, 8)) {
-            offset++;
-            wander();
-            return;
+        // first check if you're too close to anyone, and separate from each other
+        boolean separate = false;
+        MapLocation nearMuck = null;
+        RobotInfo[] near = rc.senseNearbyRobots(8, team);
+        for (RobotInfo r : near) {
+            if (r.getType() == RobotType.MUCKRAKER) {
+                separate = true;
+                nearMuck = r.getLocation();
+                break;
+            }
         }
-        nav.bugNavigate(wandLoc);
+        if (separate) {
+            // try to separate from the muckraker
+            Direction opp = rc.getLocation().directionTo(nearMuck).opposite();
+            nav.bugNavigate(rc.getLocation().add(opp));
+        } else {
+            wandLoc = new MapLocation(nav.getEnds()[(rc.getID() + offset) % 8][0], nav.getEnds()[(rc.getID() + offset) % 8][1]);
+            if (rc.getLocation().isWithinDistanceSquared(wandLoc, 8)) {
+                offset++;
+                wander();
+                return;
+            }
+            nav.bugNavigate(wandLoc);
+        }
     }
 
     // patrol around center
