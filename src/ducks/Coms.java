@@ -184,15 +184,15 @@ public class Coms {
                 checkLoc = checkLoc.add(dir);
             }
         }
-        // whether you're a muckraker guarding a slanderer
-//        RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
-//        boolean guard = false;
-//        for (RobotInfo rob : closeRobots) {
-//            if (rob.getType() == RobotType.SLANDERER) {
-//                guard = true;
-//                break;
-//            }
-//        }
+        // whether you're a guarding a slanderer
+        RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
+        boolean guard = false;
+        for (RobotInfo rob : closeRobots) {
+            if (rob.getType() == RobotType.SLANDERER) {
+                guard = true;
+                break;
+            }
+        }
         for (RobotInfo r: robots) {
             // check for any ECs
             if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
@@ -296,7 +296,10 @@ public class Coms {
             }
             if (rc.getType() != RobotType.ENLIGHTENMENT_CENTER && r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
                 if (rc.getType() == RobotType.SLANDERER) signalQueue.add(getMessage(IC.MUCKRAKER_HELP, r.getLocation()));
-                else signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
+                else if (guard) {
+                    // if you're near a slanderer
+                    signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
+                }
             }
 //            // if you're a muckraker, check for units
 //            if (rc.getType() == RobotType.MUCKRAKER) {

@@ -25,6 +25,9 @@ public class EC extends Robot {
     public void takeTurn() throws GameActionException {
         super.takeTurn();
         if (rc.getRoundNum() >= 500) bid();
+        Debug.p("tS: " + tS);
+        Debug.p("tP: " + tP);
+        Debug.p("tM: " + tM);
         // check what kind of units are outside our base
         muckCount = 0;
         polCount = 0;
@@ -70,32 +73,32 @@ public class EC extends Robot {
         // initially build in a 1:2:1 ratio of p, s, m
         // then build in a 2:2:1 ratio of p, s, m
         // then build in a 4:2:1 ratio of p, s, m
-        if (rc.getRoundNum() <= 100) {
-            if (tP < 2*tS) {
+        if (rc.getRoundNum() <= 50) {
+            if (2*tP < tS) {
                 if (rc.getInfluence() >= 600) build(RobotType.POLITICIAN, 400);
                 build(RobotType.POLITICIAN, 25);
             }
-            if (tM < 2*tS) {
+            else if (2*tM < tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
-            build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-40, 21)));
+            else build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-40, 21)));
         }
         else if (rc.getRoundNum() <= 400) {
             if (tP < tS) {
                 if (rc.getInfluence() >= 800) build(RobotType.POLITICIAN, 400);
                 build(RobotType.POLITICIAN, 40);
             }
-            if (tM < 2*tS) {
+            if (2*tM < tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
             build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-40, 21)));
         }
         else {
-            if (2*tP < 2*tS) {
+            if (tP < 2*tS) {
                 if (rc.getInfluence() >= 800) build(RobotType.POLITICIAN, Math.max(400, rc.getInfluence()/20));
                 build(RobotType.POLITICIAN, 80);
             }
-            if (tM < 2*tS) {
+            if (2*tM < tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
             build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-200, 21)));
@@ -160,11 +163,12 @@ public class EC extends Robot {
         for (Direction dir : directions) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
                 switch (toBuild) {
-                    case POLITICIAN: tP++;
-                    case SLANDERER: tS++;
-                    case MUCKRAKER: tM++;
+                    case POLITICIAN: tP++; break;
+                    case SLANDERER: tS++; break;
+                    case MUCKRAKER: tM++; break;
                 }
                 rc.buildRobot(toBuild, dir, influence);
+                return;
             }
         }
     }

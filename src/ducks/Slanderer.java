@@ -36,7 +36,7 @@ public class Slanderer extends Politician {
                 }
             }
         }
-        if (!included) {
+        if (runAway && !included) {
             dangers[size] = danger;
             size++;
         }

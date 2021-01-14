@@ -160,9 +160,10 @@ public class ECComs extends Coms {
             }
         }
         if (!processed) {
-            Debug.p("not processed yet, adding to queue: " + flag);
-
-            signalQueue.add(convertFlag(flag));
+            if (getCat(flag) != IC.MUCKRAKER || getCat(flag) != IC.MUCKRAKER_HELP) {
+                Debug.p("not processed yet, adding to queue: " + flag);
+                signalQueue.add(convertFlag(flag));
+            }
         }
         super.processFlag(flag);
     }
