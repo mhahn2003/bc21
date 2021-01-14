@@ -81,7 +81,7 @@ public class Slanderer extends Politician {
                 }
             }
             if (closestEC != null) {
-                patrol(closestEC, 12);
+                patrol(closestEC, 9, 25);
             } else {
                 // go to an edge maybe?
             }

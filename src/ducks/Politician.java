@@ -237,7 +237,7 @@ public class Politician extends Robot {
                                     }
                                 }
                             }
-                            if (closestEC != null) patrol(closestEC, 25);
+                            if (closestEC != null) patrol(closestEC, 25, 45);
                             else wander();
                         }
                     }

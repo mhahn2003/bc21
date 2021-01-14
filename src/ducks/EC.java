@@ -61,8 +61,7 @@ public class EC extends Robot {
         if (muckCount > 0) {
             if (polCount > 0) {
                 build(RobotType.POLITICIAN, 40);
-            }
-            if (muckHelp) {
+            } else {
                 build(RobotType.POLITICIAN, 25);
             }
         }
@@ -74,14 +73,14 @@ public class EC extends Robot {
         // then build in a 2:2:1 ratio of p, s, m
         // then build in a 4:2:1 ratio of p, s, m
         if (rc.getRoundNum() <= 50) {
-            if (2*tP < tS) {
+            if (5*tP < tS) {
                 if (rc.getInfluence() >= 600) build(RobotType.POLITICIAN, 400);
-                build(RobotType.POLITICIAN, 25);
+                build(RobotType.POLITICIAN, 20);
             }
             else if (2*tM < tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
-            else build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-40, 21)));
+            else build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
         }
         else if (rc.getRoundNum() <= 400) {
             if (tP < tS) {
@@ -91,7 +90,7 @@ public class EC extends Robot {
             if (2*tM < tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
-            build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-40, 21)));
+            build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
         }
         else {
             if (tP < 2*tS) {
