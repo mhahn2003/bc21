@@ -60,7 +60,7 @@ public class Robot {
         rc = r;
         if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
             eccoms = new ECComs();
-        }else{
+        } else {
             coms = new Coms();
             nav = new Nav();
         }

@@ -42,10 +42,10 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Politician
     - If muckraker buff is large enough, buff EC it just spawned from
 - Slanderer
-    - Stay in a lattice to allow others to path
+    - ~~Stay in a lattice to allow others to path~~
     - Try to avoid muckrakers from a further range
 - Muckraker AI
-    - Make them go towards enemy, not only enemy EC
+    - ~~Make them go towards enemy, not only enemy EC~~
     - Muckrakers should never be in our base, always in theirs or scouting
     - Use IDs like baby duck to keep only a few on each enemy politician to avoid too many units dying
     - Ideas for a 1000 muckraker rush?
@@ -53,7 +53,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - If there's a lot of politicians around the EC
 - EC building logic
     - If there's a constant clog in the middle, use coms to communicate to spread out and increase the patrol radius
-- Fix EC bidding bug
+- ~~Fix EC bidding bug~~
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola
