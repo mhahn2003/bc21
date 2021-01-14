@@ -170,7 +170,7 @@ public class Coms {
                 MapLocation checkLoc = rc.getLocation().add(dir);
                 while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
                     if (!rc.onTheMap(checkLoc)) {
-                        System.out.println("I see an edge");
+                        Debug.p("I see an edge");
                         edges[i] = true;
                         if (i == 0) {
                             maxY = checkLoc.y-1;
@@ -189,7 +189,7 @@ public class Coms {
                             signalQueue.add(getMessage(IC.EDGE_W, minX));
                             addRelevantFlag(getMessage(IC.EDGE_W, minX));
                         }
-                        System.out.println("updated "+i+"th edge");
+                        Debug.p("updated "+i+"th edge");
                         break;
                     }
                     checkLoc = checkLoc.add(dir);
