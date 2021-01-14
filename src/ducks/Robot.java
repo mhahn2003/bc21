@@ -9,7 +9,9 @@ public class Robot {
     static Coms coms;
     static ECComs eccoms;
 
-    public static boolean debugOn = true;
+    // debug variable
+    public static boolean debugOn = false;
+
     static int minX = 9999;
     static int maxX = 30065;
     static int minY = 9999;
