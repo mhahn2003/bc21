@@ -46,7 +46,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - ~~Defender~~
     - ~~Fix running out of bytecode~~
     - ~~Should kill lone muckrakers if they're too close to the EC, since it prevents them from spawning slanderers~~
-    - Check if running out of bytecode
+    - If muckraker buff is large enough, buff EC it just spawned from
 - Slanderer AI
     - ~~Stay close to EC & muckraker~~
     - Pathfind to an edge, not going through enemy ECs
@@ -62,6 +62,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - ~~More slanderer building~~
     - ~~Improve constants/round numbers~~
     - ~~Fix EC building logic bug~~
+    - If there's a constant clog in the middle, use coms to communicate to spread out and increase the patrol radius
 - EC should bid if they are converted
     - Ideas: bid the amount of passive income?
     - ~~Currently bids if over 600 influence~~

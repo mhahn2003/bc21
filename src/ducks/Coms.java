@@ -152,169 +152,182 @@ public class Coms {
 
     // relay information about surroundings
     public void collectInfo() throws GameActionException {
-        // first check for any edges
-        for (int i = 0; i < 4; i++) {
-            if (edges[i]) continue;
-            Direction dir = Direction.cardinalDirections()[i];
-            MapLocation checkLoc = rc.getLocation().add(dir);
-            while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
-                if (!rc.onTheMap(checkLoc)) {
-                    System.out.println("I see an edge");
-                    edges[i] = true;
-                    if (i == 0) {
-                        maxY = checkLoc.y-1;
-                        signalQueue.add(getMessage(IC.EDGE_N, maxY));
-                        addRelevantFlag(getMessage(IC.EDGE_N, maxY));
-                    } else if (i == 1) {
-                        maxX = checkLoc.x-1;
-                        signalQueue.add(getMessage(IC.EDGE_E, maxX));
-                        addRelevantFlag(getMessage(IC.EDGE_E, maxX));
-                    } else if (i == 2) {
-                        minY = checkLoc.y+1;
-                        signalQueue.add(getMessage(IC.EDGE_S, minY));
-                        addRelevantFlag(getMessage(IC.EDGE_S, minY));
-                    } else if (i == 3) {
-                        minX = checkLoc.x+1;
-                        signalQueue.add(getMessage(IC.EDGE_W, minX));
-                        addRelevantFlag(getMessage(IC.EDGE_W, minX));
-                    }
-                    System.out.println("updated "+i+"th edge");
+        // temporary fix for reducing bytecode for slanderers: fix
+        // TODO: reduce bytecode usage in general
+        if (rc.getType() == RobotType.SLANDERER) {
+            RobotInfo[] enemies = rc.senseNearbyRobots(-1, team.opponent());
+            for (RobotInfo r : enemies) {
+                if (r.getType() == RobotType.MUCKRAKER) {
+                    signalQueue.add(getMessage(IC.MUCKRAKER_HELP, r.getLocation()));
                     break;
                 }
-                checkLoc = checkLoc.add(dir);
             }
-        }
-        // whether you're a guarding a slanderer
-        RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
-        boolean guard = false;
-        for (RobotInfo rob : closeRobots) {
-            if (rob.getType() == RobotType.SLANDERER) {
-                guard = true;
-                break;
-            }
-        }
-        for (RobotInfo r: robots) {
-            // check for any ECs
-            if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                Debug.p("Found an EC!");
-                int id = r.getID();
-                Debug.p("ID is: " + id);
-                MapLocation loc = r.getLocation();
-                Debug.p("Location is: " + loc);
-                if (r.getTeam() == team) {
-                    int minInd = -1;
-                    boolean seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (ECIds[i] == 0) {
-                            minInd = i;
+        } else {
+            // first check for any edges
+            for (int i = 0; i < 4; i++) {
+                if (edges[i]) continue;
+                Direction dir = Direction.cardinalDirections()[i];
+                MapLocation checkLoc = rc.getLocation().add(dir);
+                while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
+                    if (!rc.onTheMap(checkLoc)) {
+                        System.out.println("I see an edge");
+                        edges[i] = true;
+                        if (i == 0) {
+                            maxY = checkLoc.y-1;
+                            signalQueue.add(getMessage(IC.EDGE_N, maxY));
+                            addRelevantFlag(getMessage(IC.EDGE_N, maxY));
+                        } else if (i == 1) {
+                            maxX = checkLoc.x-1;
+                            signalQueue.add(getMessage(IC.EDGE_E, maxX));
+                            addRelevantFlag(getMessage(IC.EDGE_E, maxX));
+                        } else if (i == 2) {
+                            minY = checkLoc.y+1;
+                            signalQueue.add(getMessage(IC.EDGE_S, minY));
+                            addRelevantFlag(getMessage(IC.EDGE_S, minY));
+                        } else if (i == 3) {
+                            minX = checkLoc.x+1;
+                            signalQueue.add(getMessage(IC.EDGE_W, minX));
+                            addRelevantFlag(getMessage(IC.EDGE_W, minX));
                         }
-                        if (ECIds[i] == id) {
-                            seen = true;
-                            break;
-                        }
+                        System.out.println("updated "+i+"th edge");
+                        break;
                     }
-                    if (minInd != -1 && !seen) {
-                        ECIds[minInd] = id;
-                        Debug.p("ID: Adding to signal queue");
-                        signalQueue.add(getMessage(IC.EC_ID, id));
-                        addRelevantFlag(getMessage(IC.EC_ID, id));
-                    }
-                    for (int i = 0; i < 12; i++) {
-                        if (loc.equals(enemyECs[i])) {
-                            enemyECs[i] = null;
-                            removeRelevantFlag(getMessage(IC.ENEMY_EC, loc));
-                            break;
-                        }
-                        if (loc.equals(neutralECs[i])) {
-                            neutralECs[i] = null;
-                            removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
-                            break;
-                        }
-                    }
-                    minInd = -1;
-                    seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (friendECs[i] == null) {
-                            minInd = i;
-                        } else if (friendECs[i].equals(r.getLocation())) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        friendECs[minInd] = r.getLocation();
-                        Debug.p("FRIENDLY: Adding to signal queue");
-                        signalQueue.add(getMessage(IC.FRIEND_EC, loc));
-                        addRelevantFlag(getMessage(IC.FRIEND_EC, loc));
-                    }
-                } else if (r.getTeam() == team.opponent()) {
-                    for (int i = 0; i < 12; i++) {
-                        if (loc.equals(friendECs[i])) {
-                            friendECs[i] = null;
-                            removeRelevantFlag(getMessage(IC.FRIEND_EC, loc));
-                            break;
-                        }
-                        if (loc.equals(neutralECs[i])) {
-                            neutralECs[i] = null;
-                            removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
-                            break;
-                        }
-                    }
-                    int minInd = -1;
-                    boolean seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (enemyECs[i] == null) {
-                            minInd = i;
-                        } else if (enemyECs[i].equals(loc)) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        enemyECs[minInd] = r.getLocation();
-                        Debug.p("ENEMY: Adding to signal queue");
-                        signalQueue.add(getMessage(IC.ENEMY_EC, loc));
-                        addRelevantFlag(getMessage(IC.ENEMY_EC, loc));
-                    }
-                } else {
-                    int minInd = -1;
-                    boolean seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (neutralECs[i] == null) {
-                            minInd = i;
-                        } else if (neutralECs[i].equals(r.getLocation())) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        Debug.p("NEUTRAL: Adding to signal queue");
-                        signalQueue.add(getMessage(IC.NEUTRAL_EC, loc));
-                        addRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
-                    }
+                    checkLoc = checkLoc.add(dir);
                 }
             }
-            if (rc.getType() != RobotType.ENLIGHTENMENT_CENTER && r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
-                if (rc.getType() == RobotType.SLANDERER) signalQueue.add(getMessage(IC.MUCKRAKER_HELP, r.getLocation()));
-                else if (guard) {
-                    // if you're near a slanderer
-                    signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
+            // whether you're a guarding a slanderer
+            RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
+            boolean guard = false;
+            for (RobotInfo rob : closeRobots) {
+                if (rob.getType() == RobotType.SLANDERER) {
+                    guard = true;
+                    break;
                 }
             }
-//            // if you're a muckraker, check for units
-//            if (rc.getType() == RobotType.MUCKRAKER) {
-//                if (guard) {
-//                    // then relay info about any muckrakers you see
-//                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
-//                        signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
-//                        guard = false;
-//                    }
-//                }
-//                // discuss: do we even need to signal slanderers?
-////                if (r.getType() == RobotType.SLANDERER && r.getTeam() == team.opponent()) {
-////                    signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
-////                }
-//            }
+            for (RobotInfo r: robots) {
+                // check for any ECs
+                if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+                    Debug.p("Found an EC!");
+                    int id = r.getID();
+                    Debug.p("ID is: " + id);
+                    MapLocation loc = r.getLocation();
+                    Debug.p("Location is: " + loc);
+                    if (r.getTeam() == team) {
+                        int minInd = -1;
+                        boolean seen = false;
+                        for (int i = 11; i >= 0; i--) {
+                            if (ECIds[i] == 0) {
+                                minInd = i;
+                            }
+                            if (ECIds[i] == id) {
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (minInd != -1 && !seen) {
+                            ECIds[minInd] = id;
+                            Debug.p("ID: Adding to signal queue");
+                            signalQueue.add(getMessage(IC.EC_ID, id));
+                            addRelevantFlag(getMessage(IC.EC_ID, id));
+                        }
+                        for (int i = 0; i < 12; i++) {
+                            if (loc.equals(enemyECs[i])) {
+                                enemyECs[i] = null;
+                                removeRelevantFlag(getMessage(IC.ENEMY_EC, loc));
+                                break;
+                            }
+                            if (loc.equals(neutralECs[i])) {
+                                neutralECs[i] = null;
+                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                break;
+                            }
+                        }
+                        minInd = -1;
+                        seen = false;
+                        for (int i = 11; i >= 0; i--) {
+                            if (friendECs[i] == null) {
+                                minInd = i;
+                            } else if (friendECs[i].equals(r.getLocation())) {
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (minInd != -1 && !seen) {
+                            friendECs[minInd] = r.getLocation();
+                            Debug.p("FRIENDLY: Adding to signal queue");
+                            signalQueue.add(getMessage(IC.FRIEND_EC, loc));
+                            addRelevantFlag(getMessage(IC.FRIEND_EC, loc));
+                        }
+                    } else if (r.getTeam() == team.opponent()) {
+                        for (int i = 0; i < 12; i++) {
+                            if (loc.equals(friendECs[i])) {
+                                friendECs[i] = null;
+                                removeRelevantFlag(getMessage(IC.FRIEND_EC, loc));
+                                break;
+                            }
+                            if (loc.equals(neutralECs[i])) {
+                                neutralECs[i] = null;
+                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                break;
+                            }
+                        }
+                        int minInd = -1;
+                        boolean seen = false;
+                        for (int i = 11; i >= 0; i--) {
+                            if (enemyECs[i] == null) {
+                                minInd = i;
+                            } else if (enemyECs[i].equals(loc)) {
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (minInd != -1 && !seen) {
+                            enemyECs[minInd] = r.getLocation();
+                            Debug.p("ENEMY: Adding to signal queue");
+                            signalQueue.add(getMessage(IC.ENEMY_EC, loc));
+                            addRelevantFlag(getMessage(IC.ENEMY_EC, loc));
+                        }
+                    } else {
+                        int minInd = -1;
+                        boolean seen = false;
+                        for (int i = 11; i >= 0; i--) {
+                            if (neutralECs[i] == null) {
+                                minInd = i;
+                            } else if (neutralECs[i].equals(r.getLocation())) {
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (minInd != -1 && !seen) {
+                            Debug.p("NEUTRAL: Adding to signal queue");
+                            signalQueue.add(getMessage(IC.NEUTRAL_EC, loc));
+                            addRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                        }
+                    }
+                }
+                if (rc.getType() != RobotType.ENLIGHTENMENT_CENTER && r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
+                    if (rc.getType() == RobotType.SLANDERER)
+                        signalQueue.add(getMessage(IC.MUCKRAKER_HELP, r.getLocation()));
+                    else if (guard) {
+                        // if you're near a slanderer
+                        signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
+                    }
+                }
+                //            // if you're a muckraker, check for units
+                //            if (rc.getType() == RobotType.MUCKRAKER) {
+                //                if (guard) {
+                //                    // then relay info about any muckrakers you see
+                //                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
+                //                        signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
+                //                        guard = false;
+                //                    }
+                //                }
+                //                // discuss: do we even need to signal slanderers?
+                ////                if (r.getType() == RobotType.SLANDERER && r.getTeam() == team.opponent()) {
+                ////                    signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
+                ////                }
+                //            }
+            }
         }
     }
 
