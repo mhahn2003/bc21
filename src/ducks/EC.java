@@ -6,6 +6,7 @@ import ducks.utils.*;
 public class EC extends Robot {
     int voteCount = -1;
     int bidCount = 1;
+    boolean bidded = true;
 
     // unit count near EC
     int muckCount = 0;
@@ -175,8 +176,11 @@ public class EC extends Robot {
     public void bid() throws GameActionException {
         int curVote = rc.getTeamVotes();
         if (curVote >= 751) return;
-        if (curVote == voteCount) bidCount *= 2;
-        if (bidCount + 500 <= rc.getInfluence() && rc.canBid(bidCount)) rc.bid(bidCount);
+        if (curVote == voteCount && bidded) bidCount *= 2;
+        if (rc.canBid(bidCount)) {
+            rc.bid(bidCount);
+            bidded = true;
+        } else bidded = false;
         bidCount -= bidCount/16;
         voteCount = curVote;
     }

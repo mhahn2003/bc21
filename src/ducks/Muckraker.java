@@ -104,36 +104,35 @@ public class Muckraker extends Robot {
 //                    if (optDir != null) rc.move(optDir);
 //                }
 //            }
-                if (rc.getID() % 2 == 0) {
-                    if (closestEC != null) {
-                        // else move to the closest enemy HQ if known
-                        if (!rc.getLocation().isAdjacentTo(closestEC)) {
-                            if (rc.getLocation().isWithinDistanceSquared(closestEC, 13)) {
-                                // move to an adjacent spot
-                                int closestSpotDist = 100000;
-                                MapLocation closestSpot = null;
-                                for (Direction dir : directions) {
-                                    MapLocation loc = closestEC.add(dir);
-                                    if (!rc.isLocationOccupied(loc)) {
-                                        int dist = rc.getLocation().distanceSquaredTo(loc);
-                                        if (dist < closestSpotDist) {
-                                            closestSpotDist = dist;
-                                            closestSpot = loc;
-                                        }
-                                    }
-                                }
-                                if (closestSpot != null) {
-                                    nav.bugNavigate(closestSpot);
-                                } else {
-                                    // TODO: call for attack
-                                }
-                            } else nav.bugNavigate(closestEC);
-                        }
-                    } else {
-                        wander();
-                    }
+                if (closestEC != null) {
+                    // if there's already too much then go to another
+                    patrol(closestEC, 16, 25);
+                    // else move to the closest enemy HQ if known
+//                    if (!rc.getLocation().isAdjacentTo(closestEC)) {
+//                        if (rc.getLocation().isWithinDistanceSquared(closestEC, 13)) {
+//                            // move to an adjacent spot
+//                            int closestSpotDist = 100000;
+//                            MapLocation closestSpot = null;
+//                            for (Direction dir : directions) {
+//                                MapLocation loc = closestEC.add(dir);
+//                                if (!rc.isLocationOccupied(loc)) {
+//                                    int dist = rc.getLocation().distanceSquaredTo(loc);
+//                                    if (dist < closestSpotDist) {
+//                                        closestSpotDist = dist;
+//                                        closestSpot = loc;
+//                                    }
+//                                }
+//                            }
+//                            if (closestSpot != null) {
+//                                nav.bugNavigate(closestSpot);
+//                            } else {
+//                                // TODO: call for attack
+//                            }
+//                        } else nav.bugNavigate(closestEC);
+//                    }
+                } else {
+                    wander();
                 }
-                else wander();
             }
         }
     }

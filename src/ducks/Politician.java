@@ -103,6 +103,10 @@ public class Politician extends Robot {
                             Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                         } else {
+                            if (rc.getConviction() <= 100) {
+                                // just empower
+                                if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
+                            }
                             // wait for others to move
                             // maybe ask for assist?
                         }
@@ -170,6 +174,9 @@ public class Politician extends Robot {
                     if (optDir != null) {
                         Debug.p("The optimal direction to move is: " + optDir);
                         rc.move(optDir);
+                    } else {
+                        // just empower
+                        if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                     }
                 }
             } else {

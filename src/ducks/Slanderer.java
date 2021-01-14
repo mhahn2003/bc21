@@ -83,11 +83,31 @@ public class Slanderer extends Politician {
                     }
                 }
             }
-            if (closestEC != null) {
-                patrol(closestEC, 9, 25);
-            } else {
-                // go to an edge maybe?
+            // do the pp lattice structure
+            if (rc.getLocation().isAdjacentTo(closestEC) || (rc.getLocation().x + rc.getLocation().y) % 2 != 0) {
+                // move!
+                int closestEnemyDist = 1000000;
+                MapLocation closestEnemy = null;
+                for (int i = 0; i < 12; i++) {
+                    if (enemyECs[i] != null) {
+                        int dist = rc.getLocation().distanceSquaredTo(enemyECs[i]);
+                        if (dist < closestEnemyDist) {
+                            closestEnemyDist = dist;
+                            closestEnemy = enemyECs[i];
+                        }
+                    }
+                }
+                if (closestEnemy != null) {
+                    // TODO: code
+                } else {
+                    // TODO: code
+                }
             }
+//            if (closestEC != null) {
+//                patrol(closestEC, 9, 25);
+//            } else {
+//                // go to an edge maybe?
+//            }
         }
         Debug.p("After everything else: " + Clock.getBytecodeNum());
     }

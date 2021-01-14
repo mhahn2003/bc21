@@ -36,37 +36,21 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
-- ~~Fix EC coms~~
-- ~~Add unit differentiation in coms~~
-- ~~Potential bug - not recognizing when EC switches sides? Need to test/debug more~~
-- ~~Politicians and Slanderers not patrolling HQ properly~~
+- Optimize the wander function
+    - Keep an array of the map compacted to keep track of where we visited
 - Optimize coms in terms of bytecode
-- Politician AI
-    - ~~Attacker~~
-    - ~~Defender~~
-    - ~~Fix running out of bytecode~~
-    - ~~Should kill lone muckrakers if they're too close to the EC, since it prevents them from spawning slanderers~~
+- Politician
     - If muckraker buff is large enough, buff EC it just spawned from
-- Slanderer AI
-    - ~~Stay close to EC & muckraker~~
-    - Pathfind to an edge, not going through enemy ECs
-    - ~~Convert and run politician code when it switches~~
-    - Fix running out of bytecode
-    - Stay in a lattic to allow others to path
+- Slanderer
+    - Stay in a lattice to allow others to path
 - Muckraker AI
-    - ~~Spacing out when politicians are near~~
+    - Make them go towards enemy, not only enemy EC
+    - Muckrakers should never be in our base, always in theirs or scouting
 - General attack plan on enemy EC
-    - Just spam politicians with conv 400, maybe add in lesser cost polis later
+    - If there's a lot of politicians around the EC
 - EC building logic
-    - ~~Less muckraker spam~~
-    - ~~More politician building of cost ~15~~
-    - ~~More slanderer building~~
-    - ~~Improve constants/round numbers~~
-    - ~~Fix EC building logic bug~~
     - If there's a constant clog in the middle, use coms to communicate to spread out and increase the patrol radius
-- EC should bid if they are converted
-    - Ideas: bid the amount of passive income?
-    - ~~Currently bids if over 600 influence~~
+- Fix EC bidding bug
 - Analyze top teams:
-    - Specifically: ~~baby ducks~~
-    
+    - Specifically:
+    - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola
