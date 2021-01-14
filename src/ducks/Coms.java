@@ -320,7 +320,6 @@ public class Coms {
 
     // get information from flags
     public void getInfo() throws GameActionException {
-        robots = rc.senseNearbyRobots();
         // first get the flags from ECs
         for (int i = 0; i < 12; i++) {
             if (ECIds[i] != 0) {

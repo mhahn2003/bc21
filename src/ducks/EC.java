@@ -74,7 +74,7 @@ public class EC extends Robot {
         // then build in a 4:2:1 ratio of p, s, m
         if (rc.getRoundNum() <= 50) {
             if (5*tP < tS) {
-                if (rc.getInfluence() >= 600) build(RobotType.POLITICIAN, 400);
+                if (rc.getInfluence() >= 400) build(RobotType.POLITICIAN, 400);
                 build(RobotType.POLITICIAN, 20);
             }
             else if (2*tM < tS) {
@@ -84,7 +84,7 @@ public class EC extends Robot {
         }
         else if (rc.getRoundNum() <= 400) {
             if (tP < tS) {
-                if (rc.getInfluence() >= 800) build(RobotType.POLITICIAN, 400);
+                if (rc.getInfluence() >= 600) build(RobotType.POLITICIAN, 400);
                 build(RobotType.POLITICIAN, 40);
             }
             if (2*tM < tS) {

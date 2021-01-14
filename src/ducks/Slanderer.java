@@ -1,6 +1,7 @@
 package ducks;
 
 import battlecode.common.*;
+import ducks.utils.Debug;
 
 public class Slanderer extends Politician {
 
@@ -17,10 +18,11 @@ public class Slanderer extends Politician {
         int size = 0;
         // whether the danger variable from coms is included
         boolean included = false;
-        int closestPoliticianDist = 100000;
-        MapLocation closestPolitician = null;
-        for (RobotInfo r : robots) {
-            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER) {
+//        int closestPoliticianDist = 100000;
+//        MapLocation closestPolitician = null;
+        RobotInfo[] enemies = rc.senseNearbyRobots(-1, team.opponent());
+        for (RobotInfo r : enemies) {
+            if (r.getType() == RobotType.MUCKRAKER) {
                 if (runAway && danger.equals(r.getLocation())) {
                     included = true;
                 }
@@ -28,14 +30,15 @@ public class Slanderer extends Politician {
                 size++;
                 if (size == 9) break;
             }
-            if (r.getTeam() == team && r.getType() == RobotType.POLITICIAN) {
-                int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
-                if (dist < closestPoliticianDist) {
-                    closestPoliticianDist = dist;
-                    closestPolitician = r.getLocation();
-                }
-            }
+//            if (r.getTeam() == team && r.getType() == RobotType.POLITICIAN) {
+//                int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
+//                if (dist < closestPoliticianDist) {
+//                    closestPoliticianDist = dist;
+//                    closestPolitician = r.getLocation();
+//                }
+//            }
         }
+        Debug.p("After iteration over robots: " + Clock.getBytecodeNum());
         if (runAway && !included) {
             dangers[size] = danger;
             size++;
@@ -58,9 +61,9 @@ public class Slanderer extends Politician {
                     for (int j = 0; j < size; j++) {
                         dangerH += loc.distanceSquaredTo(dangers[j]);
                     }
-                    if (closestPolitician != null) {
-                        dangerH -= loc.distanceSquaredTo(closestPolitician)/2;
-                    }
+//                    if (closestPolitician != null) {
+//                        dangerH -= loc.distanceSquaredTo(closestPolitician)/2;
+//                    }
                     if (dangerH > maxDist && rc.canMove(directions[i])) {
                         maxDist = dangerH;
                         optDir = directions[i];
@@ -86,5 +89,6 @@ public class Slanderer extends Politician {
                 // go to an edge maybe?
             }
         }
+        Debug.p("After everything else: " + Clock.getBytecodeNum());
     }
 }
