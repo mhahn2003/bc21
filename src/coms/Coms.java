@@ -17,6 +17,13 @@ public class Coms {
     // number of possible cases for InfoCategory enum class
     private static int numCase = 8;
 
+    // first 15 bit is message (only 14 is used for transimitting location)
+    // next 4 bits are catagory (an extra bit is only added for the 8 (100) since it is 4 bits)
+    // next 3 bits are unit type (an extra bit is only added for the 4 (100) since it is 3 bits)
+    // discuss: want to cut it down by one?
+
+    // (every trailing f is 4 bit. lead can be f,7,3,1 standing for 4,3,2,1 bits)
+
     public Coms() {
     }
 
@@ -62,16 +69,16 @@ public class Coms {
             case EDGE_W    : message = 8; break;
             default        : message = 9;
         }
-        message = addID(message, ID) + typeInt(rc.getType());
+        message = addID(message, ID) + typeInt(rc.getType())<<19;
         return message;
     }
 
     public static int typeInt(RobotType type) {
         switch (type) {
-            case POLITICIAN: return 1000000;
-            case SLANDERER: return 2000000;
-            case MUCKRAKER: return 3000000;
-            case ENLIGHTENMENT_CENTER: return 4000000;
+            case POLITICIAN: return 1;
+            case SLANDERER: return 2;
+            case MUCKRAKER: return 3;
+            case ENLIGHTENMENT_CENTER: return 4;
         }
         return 0;
     }
@@ -84,7 +91,7 @@ public class Coms {
     }
 
     public static RobotType getTyp(int message) {
-        switch (message/1000000) {
+        switch (message>>19) {
             case 1: return RobotType.POLITICIAN;
             case 2: return RobotType.SLANDERER;
             case 3: return RobotType.MUCKRAKER;
@@ -95,7 +102,7 @@ public class Coms {
 
 
     public static InformationCategory getCat(int message) {
-        message = message % 1000000;
+        message = message & 0x7ffff;
         switch (message >> 15) {
             case 1: return InformationCategory.FRIEND_EC;
             case 2: return InformationCategory.EC_ID;
@@ -110,12 +117,12 @@ public class Coms {
     }
 
     public static int getID(int message) {
-        message = message % 1000000;
+        message = message & 0x7ffff;
         return message % 32768;
     }
 
     public static MapLocation getCoord(int message) {
-        message = message % 1000000;
+        message = message & 0x7ffff;
         MapLocation here = rc.getLocation();
         int remX = here.x % 128;
         int remY = here.y % 128;
@@ -146,25 +153,19 @@ public class Coms {
                     edges[i] = true;
                     if (i == 0) {
                         maxY = checkLoc.y-1;
-                        signalQueue.add(getMessage(InformationCategory.EDGE_N, maxY));
                         relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_N, maxY);
-                        relevantSize++;
                     } else if (i == 1) {
                         maxX = checkLoc.x-1;
-                        signalQueue.add(getMessage(InformationCategory.EDGE_E, maxX));
                         relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_E, maxX);
-                        relevantSize++;
                     } else if (i == 2) {
                         minY = checkLoc.y+1;
-                        signalQueue.add(getMessage(InformationCategory.EDGE_S, minY));
                         relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_S, minY);
-                        relevantSize++;
                     } else if (i == 3) {
                         minX = checkLoc.x+1;
-                        signalQueue.add(getMessage(InformationCategory.EDGE_W, minX));
                         relevantFlags[relevantSize] = getMessage(InformationCategory.EDGE_W, minX);
-                        relevantSize++;
                     }
+                    signalQueue.add(relevantFlags[relevantSize]);
+                    relevantSize++;
                     System.out.println("updated "+i+"th edge");
                     break;
                 }
@@ -300,7 +301,7 @@ public class Coms {
     // process the information gained from flag
     public void processFlag(int flag) {
         InformationCategory cat = getCat(flag);
-        if (flag % 1000000 == 0 || cat == null) return;
+        if ((flag & 0x7ffff) == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
         Debug.p("Signal type: " + cat.toString());
         Debug.p("Signal Coords: " + coord.toString());
