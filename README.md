@@ -41,6 +41,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Optimize coms in terms of bytecode
 - Politician
     - If muckraker buff is large enough, buff EC it just spawned from
+    - ~~Bug fix defence politician not killing muckrakers in base and near slanderers~~
 - Slanderer
     - ~~Stay in a lattice to allow others to path~~
     - Try to avoid muckrakers from a further range
