@@ -47,7 +47,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Optimize coms in terms of bytecode
 - Change the cost of the search() politician when devs change the map specs
 - Some politician either running out of bytecode or giving an error
-- Politicians empowering nothing??
+- ~~Politicians empowering nothing??~~
 - Politician
     - If muckraker buff is large enough, buff EC it just spawned from
     - Concentrate patrolling on the side where the attacks come from

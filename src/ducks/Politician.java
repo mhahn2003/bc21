@@ -230,14 +230,14 @@ public class Politician extends Robot {
                     }
                 }
                 if (!defended || (muck != null && rc.getLocation().isAdjacentTo(muck.getLocation()))) {
-                    int locDist = rc.getLocation().distanceSquaredTo(enemyMuck);
-                    attackEffect(locDist);
-                    // either blow up the muckraker, or go closer to it
-                    if (muck != null && effect >= muck.getConviction() + 1) {
+                    if (muck != null) {
+                        // either blow up the muckraker, or go closer to it
+                        int locDist = rc.getLocation().distanceSquaredTo(muck.getLocation());
+                        attackEffect(locDist);
                         if (locDist <= RobotType.POLITICIAN.actionRadiusSquared) {
                             if (rc.canEmpower(locDist)) rc.empower(locDist);
-                        }
-                    } else if (muck != null) nav.bugNavigate(muck.getLocation());
+                        } else nav.bugNavigate(muck.getLocation());
+                    }
                     else nav.bugNavigate(enemyMuck);
                 }
             }
