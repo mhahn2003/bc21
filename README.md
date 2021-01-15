@@ -42,10 +42,12 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - Keep track of fPolcount and limit politician spawn
     - Just spam muckrakers anyway
 - Muckrakers still getting stuck on edges for some reason
+    - I think the reason for this is because of the separation factor: they keep trying to move away from each other, which means that the muck and polis sent to the other side gets killed and our unit gets clogged up on our side
 - How to deal with clogged up units near EC
 - Optimize coms in terms of bytecode
 - Change the cost of the search() politician when devs change the map specs
 - Some politician either running out of bytecode or giving an error
+- Politicians empowering nothing??
 - Politician
     - If muckraker buff is large enough, buff EC it just spawned from
     - Concentrate patrolling on the side where the attacks come from
