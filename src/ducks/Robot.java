@@ -16,9 +16,10 @@ public class Robot {
     static int maxX = 30065;
     static int minY = 9999;
     static int maxY = 30065;
-    static int[][] ends;
+    static MapLocation[] ends;
     static Team team;
     static boolean[] edges = {false, false, false, false};
+    static boolean[] corners = {false, false, false, false, false, false, false, false, false};
     static MapLocation wandLoc;
     static int offset = 0;
 
@@ -125,7 +126,7 @@ public class Robot {
             Direction opp = rc.getLocation().directionTo(nearMuck).opposite();
             nav.bugNavigate(rc.getLocation().add(opp));
         } else {
-            wandLoc = new MapLocation(nav.getEnds()[(rc.getID() + offset) % 8][0], nav.getEnds()[(rc.getID() + offset) % 8][1]);
+            wandLoc = Nav.getEnds()[(rc.getID() + offset) % 8];
             if (rc.getLocation().isWithinDistanceSquared(wandLoc, 8)) {
                 offset++;
                 wander();

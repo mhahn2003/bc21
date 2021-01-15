@@ -58,3 +58,4 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola
+- 500 cost muckraker surrounded with 1 cost polis

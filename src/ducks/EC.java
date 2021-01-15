@@ -71,7 +71,7 @@ public class EC extends Robot {
         }
         // scenario 2: no enemy units nearby
         // initially build in a 1:4:4 ratio of p, s, m
-        // then build in a 3:1:4 ratio of p, s, m
+        // then build in a 2:1:5 ratio of p, s, m
         // then build in a 4:1:2 ratio of p, s, m
         if (rc.getRoundNum() <= 50) {
             if (4*tP < tS) {
@@ -84,11 +84,11 @@ public class EC extends Robot {
             else build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
         }
         else if (rc.getRoundNum() <= 400) {
-            if (tP < 3*tS) {
+            if (tP < 2*tS) {
                 if (rc.getInfluence() >= 600) build(RobotType.POLITICIAN, 400);
                 build(RobotType.POLITICIAN, 25);
             }
-            if (tM < 4*tS) {
+            if (tM < 5*tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
             build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));

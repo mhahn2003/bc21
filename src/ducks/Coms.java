@@ -28,6 +28,7 @@ public class Coms {
         EC_ID,
         ENEMY_EC,
         NEUTRAL_EC,
+        ENDS,
         MUCKRAKER,
         SLANDERER,
         EDGE_N,
@@ -45,14 +46,15 @@ public class Coms {
             case EC_ID         : message = 3; break;
             case ENEMY_EC      : message = 4; break;
             case NEUTRAL_EC    : message = 5; break;
-            case MUCKRAKER     : message = 6; break;
-            case SLANDERER     : message = 7; break;
-            case EDGE_N        : message = 8; break;
-            case EDGE_E        : message = 9; break;
-            case EDGE_S        : message = 10; break;
-            case EDGE_W        : message = 11; break;
-            case ATTACK        : message = 12; break;
-            default            : message = 13;
+            case ENDS          : message = 6; break;
+            case MUCKRAKER     : message = 7; break;
+            case SLANDERER     : message = 8; break;
+            case EDGE_N        : message = 9; break;
+            case EDGE_E        : message = 10; break;
+            case EDGE_S        : message = 11; break;
+            case EDGE_W        : message = 12; break;
+            case ATTACK        : message = 13; break;
+            default            : message = 14;
         }
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
@@ -66,14 +68,15 @@ public class Coms {
             case EC_ID         : message = 3; break;
             case ENEMY_EC      : message = 4; break;
             case NEUTRAL_EC    : message = 5; break;
-            case MUCKRAKER     : message = 6; break;
-            case SLANDERER     : message = 7; break;
-            case EDGE_N        : message = 8; break;
-            case EDGE_E        : message = 9; break;
-            case EDGE_S        : message = 10; break;
-            case EDGE_W        : message = 11; break;
-            case ATTACK        : message = 12; break;
-            default            : message = 13;
+            case ENDS          : message = 6; break;
+            case MUCKRAKER     : message = 7; break;
+            case SLANDERER     : message = 8; break;
+            case EDGE_N        : message = 9; break;
+            case EDGE_E        : message = 10; break;
+            case EDGE_S        : message = 11; break;
+            case EDGE_W        : message = 12; break;
+            case ATTACK        : message = 13; break;
+            default            : message = 14;
         }
         message = addID(message, ID) + typeInt(rc.getType());
         return message;
@@ -115,13 +118,14 @@ public class Coms {
             case 3: return IC.EC_ID;
             case 4: return IC.ENEMY_EC;
             case 5: return IC.NEUTRAL_EC;
-            case 6: return IC.MUCKRAKER;
-            case 7: return IC.SLANDERER;
-            case 8: return IC.EDGE_N;
-            case 9: return IC.EDGE_E;
-            case 10: return IC.EDGE_S;
-            case 11: return IC.EDGE_W;
-            case 12: return IC.ATTACK;
+            case 6: return IC.ENDS;
+            case 7: return IC.MUCKRAKER;
+            case 8: return IC.SLANDERER;
+            case 9: return IC.EDGE_N;
+            case 10: return IC.EDGE_E;
+            case 11: return IC.EDGE_S;
+            case 12: return IC.EDGE_W;
+            case 13: return IC.ATTACK;
             default: return null;
         }
     }
@@ -194,6 +198,31 @@ public class Coms {
                     }
                     checkLoc = checkLoc.add(dir);
                 }
+            }
+            Nav.getEnds();
+            // check for any corners
+            boolean update = false;
+            for (int i = 0; i < 9; i++) {
+                if (corners[i]) continue;
+                if (rc.canSenseLocation(ends[i])) {
+                    corners[i] = true;
+                    update = true;
+                }
+            }
+            if (update) {
+                int msgSum = 0;
+                for (int i = 0; i < 9; i++) {
+                    if (corners[i]) msgSum += (1 << i);
+                }
+                signalQueue.add(getMessage(IC.ENDS, msgSum));
+                // need to check relevant flags and replace the previous ends flag if there is any
+                for (int i = 0; i < 20; i++) {
+                    if (getCat(relevantFlags[i]) == IC.ENDS) {
+                        removeRelevantFlag(relevantFlags[i]);
+                        break;
+                    }
+                }
+                addRelevantFlag(getMessage(IC.ENDS, msgSum));
             }
             // whether you're a guarding a slanderer
             RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
@@ -394,6 +423,30 @@ public class Coms {
                     minX = ID;
                     Debug.p("updated "+3+"rd edge");
                     addRelevantFlag(getMessage(IC.EDGE_W, minX));
+                }
+                break;
+            case ENDS:
+                boolean changed = false;
+                for (int i = 0; i < 9; i++) {
+                    if (!corners[i] && (ID & (1 << i)) != 0) {
+                        corners[i] = true;
+                        changed = true;
+                    }
+                }
+                if (changed && rc.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+                    int msgSum = 0;
+                    for (int i = 0; i < 9; i++) {
+                        if (corners[i]) msgSum += (1 << i);
+                    }
+                    signalQueue.add(getMessage(IC.ENDS, msgSum));
+                    // need to check relevant flags and replace the previous ends flag if there is any
+                    for (int i = 0; i < 20; i++) {
+                        if (getCat(relevantFlags[i]) == IC.ENDS) {
+                            removeRelevantFlag(relevantFlags[i]);
+                            break;
+                        }
+                    }
+                    addRelevantFlag(getMessage(IC.ENDS, msgSum));
                 }
                 break;
             case ENEMY_EC:

@@ -107,7 +107,7 @@ public class Nav {
 
     }
 
-    public int[][] getEnds() {
+    public static MapLocation[] getEnds() {
         int midX, midY;
         if (minX == 9999 && maxX == 30065) midX = 20000;
         else if (minX == 9999) midX = maxX-32;
@@ -119,7 +119,9 @@ public class Nav {
         else if (maxY == 30065) midY = minY+32;
         else midY = (minY+maxY)/2;
 
-        ends = new int[][]{{minX, minY}, {minX, midY}, {minX, maxY}, {midX, maxY}, {maxX, maxY}, {maxX, midY}, {maxX, minY}, {midX, minY}};
+        ends = new MapLocation[] {new MapLocation(minX, minY), new MapLocation(minX, midY), new MapLocation(minX, maxY),
+                new MapLocation(midX, maxY), new MapLocation(maxX, maxY), new MapLocation(maxX, midY),
+                new MapLocation(maxX, minY), new MapLocation(midX, minY), new MapLocation(midX, midY)};
         return ends;
     }
 
