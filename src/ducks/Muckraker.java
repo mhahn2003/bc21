@@ -80,56 +80,10 @@ public class Muckraker extends Robot {
                 if (muckCount <= 2) nav.bugNavigate(closestPolitician);
             }
             else {
-                // else move to protect our slanderer
-//            if (closestProtectorDist <= 8) {
-//                boolean protect = true;
-//                // first check if anybody else is on the slanderer
-//                RobotInfo[] surroundSlanderer = rc.senseNearbyRobots(closestProtector, 2, team);
-//                for (RobotInfo r : surroundSlanderer) {
-//                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team) {
-//                        protect = false;
-//                        break;
-//                    }
-//                }
-//                if (protect) {
-//                    int closestDist = rc.getLocation().distanceSquaredTo(closestProtector);
-//                    Direction optDir = null;
-//                    for (int i = 0; i < 8; i++) {
-//                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestProtector);
-//                        if (dist < closestDist && rc.canMove(directions[i])) {
-//                            closestDist = dist;
-//                            optDir = directions[i];
-//                        }
-//                    }
-//                    if (optDir != null) rc.move(optDir);
-//                }
-//            }
                 if (closestEC != null) {
-                    // if there's already too much then go to another
-                    patrol(closestEC, 16, 25);
-                    // else move to the closest enemy HQ if known
-//                    if (!rc.getLocation().isAdjacentTo(closestEC)) {
-//                        if (rc.getLocation().isWithinDistanceSquared(closestEC, 13)) {
-//                            // move to an adjacent spot
-//                            int closestSpotDist = 100000;
-//                            MapLocation closestSpot = null;
-//                            for (Direction dir : directions) {
-//                                MapLocation loc = closestEC.add(dir);
-//                                if (!rc.isLocationOccupied(loc)) {
-//                                    int dist = rc.getLocation().distanceSquaredTo(loc);
-//                                    if (dist < closestSpotDist) {
-//                                        closestSpotDist = dist;
-//                                        closestSpot = loc;
-//                                    }
-//                                }
-//                            }
-//                            if (closestSpot != null) {
-//                                nav.bugNavigate(closestSpot);
-//                            } else {
-//                                // TODO: call for attack
-//                            }
-//                        } else nav.bugNavigate(closestEC);
-//                    }
+                    if (rc.getLocation().isWithinDistanceSquared(closestEC, 30)) patrol(closestEC, 16, 25);
+                    else nav.bugNavigate(closestEC);
+                    // TODO: if there's already too much then go to another
                 } else {
                     wander();
                 }

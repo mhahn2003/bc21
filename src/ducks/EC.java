@@ -59,16 +59,15 @@ public class EC extends Robot {
         // if muckraker nearby, signal for help
         if (muckHelp) Coms.signalQueue.add(Coms.getMessage(Coms.IC.MUCKRAKER_HELP, muckHelpLoc));
         // scenario 1: if enemy units nearby
-        if (muckCount > 0) {
-            if (polCount > 0) {
-                build(RobotType.POLITICIAN, 40);
-            } else {
-                build(RobotType.POLITICIAN, 25);
+        if (polCount > 0) {
+            int random = (int) (Math.random() * 4);
+            if (random < 3) {
+                build(RobotType.MUCKRAKER, 1);
+                tM--;
             }
+            else build(RobotType.POLITICIAN, 30);
         }
-        else if (polCount > 0) {
-            build(RobotType.POLITICIAN, 30);
-        }
+        else if (muckCount > 0) build(RobotType.POLITICIAN, 25);
         // scenario 2: no enemy units nearby
         // initially build in a 1:4:4 ratio of p, s, m
         // then build in a 2:1:5 ratio of p, s, m

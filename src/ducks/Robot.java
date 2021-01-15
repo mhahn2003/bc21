@@ -10,7 +10,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = false;
+    public static boolean debugOn = true;
 
     static int minX = 9999;
     static int maxX = 30065;
@@ -121,17 +121,26 @@ public class Robot {
                 break;
             }
         }
-        if (separate) {
+        if (separate && rc.getRoundNum() >= 200) {
+            Debug.p("need to separate from others");
             // try to separate from the muckraker
             Direction opp = rc.getLocation().directionTo(nearMuck).opposite();
             nav.bugNavigate(rc.getLocation().add(opp));
         } else {
-            wandLoc = Nav.getEnds()[(rc.getID() + offset) % 8];
-            if (rc.getLocation().isWithinDistanceSquared(wandLoc, 8)) {
-                offset++;
-                wander();
-                return;
+            Debug.p("going to unknown places");
+            boolean explored = true;
+            for (int i = 0; i < 9; i++) {
+                if (!corners[((rc.getID() % 8) + i) % 9]) {
+                    wandLoc = ends[((rc.getID() % 8) + i) % 9];
+                    explored = false;
+                    break;
+                }
             }
+            if (explored) {
+                // what to do if everything is explored?
+                wandLoc = ends[rc.getID() % 9];
+            }
+            Debug.p("going to: " + wandLoc);
             nav.bugNavigate(wandLoc);
         }
     }

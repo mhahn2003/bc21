@@ -212,8 +212,12 @@ public class Coms {
             if (update) {
                 int msgSum = 0;
                 for (int i = 0; i < 9; i++) {
-                    if (corners[i]) msgSum += (1 << i);
+                    if (corners[i]) {
+                        Debug.p("corner i: " + ends[i]);
+                        msgSum += (1 << i);
+                    }
                 }
+                Debug.p("msgSum: " + msgSum);
                 signalQueue.add(getMessage(IC.ENDS, msgSum));
                 // need to check relevant flags and replace the previous ends flag if there is any
                 for (int i = 0; i < 20; i++) {

@@ -36,24 +36,25 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
-- Optimize the wander function
-    - Keep an array of the map compacted to keep track of where we visited
+- ~~Optimize the wander function~~
+    - ~~Keep an array of the map compacted to keep track of where we visited~~
 - Optimize coms in terms of bytecode
 - Politician
     - If muckraker buff is large enough, buff EC it just spawned from
     - ~~Bug fix defence politician not killing muckrakers in base and near slanderers~~
+    - Concentrate patrolling on the side where the attacks come from
 - Slanderer
     - ~~Stay in a lattice to allow others to path~~
     - Try to avoid muckrakers from a further range
 - Muckraker AI
     - ~~Make them go towards enemy, not only enemy EC~~
-    - Muckrakers should never be in our base, always in theirs or scouting
+    - ~~Muckrakers should never be in our base, always in theirs or scouting~~
     - Use IDs like baby duck to keep only a few on each enemy politician to avoid too many units dying
     - Ideas for a 1000 muckraker rush?
 - General attack plan on enemy EC
     - If there's a lot of politicians around the EC
 - EC building logic
-    - If there's a constant clog in the middle, use coms to communicate to spread out and increase the patrol radius
+    - If it's too clogged up, use coms to indicate to increase the politician patrol radius
 - ~~Fix EC bidding bug~~
 - Analyze top teams:
     - Specifically:
