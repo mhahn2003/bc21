@@ -36,32 +36,26 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
+- **Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**
 -- Communicate EC influence
-- ~~I don't think the wander() function is completely operational?~~
-- Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying
+- Change the cost of the search() politician, since devs changed the specs accordingly
 - Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
     - Keep track of fPolcount and limit politician spawn
     - Just spam muckrakers anyway
-- Muckrakers still getting stuck on edges for some reason
-    - I think the reason for this is because of the separation factor: they keep trying to move away from each other, which means that the muck and polis sent to the other side gets killed and our unit gets clogged up on our side
-- How to deal with clogged up units near EC
-- Optimize coms in terms of bytecode
-- Change the cost of the search() politician when devs change the map specs
 - Some politician either running out of bytecode or giving an error
-- ~~Politicians empowering nothing??~~
 - Politician
-    - If muckraker buff is large enough, buff EC it just spawned from
+    - **If muckraker buff is large enough, buff EC it just spawned from**
     - Concentrate patrolling on the side where the attacks come from
 - Slanderer
     - Try to avoid muckrakers from a further range
 - Muckraker AI
-    - Ideas for a 1000 muckraker rush?
+    - **Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis**
+    - Don't only crowd around the enemy EC, spread around and look for slanderers
 - General attack plan on enemy EC
-    - If there's a lot of politicians around the EC
+    - If there's a lot of politicians around the EC, you should just keep attacking, and not wait for maximum efficiency
+    - Count how many of our units are around the enemy EC and just attack
 - EC building logic
     - If it's too clogged up, use coms to indicate to increase the politician patrol radius
-- ~~Fix EC bidding bug~~
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola
-- 500 cost muckraker surrounded with 1 cost polis
