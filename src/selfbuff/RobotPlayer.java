@@ -1,4 +1,4 @@
-package selfbuff.coms;
+package selfbuff;
 
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;

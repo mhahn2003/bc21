@@ -1,11 +1,11 @@
-package selfbuff.coms;
+package selfbuff;
 
 import battlecode.common.*;
-import selfbuff.coms.utils.Debug;
+import selfbuff.utils.Debug;
 
 import java.util.PriorityQueue;
 
-import static coms.Robot.*;
+import static selfbuff.Robot.*;
 
 public class Coms {
     protected final PriorityQueue<Integer> signalQueue = new PriorityQueue<>();

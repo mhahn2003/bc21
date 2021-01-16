@@ -1,7 +1,7 @@
-package selfbuff.coms;
+package selfbuff;
 
 import battlecode.common.*;
-import selfbuff.coms.utils.Debug;
+import selfbuff.utils.Debug;
 
 public class Politician extends Robot {
 

@@ -1,6 +1,6 @@
-package selfbuff.coms.utils;
+package selfbuff.utils;
 
-import static coms.Robot.debugOn;
+import static selfbuff.Robot.debugOn;
 
 public class Debug {
 

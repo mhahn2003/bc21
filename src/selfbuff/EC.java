@@ -1,8 +1,8 @@
-package selfbuff.coms;
+package selfbuff;
 
 import battlecode.common.*;
 
-import static coms.RobotPlayer.turnCount;
+import static selfbuff.RobotPlayer.turnCount;
 
 public class EC extends Robot {
     int muckCount = 0;

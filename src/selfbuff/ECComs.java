@@ -1,16 +1,16 @@
-package selfbuff.coms;
+package selfbuff;
 
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
 import battlecode.common.RobotType;
-import selfbuff.coms.utils.Debug;
-import selfbuff.coms.utils.HashSet;
-import selfbuff.coms.utils.LinkedList;
-import selfbuff.coms.utils.Node;
+import selfbuff.utils.Debug;
+import selfbuff.utils.HashSet;
+import selfbuff.utils.LinkedList;
+import selfbuff.utils.Node;
 
-import static coms.Robot.*;
-import static coms.RobotPlayer.turnCount;
+import static selfbuff.Robot.*;
+import static selfbuff.RobotPlayer.turnCount;
 
 
 public class ECComs extends Coms {

@@ -1,4 +1,4 @@
-package selfbuff.coms.utils;
+package selfbuff.utils;
 
 public class Constants {
 }

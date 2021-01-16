@@ -1,11 +1,11 @@
-package selfbuff.coms;
+package selfbuff;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 
-import static coms.Robot.*;
+import static selfbuff.Robot.*;
 
 public class Nav {
     private int patience;

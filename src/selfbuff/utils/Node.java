@@ -1,7 +1,7 @@
 // from the code of Bowl of Chowder:
 // https://github.com/StoneT2000/Battlecode2020
 
-package selfbuff.coms.utils;
+package selfbuff.utils;
 
 public class Node<T> {
     public Node next;
