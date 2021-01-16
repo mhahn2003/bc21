@@ -10,7 +10,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = false;
+    public static boolean debugOn = true;
 
     static int minX = 9999;
     static int maxX = 30065;
@@ -19,9 +19,7 @@ public class Robot {
     static MapLocation[] ends;
     static Team team;
     static boolean[] edges = {false, false, false, false};
-    static boolean[] corners = {false, false, false, false, false, false, false, false, false};
     static MapLocation wandLoc;
-    static int offset = 0;
 
 
     // ECIds may not necessarily correspond to EC MapLocations
@@ -39,6 +37,14 @@ public class Robot {
     static MapLocation enemyMuck = null;
     static boolean runAway = false;
     static MapLocation danger = null;
+    static boolean mapGenerated = false;
+    static MapLocation[][] mapSpots = new MapLocation[8][8];
+    static boolean[][] visited = new boolean[8][8];
+    static boolean updateNE = false;
+    static boolean updateSE = false;
+    static boolean updateSW = false;
+    static boolean updateNW = false;
+    static int mapType = -1;
 
     // all robots in sensor radius
     static RobotInfo[] robots;
@@ -77,13 +83,13 @@ public class Robot {
         if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
             eccoms.getInfo();
         } else {
-            Debug.p("Before coms: " + Clock.getBytecodeNum());
+//            Debug.p("Before coms: " + Clock.getBytecodeNum());
             coms.getInfo();
-            Debug.p("After getInfo: " + Clock.getBytecodeNum());
+//            Debug.p("After getInfo: " + Clock.getBytecodeNum());
             coms.collectInfo();
-            Debug.p("After collectInfo: " + Clock.getBytecodeNum());
+//            Debug.p("After collectInfo: " + Clock.getBytecodeNum());
             coms.displaySignal();
-            Debug.p("After displaySignal: " + Clock.getBytecodeNum());
+//            Debug.p("After displaySignal: " + Clock.getBytecodeNum());
             if (moveAway) {
                 // move away from the attacker if needed
                 if (rc.getLocation().isWithinDistanceSquared(attacker, attackDist+4)) {
@@ -100,49 +106,80 @@ public class Robot {
                 }
             }
         }
+        if (mapGenerated) {
+            // debug purposes
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (visited[i][j]) rc.setIndicatorDot(mapSpots[i][j], 0, 0, 255);
+                    else rc.setIndicatorDot(mapSpots[i][j], 255, 0, 0);
+                }
+            }
+        }
         Debug.p("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
-        Debug.p("Robot.takeTurn: " + Clock.getBytecodeNum());
+//        Debug.p("Robot.takeTurn: " + Clock.getBytecodeNum());
 //        rc.setIndicatorLine(rc.getLocation(),new MapLocation(maxX, maxY), 255, 255, 255);
 //        rc.setIndicatorLine(rc.getLocation(),new MapLocation(minX, minY), 255, 255, 255);
     }
 
 
     // wander around
-    // TODO: what if you're already at a corner/side and you want to explore more (+3 to the end to explore?)
     public static void wander() throws GameActionException {
-        // first check if you're too close to anyone, and separate from each other
-        boolean separate = false;
-        MapLocation nearMuck = null;
-        RobotInfo[] near = rc.senseNearbyRobots(8, team);
-        for (RobotInfo r : near) {
-            if (r.getType() == RobotType.MUCKRAKER) {
-                separate = true;
-                nearMuck = r.getLocation();
-                break;
-            }
-        }
-        if (separate && rc.getRoundNum() >= 200) {
-            Debug.p("need to separate from others");
-            // try to separate from the muckraker
-            Direction opp = rc.getLocation().directionTo(nearMuck).opposite();
-            nav.bugNavigate(rc.getLocation().add(opp));
-        } else {
-            Debug.p("going to unknown places");
-            boolean explored = true;
-            for (int i = 0; i < 9; i++) {
-                if (!corners[((rc.getID() % 8) + i) % 9]) {
-                    wandLoc = ends[((rc.getID() % 8) + i) % 9];
-                    explored = false;
-                    break;
-                }
-            }
-            if (explored) {
-                // what to do if everything is explored?
-                wandLoc = ends[rc.getID() % 9];
-            }
+        if (!mapGenerated) {
+            // go to the corners
+            Nav.getEnds();
+            wandLoc = ends[(rc.getID() % 4)];
             Debug.p("going to: " + wandLoc);
             nav.bugNavigate(wandLoc);
+        } else {
+            int closestWandDist = 100000;
+            MapLocation closestWand = null;
+            for (int i = 7; i >= 0; i--) {
+                 for (int j = 7; j >= 0; j--) {
+                    int dist = rc.getLocation().distanceSquaredTo(mapSpots[i][j]);
+                    if (dist < closestWandDist && !visited[i][j]) {
+                        closestWandDist = dist;
+                        closestWand = mapSpots[i][j];
+                    }
+                 }
+            }
+            if (closestWand != null) {
+                Debug.p("going to " + closestWand);
+                nav.bugNavigate(closestWand);
+            }
         }
+        // first check if you're too close to anyone, and separate from each other
+//        boolean separate = false;
+//        MapLocation nearMuck = null;
+//        RobotInfo[] near = rc.senseNearbyRobots(8, team);
+//        for (RobotInfo r : near) {
+//            if (r.getType() == RobotType.MUCKRAKER) {
+//                separate = true;
+//                nearMuck = r.getLocation();
+//                break;
+//            }
+//        }
+//        if (separate && rc.getRoundNum() >= 200) {
+//            Debug.p("need to separate from others");
+//            // try to separate from the muckraker
+//            Direction opp = rc.getLocation().directionTo(nearMuck).opposite();
+//            nav.bugNavigate(rc.getLocation().add(opp));
+//        } else {
+//            Debug.p("going to unknown places");
+//            boolean explored = true;
+//            for (int i = 0; i < 9; i++) {
+//                if (!corners[((rc.getID() % 8) + i) % 9]) {
+//                    wandLoc = ends[((rc.getID() % 8) + i) % 9];
+//                    explored = false;
+//                    break;
+//                }
+//            }
+//            if (explored) {
+//                // what to do if everything is explored?
+//                wandLoc = ends[rc.getID() % 9];
+//            }
+//            Debug.p("going to: " + wandLoc);
+//            nav.bugNavigate(wandLoc);
+//        }
     }
 
     // patrol around center

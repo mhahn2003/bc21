@@ -107,22 +107,8 @@ public class Nav {
 
     }
 
-    public static MapLocation[] getEnds() {
-        int midX, midY;
-        if (minX == 9999 && maxX == 30065) midX = 20000;
-        else if (minX == 9999) midX = maxX-32;
-        else if (maxX == 30065) midX = minX+32;
-        else midX = (minX+maxX)/2;
-
-        if (minY == 9999 && maxY == 30065) midY = 20000;
-        else if (minY == 9999) midY = maxY-32;
-        else if (maxY == 30065) midY = minY+32;
-        else midY = (minY+maxY)/2;
-
-        ends = new MapLocation[] {new MapLocation(minX, minY), new MapLocation(minX, midY), new MapLocation(minX, maxY),
-                new MapLocation(midX, maxY), new MapLocation(maxX, maxY), new MapLocation(maxX, midY),
-                new MapLocation(maxX, minY), new MapLocation(midX, minY), new MapLocation(midX, midY)};
-        return ends;
+    public static void getEnds() {
+        ends = new MapLocation[] {new MapLocation(minX, minY), new MapLocation(minX, maxY), new MapLocation(maxX, maxY), new MapLocation(maxX, minY)};
     }
 
     public static boolean isTrapped () throws GameActionException {
