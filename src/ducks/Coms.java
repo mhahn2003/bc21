@@ -6,6 +6,7 @@ import ducks.utils.Debug;
 import java.util.PriorityQueue;
 
 import static ducks.Robot.*;
+import static ducks.utils.Constants.staleCooldown;
 
 public class Coms {
     public static PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
@@ -28,13 +29,14 @@ public class Coms {
         EC_ID,
         ENEMY_EC,
         NEUTRAL_EC,
+        POLITICIAN,
+        SLANDERER,
         MAP_CORNER,
         MAP_NW,
         MAP_NE,
         MAP_SW,
         MAP_SE,
         MUCKRAKER,
-        SLANDERER,
         EDGE_N,
         EDGE_E,
         EDGE_S,
@@ -50,19 +52,20 @@ public class Coms {
             case EC_ID         : message = 3; break;
             case ENEMY_EC      : message = 4; break;
             case NEUTRAL_EC    : message = 5; break;
-            case MAP_CORNER    : message = 6; break;
-            case MAP_NW        : message = 7; break;
-            case MAP_NE        : message = 8; break;
-            case MAP_SW        : message = 9; break;
-            case MAP_SE        : message = 10; break;
-            case MUCKRAKER     : message = 11; break;
-            case SLANDERER     : message = 12; break;
-            case EDGE_N        : message = 13; break;
-            case EDGE_E        : message = 14; break;
-            case EDGE_S        : message = 15; break;
-            case EDGE_W        : message = 16; break;
-            case ATTACK        : message = 17; break;
-            default            : message = 18;
+            case POLITICIAN    : message = 6; break;
+            case SLANDERER     : message = 7; break;
+            case MAP_CORNER    : message = 8; break;
+            case MAP_NW        : message = 9; break;
+            case MAP_NE        : message = 10; break;
+            case MAP_SW        : message = 11; break;
+            case MAP_SE        : message = 12; break;
+            case MUCKRAKER     : message = 13; break;
+            case EDGE_N        : message = 14; break;
+            case EDGE_E        : message = 15; break;
+            case EDGE_S        : message = 16; break;
+            case EDGE_W        : message = 17; break;
+            case ATTACK        : message = 18; break;
+            default            : message = 19;
         }
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
@@ -76,19 +79,20 @@ public class Coms {
             case EC_ID         : message = 3; break;
             case ENEMY_EC      : message = 4; break;
             case NEUTRAL_EC    : message = 5; break;
-            case MAP_CORNER    : message = 6; break;
-            case MAP_NW        : message = 7; break;
-            case MAP_NE        : message = 8; break;
-            case MAP_SW        : message = 9; break;
-            case MAP_SE        : message = 10; break;
-            case MUCKRAKER     : message = 11; break;
-            case SLANDERER     : message = 12; break;
-            case EDGE_N        : message = 13; break;
-            case EDGE_E        : message = 14; break;
-            case EDGE_S        : message = 15; break;
-            case EDGE_W        : message = 16; break;
-            case ATTACK        : message = 17; break;
-            default            : message = 18;
+            case POLITICIAN    : message = 6; break;
+            case SLANDERER     : message = 7; break;
+            case MAP_CORNER    : message = 8; break;
+            case MAP_NW        : message = 9; break;
+            case MAP_NE        : message = 10; break;
+            case MAP_SW        : message = 11; break;
+            case MAP_SE        : message = 12; break;
+            case MUCKRAKER     : message = 13; break;
+            case EDGE_N        : message = 14; break;
+            case EDGE_E        : message = 15; break;
+            case EDGE_S        : message = 16; break;
+            case EDGE_W        : message = 17; break;
+            case ATTACK        : message = 18; break;
+            default            : message = 19;
         }
         message = addID(message, ID) + typeInt(rc.getType());
         return message;
@@ -96,10 +100,10 @@ public class Coms {
 
     public static int typeInt(RobotType type) {
         switch (type) {
-            case POLITICIAN: return 1 << 21;
-            case SLANDERER: return 2 << 21;
-            case MUCKRAKER: return 3 << 21;
-            case ENLIGHTENMENT_CENTER: return 4 << 21;
+            case POLITICIAN: return 0;
+            case SLANDERER: return 1 << 22;
+            case MUCKRAKER: return 2 << 22;
+            case ENLIGHTENMENT_CENTER: return 3 << 22;
         }
         return 0;
     }
@@ -112,36 +116,37 @@ public class Coms {
     }
 
     public static RobotType getTyp(int message) {
-        switch (message >> 21) {
-            case 1: return RobotType.POLITICIAN;
-            case 2: return RobotType.SLANDERER;
-            case 3: return RobotType.MUCKRAKER;
-            case 4: return RobotType.ENLIGHTENMENT_CENTER;
+        switch (message >> 22) {
+            case 0: return RobotType.POLITICIAN;
+            case 1: return RobotType.SLANDERER;
+            case 2: return RobotType.MUCKRAKER;
+            case 3: return RobotType.ENLIGHTENMENT_CENTER;
         }
         return null;
     }
 
 
     public static IC getCat(int message) {
-        message = message % (1 << 21);
+        message = message % (1 << 22);
         switch (message >> 16) {
             case 1: return IC.MUCKRAKER_HELP;
             case 2: return IC.FRIEND_EC;
             case 3: return IC.EC_ID;
             case 4: return IC.ENEMY_EC;
             case 5: return IC.NEUTRAL_EC;
-            case 6: return IC.MAP_CORNER;
-            case 7: return IC.MAP_NW;
-            case 8: return IC.MAP_NE;
-            case 9: return IC.MAP_SW;
-            case 10: return IC.MAP_SE;
-            case 11: return IC.MUCKRAKER;
-            case 12: return IC.SLANDERER;
-            case 13: return IC.EDGE_N;
-            case 14: return IC.EDGE_E;
-            case 15: return IC.EDGE_S;
-            case 16: return IC.EDGE_W;
-            case 17: return IC.ATTACK;
+            case 6: return IC.POLITICIAN;
+            case 7: return IC.SLANDERER;
+            case 8: return IC.MAP_CORNER;
+            case 9: return IC.MAP_NW;
+            case 10: return IC.MAP_NE;
+            case 11: return IC.MAP_SW;
+            case 12: return IC.MAP_SE;
+            case 13: return IC.MUCKRAKER;
+            case 14: return IC.EDGE_N;
+            case 15: return IC.EDGE_E;
+            case 16: return IC.EDGE_S;
+            case 17: return IC.EDGE_W;
+            case 18: return IC.ATTACK;
             default: return null;
         }
     }
@@ -263,7 +268,7 @@ public class Coms {
                                     if (visited[i][j]) msgSum += (1 << (i*4+j));
                                 }
                             }
-                            signalQueue.add(getMessage(IC.MAP_SW, msgSum));
+                            if (rc.getType() == RobotType.MUCKRAKER) signalQueue.add(getMessage(IC.MAP_SW, msgSum));
                         }
                         if (x >= 4 && y < 4) {
                             // SE
@@ -273,7 +278,7 @@ public class Coms {
                                     if (visited[i][j]) msgSum += (1 << ((i-4)*4+j));
                                 }
                             }
-                            signalQueue.add(getMessage(IC.MAP_SE, msgSum));
+                            if (rc.getType() == RobotType.MUCKRAKER) signalQueue.add(getMessage(IC.MAP_SE, msgSum));
                         }
                         if (x < 4 && y >= 4) {
                             // NW
@@ -283,7 +288,7 @@ public class Coms {
                                     if (visited[i][j]) msgSum += (1 << (i*4+j-4));
                                 }
                             }
-                            signalQueue.add(getMessage(IC.MAP_NW, msgSum));
+                            if (rc.getType() == RobotType.MUCKRAKER) signalQueue.add(getMessage(IC.MAP_NW, msgSum));
                         }
                         if (x >= 4 && y >= 4) {
                             // NE
@@ -293,7 +298,7 @@ public class Coms {
                                     if (visited[i][j]) msgSum += (1 << ((i-4)*4+j-4));
                                 }
                             }
-                            signalQueue.add(getMessage(IC.MAP_NE, msgSum));
+                            if (rc.getType() == RobotType.MUCKRAKER) signalQueue.add(getMessage(IC.MAP_NE, msgSum));
                         }
                     }
                 }
@@ -337,6 +342,7 @@ public class Coms {
                     break;
                 }
             }
+            boolean foundSlanderer = false;
             for (RobotInfo r: robots) {
                 // check for any ECs
                 if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
@@ -446,20 +452,13 @@ public class Coms {
                         signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
                     }
                 }
-                //            // if you're a muckraker, check for units
-                //            if (rc.getType() == RobotType.MUCKRAKER) {
-                //                if (guard) {
-                //                    // then relay info about any muckrakers you see
-                //                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
-                //                        signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
-                //                        guard = false;
-                //                    }
-                //                }
-                //                // discuss: do we even need to signal slanderers?
-                ////                if (r.getType() == RobotType.SLANDERER && r.getTeam() == team.opponent()) {
-                ////                    signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
-                ////                }
-                //            }
+                // if you're a muckraker, check for units
+                if (rc.getType() == RobotType.MUCKRAKER && !foundSlanderer) {
+                    if (r.getType() == RobotType.SLANDERER && r.getTeam() == team.opponent()) {
+                        foundSlanderer = true;
+                        signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
+                    }
+                }
             }
         }
     }
@@ -488,7 +487,7 @@ public class Coms {
     // process the information gained from flag
     public void processFlag(int flag) {
         IC cat = getCat(flag);
-        if (flag % (1 << 21) == 0 || cat == null) return;
+        if (flag % (1 << 22) == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
         int ID = getID(flag);
         Debug.p("Signal type: " + cat.toString());
@@ -803,6 +802,30 @@ public class Coms {
                     defendSlanderer = true;
                     enemyMuck = coord;
                 }
+                break;
+            case SLANDERER:
+                boolean inserted = false;
+                for (int i = 0; i < 6; i++) {
+                    if (slandererLoc[i] == null || slandererLoc[i].isWithinDistanceSquared(coord, 9)) {
+                        slandererLoc[i] = coord;
+                        staleness[i] = staleCooldown;
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    int minStale = 1000;
+                    int minStaleInd = -1;
+                    for (int i = 0; i < 6; i++) {
+                        if (staleness[i] < minStale) {
+                            minStale = staleness[i];
+                            minStaleInd = i;
+                        }
+                    }
+                    slandererLoc[minStaleInd] = coord;
+                    staleness[minStaleInd] = staleCooldown;
+                }
+                break;
         }
     }
 

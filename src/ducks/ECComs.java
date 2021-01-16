@@ -129,7 +129,7 @@ public class ECComs extends Coms {
         loopECS();
         updateMap();
         if (turnCount < 7) {
-            lastFlags[9] = getMessage(IC.EC_ID, rc.getID()) % (1 << 21);
+            lastFlags[9] = getMessage(IC.EC_ID, rc.getID()) % (1 << 22);
             rc.setFlag(getMessage(IC.EC_ID, rc.getID()));
             loopFlags();
         } else {
@@ -138,13 +138,13 @@ public class ECComs extends Coms {
                 boolean redundant = false;
                 int flag = signalQueue.peek();
                 for (int i = 0; i < 20; i++) {
-                    if (lastFlags[i] == flag % (1 << 21)) {
+                    if (lastFlags[i] == flag % (1 << 22)) {
                         redundant = true;
                         break;
                     }
                 }
                 for (int i = 0; i < relevantSize; i++) {
-                    if (relevantFlags[relevantInd % relevantSize] % (1 << 21) == flag % (1 << 21)) {
+                    if (relevantFlags[relevantInd % relevantSize] % (1 << 22) == flag % (1 << 22)) {
                         redundant = true;
                         break;
                     }
@@ -160,7 +160,7 @@ public class ECComs extends Coms {
                 // add it to a list of last displayed flags to reduce redundancy between ecs
                 int flag = signalQueue.poll();
                 Debug.p("getting from signalQueue");
-                lastFlags[flagIndex % 20] = flag % (1 << 21);
+                lastFlags[flagIndex % 20] = flag % (1 << 22);
                 flagIndex++;
                 Debug.p("Type: " + getCat(flag));
                 rc.setFlag(flag);
@@ -177,34 +177,35 @@ public class ECComs extends Coms {
 
     public void processFlag(int flag) {
         IC cat = getCat(flag);
-        if (flag % (1 << 21) == 0 || cat == null) return;
+        if (flag % (1 << 22) == 0 || cat == null) return;
         boolean processed = false;
         for (int i = 0; i < 20; i++) {
-            if (lastFlags[i] == flag % (1 << 21)) {
+            if (lastFlags[i] == flag % (1 << 22)) {
                 processed = true;
                 break;
             }
         }
         for (int i = 0; i < relevantSize; i++) {
-            if (relevantFlags[relevantInd % relevantSize] % (1 << 21) == flag % (1 << 21)) {
+            if (relevantFlags[relevantInd % relevantSize] % (1 << 22) == flag % (1 << 22)) {
                 processed = true;
                 break;
             }
         }
         if (!processed) {
             if (cat != IC.MUCKRAKER && cat != IC.MUCKRAKER_HELP
-            && cat != IC.MAP_NE && cat != IC.MAP_NW && cat != IC.MAP_SE && cat != IC.MAP_SW && cat != IC.ATTACK) {
+            && cat != IC.MAP_NE && cat != IC.MAP_NW && cat != IC.MAP_SE
+            && cat != IC.MAP_SW && cat != IC.ATTACK) {
                 Debug.p("not processed yet, adding to queue: " + flag);
-                lastFlags[flagIndex % 20] = flag % (1 << 21);
+                lastFlags[flagIndex % 20] = flag % (1 << 22);
                 flagIndex++;
                 signalQueue.add(convertFlag(flag));
             }
-            super.processFlag(flag);
+            if (cat != IC.MUCKRAKER_HELP && cat != IC.MUCKRAKER && cat != IC.ATTACK) super.processFlag(flag);
         }
     }
 
     public int convertFlag(int flag) {
-        flag = flag % (1 << 21);
+        flag = flag % (1 << 22);
         return flag + typeInt(rc.getType());
     }
 

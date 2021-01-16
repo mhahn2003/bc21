@@ -229,7 +229,7 @@ public class Politician extends Robot {
                         break;
                     }
                 }
-                if (!defended || (muck != null && rc.getLocation().isAdjacentTo(muck.getLocation()))) {
+                if (!defended || (muck != null && rc.getLocation().isWithinDistanceSquared(muck.getLocation(), 8))) {
                     if (muck != null) {
                         // either blow up the muckraker, or go closer to it
                         int locDist = rc.getLocation().distanceSquaredTo(muck.getLocation());
