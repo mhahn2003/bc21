@@ -21,7 +21,18 @@ public class Politician extends Robot {
         super.takeTurn();
         if (rc.getType() == RobotType.SLANDERER) return;
         if (rc.getConviction() >= 300) attack();
-        else defend();
+        else {
+            if (rc.getRoundNum() <= 200) {
+                if (rc.getID() % 4 == 0) search();
+                else defend();
+            } else if (rc.getRoundNum() <= 400) {
+                if (rc.getID() % 4 == 0) attack();
+                else defend();
+            } else {
+                if (rc.getID() % 3 == 0) attack();
+                else defend();
+            }
+        }
     }
 
     // attack on the enemy ec
@@ -60,8 +71,11 @@ public class Politician extends Robot {
                     if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                 } else {
                     // signal that you're attacking, so move out of the way
-                    Debug.p("Signalling attack");
-                    rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
+                    // only signal if you're a fat politician
+                    if (rc.getConviction() >= 300) {
+                        Debug.p("Signalling attack");
+                        rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
+                    }
                     // check if we can get closer, or if there's a lot of our own units in the way
                     int closerDist = rc.getLocation().distanceSquaredTo(closestEC);
                     Direction optDir = null;
@@ -89,6 +103,10 @@ public class Politician extends Robot {
                             Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                         } else {
+                            if (rc.getConviction() <= 100) {
+                                // just empower
+                                if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
+                            }
                             // wait for others to move
                             // maybe ask for assist?
                         }
@@ -115,9 +133,57 @@ public class Politician extends Robot {
         }
     }
 
-    // assist with the attack by killing any muckrakers/politicians around the EC
-    static void assist() {
-
+    // search for nearby cheap neutral ECs
+    static void search() throws GameActionException {
+        int closestECDist = 100000;
+        MapLocation closestEC = null;
+        for (int i = 0; i < 12; i++) {
+            if (neutralECs[i] != null) {
+                int dist = rc.getLocation().distanceSquaredTo(neutralECs[i]);
+                if (dist < closestECDist) {
+                    closestECDist = dist;
+                    closestEC = neutralECs[i];
+                }
+            }
+        }
+        if (closestEC != null) {
+            if (closestECDist <= 9) {
+                Debug.p("Within empower distance");
+                // check if can kill
+                RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
+                int size = empowered.length;
+                int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10) / size;
+                RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
+                if (enemyEC.getConviction() + 1 <= effect) {
+                    Debug.p("Can kill, will kill");
+                    if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
+                } else {
+                    // signal that you're attacking, so move out of the way
+                    Debug.p("Signalling attack");
+                    rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
+                    // check if we can get closer, or if there's a lot of our own units in the way
+                    int closerDist = rc.getLocation().distanceSquaredTo(closestEC);
+                    Direction optDir = null;
+                    for (int i = 0; i < 8; i++) {
+                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestEC);
+                        if (dist < closerDist && rc.canMove(directions[i])) {
+                            closerDist = dist;
+                            optDir = directions[i];
+                        }
+                    }
+                    if (optDir != null) {
+                        Debug.p("The optimal direction to move is: " + optDir);
+                        rc.move(optDir);
+                    } else {
+                        // just empower
+                        if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
+                    }
+                }
+            } else {
+                Debug.p("navbugging");
+                nav.bugNavigate(closestEC);
+            }
+        } else wander();
     }
 
     static void defend() throws GameActionException {
@@ -163,15 +229,15 @@ public class Politician extends Robot {
                         break;
                     }
                 }
-                if (!defended) {
-                    int locDist = rc.getLocation().distanceSquaredTo(enemyMuck);
-                    attackEffect(locDist);
-                    // either blow up the muckraker, or go closer to it
-                    if (muck != null && effect >= muck.getConviction() + 1) {
+                if (!defended || (muck != null && rc.getLocation().isAdjacentTo(muck.getLocation()))) {
+                    if (muck != null) {
+                        // either blow up the muckraker, or go closer to it
+                        int locDist = rc.getLocation().distanceSquaredTo(muck.getLocation());
+                        attackEffect(locDist);
                         if (locDist <= RobotType.POLITICIAN.actionRadiusSquared) {
                             if (rc.canEmpower(locDist)) rc.empower(locDist);
-                        }
-                    } else if (muck != null) nav.bugNavigate(muck.getLocation());
+                        } else nav.bugNavigate(muck.getLocation());
+                    }
                     else nav.bugNavigate(enemyMuck);
                 }
             }

@@ -36,35 +36,31 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
-- ~~Fix EC coms~~
-- ~~Add unit differentiation in coms~~
-- ~~Potential bug - not recognizing when EC switches sides? Need to test/debug more~~
-- ~~Politicians and Slanderers not patrolling HQ properly~~
-- Optimize coms in terms of bytecode
-- Politician AI
-    - ~~Attacker~~
-    - ~~Defender~~
-    - ~~Fix running out of bytecode~~
-    - ~~Should kill lone muckrakers if they're too close to the EC, since it prevents them from spawning slanderers~~
-    - Check if running out of bytecode
-- Slanderer AI
-    - ~~Stay close to EC & muckraker~~
-    - Pathfind to an edge, not going through enemy ECs
-    - ~~Convert and run politician code when it switches~~
-    - Fix running out of bytecode
+- ~~Need to fix wander function to not go to places where it's off the map~~
+- **Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**
+- Need to spawn more slanderers for more eco: I think pp does 1:1:1 ratio?
+    - Maybe separate between the initial ECs and the new ECs:
+    - The initial ECS focus on slanderers and politicians, while the new ones focus on muckrakers
+- Communicate EC influence
+- Change the cost of the search() politician, since devs changed the specs accordingly
+- Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
+    - Keep track of fPolcount and limit politician spawn
+    - Just spam muckrakers anyway
+- Some politician either running out of bytecode or giving an error
+- Politician
+    - **If muckraker buff is large enough, buff EC it just spawned from**
+    - Concentrate patrolling on the side where the attacks come from
+- Slanderer
+    - Position the slanderers away from the enemy ECs if they are known
+    - Try to avoid muckrakers from a further range
 - Muckraker AI
-    - ~~Spacing out when politicians are near~~
+    - **Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis**
+    - Don't only crowd around the enemy EC, spread around and look for slanderers
 - General attack plan on enemy EC
-    - Just spam politicians with conv 400, maybe add in lesser cost polis later
+    - If there's a lot of politicians around the EC, you should just keep attacking, and not wait for maximum efficiency
+    - Count how many of our units are around the enemy EC and just attack
 - EC building logic
-    - ~~Less muckraker spam~~
-    - ~~More politician building of cost ~15~~
-    - ~~More slanderer building~~
-    - ~~Improve constants/round numbers~~
-    - ~~Fix EC building logic bug~~
-- EC should bid if they are converted
-    - Ideas: bid the amount of passive income?
-    - ~~Currently bids if over 600 influence~~
+    - If it's too clogged up, use coms to indicate to increase the politician patrol radius
 - Analyze top teams:
-    - Specifically: ~~baby ducks~~
-    
+    - Specifically:
+    - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola

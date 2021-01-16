@@ -1,6 +1,6 @@
 package ducks.utils;
 
-import static coms.Robot.debugOn;
+import static ducks.Robot.debugOn;
 
 public class Debug {
 

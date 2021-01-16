@@ -4,6 +4,7 @@ import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
+import ducks.utils.Debug;
 
 import static ducks.Robot.*;
 
@@ -29,7 +30,7 @@ public class Nav {
 //        try {
 //            initializingSurroundingMap();
 //        } catch (GameActionException e) {
-//            System.out.println("oops, intialization failed");
+//            Debug.p("oops, intialization failed");
 //        }
 
         //the following is a look up table that makes updating map from 4*x^2 bytecode to 4*x bytecode
@@ -51,7 +52,7 @@ public class Nav {
                 interCardinalNewSense = new int[][]{{-2, 4}, {-1, 4}, {-0, 4}, {1, 4}, {2, 4}, {2, 3}, {3, 3}, {3, 2}, {4, 2}, {4, 1}, {4, 0}, {4, -1}, {4, -2}};
                 break;
         }
-        System.out.println("made nav");
+        Debug.p("made nav");
     }
 
 //    public static void move(Direction dir) throws GameActionException {
@@ -72,7 +73,7 @@ public class Nav {
 //                case 1: nloc = loc.translate( xypair[1],-xypair[0]); break;
 //                case 2: nloc = loc.translate(-xypair[0],-xypair[1]); break;
 //                case 3: nloc = loc.translate(-xypair[1], xypair[0]); break;
-//                default: nloc = loc.translate( xypair[0], xypair[1]); System.out.println("nav move wrong");
+//                default: nloc = loc.translate( xypair[0], xypair[1]); Debug.p("nav move wrong");
 //            }
 //            nx=nloc.x%128;
 //            ny=nloc.y%128;
@@ -106,20 +107,8 @@ public class Nav {
 
     }
 
-    public int[][] getEnds() {
-        int midX, midY;
-        if (minX == 9999 && maxX == 30065) midX = 20000;
-        else if (minX == 9999) midX = maxX-32;
-        else if (maxX == 30065) midX = minX+32;
-        else midX = (minX+maxX)/2;
-
-        if (minY == 9999 && maxY == 30065) midY = 20000;
-        else if (minY == 9999) midY = maxY-32;
-        else if (maxY == 30065) midY = minY+32;
-        else midY = (minY+maxY)/2;
-
-        ends = new int[][]{{minX, minY}, {minX, midY}, {minX, maxY}, {midX, maxY}, {maxX, maxY}, {maxX, midY}, {maxX, minY}, {midX, minY}};
-        return ends;
+    public static void getEnds() {
+        ends = new MapLocation[] {new MapLocation(minX, minY), new MapLocation(minX, maxY), new MapLocation(maxX, maxY), new MapLocation(maxX, minY)};
     }
 
     public static boolean isTrapped () throws GameActionException {
@@ -174,7 +163,7 @@ public class Nav {
     public Direction bugNavigate (MapLocation target) throws GameActionException {
         Direction just = justMove(target);
         if (just != null) return just;
-        System.out.println("Bug navigating to " + target);
+        Debug.p("Bug navigating to " + target);
 
         if (isTrapped()) {
             return null;
@@ -194,11 +183,11 @@ public class Nav {
 
         Direction destDir = rc.getLocation().directionTo(bugTarget);
 
-        System.out.println("BUG_NAVIGATE");
-        System.out.println("bugTarget: " + bugTarget);
-        System.out.println("bugClosestDistanceToTarget: " + bugClosestDistanceToTarget);
-        System.out.println("destDir: " + destDir);
-        System.out.println("bugTracing: " + bugTracing);
+        Debug.p("BUG_NAVIGATE");
+        Debug.p("bugTarget: " + bugTarget);
+        Debug.p("bugClosestDistanceToTarget: " + bugClosestDistanceToTarget);
+        Debug.p("destDir: " + destDir);
+        Debug.p("bugTracing: " + bugTracing);
 
         if (!bugTracing) { // try to go directly towards the target
             Direction tryMoveResult = tryMoveInDirection(destDir);
@@ -210,9 +199,9 @@ public class Nav {
         } else { // we are on obstacle, trying to get off of it
             if (rc.getLocation().distanceSquaredTo(bugTarget) < bugClosestDistanceToTarget) {
                 Direction tryMoveResult = tryMoveInDirection(destDir);
-                System.out.println("on obstacle");
+                Debug.p("on obstacle");
                 if (tryMoveResult != null) { // we got off of the obstacle
-                    System.out.println("We're free!");
+                    Debug.p("We're free!");
                     bugTracing = false;
                     return tryMoveResult;
                 }
@@ -275,9 +264,9 @@ public class Nav {
             bugRotateLeft = false;
             bugLastWall = rc.adjacentLocation(rightDir.rotateLeft());
         }
-        System.out.println("START_TRACING");
-        System.out.println("bugRotateLeft: " + bugRotateLeft);
-        System.out.println("bugLastWall: " + bugLastWall);
+        Debug.p("START_TRACING");
+        Debug.p("bugRotateLeft: " + bugRotateLeft);
+        Debug.p("bugLastWall: " + bugLastWall);
     }
 
     /*
@@ -307,7 +296,7 @@ public class Nav {
             }
             MapLocation curDest = rc.adjacentLocation(curDir);
             if (!rc.onTheMap(curDest) && !recursed) {
-                System.out.println("Hit the edge of map, reverse and recurse");
+                Debug.p("Hit the edge of map, reverse and recurse");
                 // if we hit the edge of the map, reverse direction and recurse
                 bugRotateLeft = !bugRotateLeft;
                 return bugTraceMove(true);
@@ -316,7 +305,7 @@ public class Nav {
                 rc.move(curDir);
                 for (int x = 0; x < bugVisitedLocationsLength; x++) {
                     if (bugVisitedLocations[x].equals(curDest)) {
-                        System.out.println("Resetting bugTracing");
+                        Debug.p("Resetting bugTracing");
                         bugTracing = false;
                         break;
                     }

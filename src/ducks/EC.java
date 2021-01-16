@@ -6,6 +6,7 @@ import ducks.utils.*;
 public class EC extends Robot {
     int voteCount = -1;
     int bidCount = 1;
+    boolean bidded = true;
 
     // unit count near EC
     int muckCount = 0;
@@ -58,46 +59,45 @@ public class EC extends Robot {
         // if muckraker nearby, signal for help
         if (muckHelp) Coms.signalQueue.add(Coms.getMessage(Coms.IC.MUCKRAKER_HELP, muckHelpLoc));
         // scenario 1: if enemy units nearby
-        if (muckCount > 0) {
-            if (polCount > 0) {
-                build(RobotType.POLITICIAN, 40);
-            } else {
-                build(RobotType.POLITICIAN, 25);
+        if (polCount > 0) {
+            int random = (int) (Math.random() * 4);
+            if (random < 3) {
+                build(RobotType.MUCKRAKER, 1);
+                tM--;
             }
+            else build(RobotType.POLITICIAN, 30);
         }
-        else if (polCount > 0) {
-            build(RobotType.POLITICIAN, 30);
-        }
+        else if (muckCount > 0) build(RobotType.POLITICIAN, 25);
         // scenario 2: no enemy units nearby
-        // initially build in a 1:2:1 ratio of p, s, m
-        // then build in a 2:2:1 ratio of p, s, m
-        // then build in a 4:2:1 ratio of p, s, m
+        // initially build in a 1:4:4 ratio of p, s, m
+        // then build in a 2:1:5 ratio of p, s, m
+        // then build in a 4:1:2 ratio of p, s, m
         if (rc.getRoundNum() <= 50) {
-            if (5*tP < tS) {
+            if (4*tP < tS) {
                 if (rc.getInfluence() >= 400) build(RobotType.POLITICIAN, 400);
                 build(RobotType.POLITICIAN, 20);
             }
-            else if (2*tM < tS) {
+            else if (tM < tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
             else build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
         }
         else if (rc.getRoundNum() <= 400) {
-            if (tP < tS) {
+            if (tP < 2*tS) {
                 if (rc.getInfluence() >= 600) build(RobotType.POLITICIAN, 400);
-                build(RobotType.POLITICIAN, 40);
+                build(RobotType.POLITICIAN, 25);
             }
-            if (2*tM < tS) {
+            if (tM < 5*tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
             build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
         }
         else {
-            if (tP < 2*tS) {
+            if (tP < 4*tS) {
                 if (rc.getInfluence() >= 800) build(RobotType.POLITICIAN, Math.max(400, rc.getInfluence()/20));
-                build(RobotType.POLITICIAN, 80);
+                build(RobotType.POLITICIAN, 50);
             }
-            if (2*tM < tS) {
+            if (tM < 2*tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
             build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-200, 21)));
@@ -175,8 +175,11 @@ public class EC extends Robot {
     public void bid() throws GameActionException {
         int curVote = rc.getTeamVotes();
         if (curVote >= 751) return;
-        if (curVote == voteCount) bidCount *= 2;
-        if (bidCount + 500 <= rc.getInfluence() && rc.canBid(bidCount)) rc.bid(bidCount);
+        if (curVote == voteCount && bidded) bidCount *= 2;
+        if (rc.canBid(bidCount)) {
+            rc.bid(bidCount);
+            bidded = true;
+        } else bidded = false;
         bidCount -= bidCount/16;
         voteCount = curVote;
     }
