@@ -1,4 +1,4 @@
-package coms;
+package selfbuff.coms;
 
 import battlecode.common.*;
 

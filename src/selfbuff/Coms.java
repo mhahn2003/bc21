@@ -1,7 +1,7 @@
-package coms;
+package selfbuff.coms;
 
 import battlecode.common.*;
-import coms.utils.Debug;
+import selfbuff.coms.utils.Debug;
 
 import java.util.PriorityQueue;
 

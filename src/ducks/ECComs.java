@@ -1,13 +1,16 @@
-package coms;
+package ducks;
 
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
 import battlecode.common.RobotType;
-import coms.utils.*;
+import ducks.utils.Debug;
+import ducks.utils.HashSet;
+import ducks.utils.LinkedList;
+import ducks.utils.Node;
 
-import static coms.Robot.*;
-import static coms.RobotPlayer.turnCount;
+import static ducks.Robot.*;
+import static ducks.RobotPlayer.turnCount;
 
 
 public class ECComs extends Coms {
@@ -157,9 +160,10 @@ public class ECComs extends Coms {
             }
         }
         if (!processed) {
-            Debug.p("not processed yet, adding to queue: " + flag);
-
-            signalQueue.add(convertFlag(flag));
+            if (getCat(flag) != IC.MUCKRAKER || getCat(flag) != IC.MUCKRAKER_HELP) {
+                Debug.p("not processed yet, adding to queue: " + flag);
+                signalQueue.add(convertFlag(flag));
+            }
         }
         super.processFlag(flag);
     }

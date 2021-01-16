@@ -38,7 +38,33 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 - ~~Fix EC coms~~
 - ~~Add unit differentiation in coms~~
+- ~~Potential bug - not recognizing when EC switches sides? Need to test/debug more~~
+- ~~Politicians and Slanderers not patrolling HQ properly~~
+- Optimize coms in terms of bytecode
 - Politician AI
+    - ~~Attacker~~
+    - ~~Defender~~
+    - ~~Fix running out of bytecode~~
+    - ~~Should kill lone muckrakers if they're too close to the EC, since it prevents them from spawning slanderers~~
+    - Check if running out of bytecode
 - Slanderer AI
+    - ~~Stay close to EC & muckraker~~
+    - Pathfind to an edge, not going through enemy ECs
+    - ~~Convert and run politician code when it switches~~
+    - Fix running out of bytecode
+- Muckraker AI
+    - ~~Spacing out when politicians are near~~
 - General attack plan on enemy EC
+    - Just spam politicians with conv 400, maybe add in lesser cost polis later
 - EC building logic
+    - ~~Less muckraker spam~~
+    - ~~More politician building of cost ~15~~
+    - ~~More slanderer building~~
+    - ~~Improve constants/round numbers~~
+    - ~~Fix EC building logic bug~~
+- EC should bid if they are converted
+    - Ideas: bid the amount of passive income?
+    - ~~Currently bids if over 600 influence~~
+- Analyze top teams:
+    - Specifically: ~~baby ducks~~
+    

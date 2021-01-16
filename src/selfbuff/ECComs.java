@@ -1,10 +1,13 @@
-package coms;
+package selfbuff.coms;
 
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
 import battlecode.common.RobotType;
-import coms.utils.*;
+import selfbuff.coms.utils.Debug;
+import selfbuff.coms.utils.HashSet;
+import selfbuff.coms.utils.LinkedList;
+import selfbuff.coms.utils.Node;
 
 import static coms.Robot.*;
 import static coms.RobotPlayer.turnCount;
