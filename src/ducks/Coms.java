@@ -182,32 +182,64 @@ public class Coms {
             }
         } else {
             // first check for any edges
-            for (int i = 0; i < 4; i++) {
-                if (edges[i]) continue;
-                Direction dir = Direction.cardinalDirections()[i];
+            for (int a = 0; a < 4; a++) {
+                if (edges[a]) continue;
+                Direction dir = Direction.cardinalDirections()[a];
                 MapLocation checkLoc = rc.getLocation().add(dir);
                 while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
                     if (!rc.onTheMap(checkLoc)) {
                         Debug.p("I see an edge");
-                        edges[i] = true;
-                        if (i == 0) {
+                        edges[a] = true;
+                        if (a == 0) {
                             maxY = checkLoc.y-1;
                             signalQueue.add(getMessage(IC.EDGE_N, maxY));
                             addRelevantFlag(getMessage(IC.EDGE_N, maxY));
-                        } else if (i == 1) {
+                            if (mapGenerated) {
+                                // rule out some spots
+                                for (int i = 7; i >= 0; i--) {
+                                    for (int j = 7; j >= 0; j--) {
+                                        if (mapSpots[i][j].y > maxY) visited[i][j] = true;
+                                    }
+                                }
+                            }
+                        } else if (a == 1) {
                             maxX = checkLoc.x-1;
                             signalQueue.add(getMessage(IC.EDGE_E, maxX));
                             addRelevantFlag(getMessage(IC.EDGE_E, maxX));
-                        } else if (i == 2) {
+                            if (mapGenerated) {
+                                // rule out some spots
+                                for (int i = 7; i >= 0; i--) {
+                                    for (int j = 7; j >= 0; j--) {
+                                        if (mapSpots[i][j].x > maxX) visited[i][j] = true;
+                                    }
+                                }
+                            }
+                        } else if (a == 2) {
                             minY = checkLoc.y+1;
                             signalQueue.add(getMessage(IC.EDGE_S, minY));
                             addRelevantFlag(getMessage(IC.EDGE_S, minY));
-                        } else if (i == 3) {
+                            if (mapGenerated) {
+                                // rule out some spots
+                                for (int i = 7; i >= 0; i--) {
+                                    for (int j = 7; j >= 0; j--) {
+                                        if (mapSpots[i][j].y < minY) visited[i][j] = true;
+                                    }
+                                }
+                            }
+                        } else if (a == 3) {
                             minX = checkLoc.x+1;
                             signalQueue.add(getMessage(IC.EDGE_W, minX));
                             addRelevantFlag(getMessage(IC.EDGE_W, minX));
+                            if (mapGenerated) {
+                                // rule out some spots
+                                for (int i = 7; i >= 0; i--) {
+                                    for (int j = 7; j >= 0; j--) {
+                                        if (mapSpots[i][j].x < minX) visited[i][j] = true;
+                                    }
+                                }
+                            }
                         }
-                        Debug.p("updated "+i+"th edge");
+                        Debug.p("updated "+a+"th edge");
                         break;
                     }
                     checkLoc = checkLoc.add(dir);
@@ -611,6 +643,14 @@ public class Coms {
                             }
                         }
                         addRelevantFlag(getMessage(IC.MAP_CORNER, 3));
+                    }
+                    if (mapGenerated) {
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                MapLocation loc = mapSpots[i][j];
+                                if (loc.x > maxX || loc.y > maxY || loc.x < minX || loc.y < minY) visited[i][j] = true;
+                            }
+                        }
                     }
                 }
                 break;
