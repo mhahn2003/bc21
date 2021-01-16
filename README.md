@@ -36,6 +36,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
+-- Communicate EC influence
 - ~~I don't think the wander() function is completely operational?~~
 - Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying
 - Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers

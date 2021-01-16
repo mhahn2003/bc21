@@ -14,7 +14,7 @@ public class ECComs extends Coms {
 
     private static int IDcheck = 10000;
     private static boolean allSearched = false;
-    private int[] lastFlags = new int[10];
+    private int[] lastFlags = new int[20];
     private int flagIndex = 0;
     // edges, ec id and locations, enemy loc
 
@@ -36,7 +36,7 @@ public class ECComs extends Coms {
         }
         // process known robot IDs
         // if array too big, prune
-        if (robotIDs.size >= 200) {
+        if (robotIDs.size >= 150) {
             Debug.p("pruning robot ID array");
             HashSet<Integer> tempIDs = new HashSet<>(50);
             for (int i = 0; i < 50; i++) {
@@ -46,7 +46,7 @@ public class ECComs extends Coms {
             Debug.p("new size: " + robotIDs.size);
         }
 //        int counter = 0;
-//        Debug.p("Size: " + robotIDs.size);
+        Debug.p("Size: " + robotIDs.size);
         for (int i = 0; i < 50; i++) {
             LinkedList<Integer> list = robotIDs.table[i];
             if (list.size != 0) {
@@ -133,11 +133,34 @@ public class ECComs extends Coms {
             rc.setFlag(getMessage(IC.EC_ID, rc.getID()));
             loopFlags();
         } else {
+            // remove redundant flags
+            while (!signalQueue.isEmpty()) {
+                boolean redundant = false;
+                int flag = signalQueue.peek();
+                for (int i = 0; i < 20; i++) {
+                    if (lastFlags[i] == flag % (1 << 21)) {
+                        redundant = true;
+                        break;
+                    }
+                }
+                for (int i = 0; i < relevantSize; i++) {
+                    if (relevantFlags[relevantInd % relevantSize] % (1 << 21) == flag % (1 << 21)) {
+                        redundant = true;
+                        break;
+                    }
+                }
+                if (redundant) {
+                    Debug.p("Redundant flag, removing");
+                    Debug.p("Type: " + getCat(flag));
+                    signalQueue.poll();
+                }
+                else break;
+            }
             if (!signalQueue.isEmpty()) {
                 // add it to a list of last displayed flags to reduce redundancy between ecs
                 int flag = signalQueue.poll();
                 Debug.p("getting from signalQueue");
-                lastFlags[flagIndex % 10] = flag % (1 << 21);
+                lastFlags[flagIndex % 20] = flag % (1 << 21);
                 flagIndex++;
                 Debug.p("Type: " + getCat(flag));
                 rc.setFlag(flag);
@@ -156,7 +179,7 @@ public class ECComs extends Coms {
         IC cat = getCat(flag);
         if (flag % (1 << 21) == 0 || cat == null) return;
         boolean processed = false;
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             if (lastFlags[i] == flag % (1 << 21)) {
                 processed = true;
                 break;
@@ -172,10 +195,12 @@ public class ECComs extends Coms {
             if (cat != IC.MUCKRAKER && cat != IC.MUCKRAKER_HELP
             && cat != IC.MAP_NE && cat != IC.MAP_NW && cat != IC.MAP_SE && cat != IC.MAP_SW && cat != IC.ATTACK) {
                 Debug.p("not processed yet, adding to queue: " + flag);
+                lastFlags[flagIndex % 20] = flag % (1 << 21);
+                flagIndex++;
                 signalQueue.add(convertFlag(flag));
             }
+            super.processFlag(flag);
         }
-        super.processFlag(flag);
     }
 
     public int convertFlag(int flag) {

@@ -11,7 +11,7 @@ public class Coms {
     public static PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
     protected int relevantSize = 0;
     protected int relevantInd = 0;
-    protected int[] relevantFlags = new int[20];
+    protected int[] relevantFlags = new int[30];
     protected RobotInfo processingRobot = null;
 
 
