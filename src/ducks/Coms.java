@@ -471,6 +471,14 @@ public class Coms {
                     maxY = ID;
                     Debug.p("updated "+0+"th edge");
                     addRelevantFlag(getMessage(IC.EDGE_N, maxY));
+                    if (mapGenerated) {
+                        // rule out some spots
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                if (mapSpots[i][j].y > maxY) visited[i][j] = true;
+                            }
+                        }
+                    }
                 }
                 break;
             case EDGE_E:
@@ -479,6 +487,14 @@ public class Coms {
                     maxX = ID;
                     Debug.p("updated "+1+"st edge");
                     addRelevantFlag(getMessage(IC.EDGE_E, maxX));
+                    if (mapGenerated) {
+                        // rule out some spots
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                if (mapSpots[i][j].x > maxX) visited[i][j] = true;
+                            }
+                        }
+                    }
                 }
                 break;
             case EDGE_S:
@@ -487,6 +503,14 @@ public class Coms {
                     minY = ID;
                     Debug.p("updated "+2+"nd edge");
                     addRelevantFlag(getMessage(IC.EDGE_S, minY));
+                    if (mapGenerated) {
+                        // rule out some spots
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                if (mapSpots[i][j].y < minY) visited[i][j] = true;
+                            }
+                        }
+                    }
                 }
                 break;
             case EDGE_W:
@@ -495,6 +519,14 @@ public class Coms {
                     minX = ID;
                     Debug.p("updated "+3+"rd edge");
                     addRelevantFlag(getMessage(IC.EDGE_W, minX));
+                    if (mapGenerated) {
+                        // rule out some spots
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                if (mapSpots[i][j].x > minX) visited[i][j] = true;
+                            }
+                        }
+                    }
                 }
                 break;
 //            case ENDS:

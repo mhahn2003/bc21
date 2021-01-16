@@ -36,8 +36,12 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
+- ~~Need to fix wander function to not go to places where it's off the map~~
 - **Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**
--- Communicate EC influence
+- Need to spawn more slanderers for more eco: I think pp does 1:1:1 ratio?
+    - Maybe separate between the initial ECs and the new ECs:
+    - The initial ECS focus on slanderers and politicians, while the new ones focus on muckrakers
+- Communicate EC influence
 - Change the cost of the search() politician, since devs changed the specs accordingly
 - Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
     - Keep track of fPolcount and limit politician spawn
@@ -47,6 +51,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - **If muckraker buff is large enough, buff EC it just spawned from**
     - Concentrate patrolling on the side where the attacks come from
 - Slanderer
+    - Position the slanderers away from the enemy ECs if they are known
     - Try to avoid muckrakers from a further range
 - Muckraker AI
     - **Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis**

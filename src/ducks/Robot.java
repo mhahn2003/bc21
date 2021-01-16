@@ -12,7 +12,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = false;
+    public static boolean debugOn = true;
 
     static int minX = 9999;
     static int maxX = 30065;
@@ -149,6 +149,8 @@ public class Robot {
             if (closestWand != null) {
                 Debug.p("going to " + closestWand);
                 nav.bugNavigate(closestWand);
+            } else {
+
             }
         }
         // first check if you're too close to anyone, and separate from each other
