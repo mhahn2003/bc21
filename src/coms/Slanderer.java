@@ -47,6 +47,7 @@ public class Slanderer extends Robot {
                 boolean safe = true;
                 MapLocation loc = rc.getLocation().add(directions[i]);
                 for (int j = 0; j < size; j++) {
+                    if (dangers[j]==null)continue;
                     if (loc.isWithinDistanceSquared(dangers[j], RobotType.MUCKRAKER.actionRadiusSquared)) {
                         safe = false;
                         break;

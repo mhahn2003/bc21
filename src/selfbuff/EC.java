@@ -63,13 +63,7 @@ public class EC extends Robot {
             }
         }
         if (rc.getEmpowerFactor(team,10)>1.5){
-            for (int i = 0; i < 4; i++) {
-                Direction dir = Direction.cardinalDirections()[i];
-                if (rc.canBuildRobot(RobotType.POLITICIAN,dir,rc.getInfluence())){
-                    rc.buildRobot(RobotType.POLITICIAN,dir,rc.getInfluence());
-                    break;
-                }
-            }
+            build(RobotType.POLITICIAN,rc.getInfluence());
         }
 //
 //        if (turnCount < 250) {
@@ -106,6 +100,24 @@ public class EC extends Robot {
                 System.out.println("I can build in " + dir);
                 rc.buildRobot(toBuild, dir, influence);
             }
+        }
+    }
+
+    public void build(RobotType toBuild, int influence, boolean onlyCardial) throws GameActionException {
+        if (onlyCardial){
+            int safetyNet = 0;
+            if (muckCount > 0 && toBuild == RobotType.SLANDERER) return;
+            if (polCount > 0) safetyNet = 100;
+            if (toBuild == RobotType.MUCKRAKER) safetyNet = 0;
+            if (influence + safetyNet > rc.getInfluence()) return;
+            for (Direction dir : Direction.cardinalDirections()) {
+                if (rc.canBuildRobot(toBuild, dir, influence)) {
+                    System.out.println("I can build in " + dir);
+                    rc.buildRobot(toBuild, dir, influence);
+                }
+            }
+        }else{
+            build( toBuild, influence);
         }
     }
 }
