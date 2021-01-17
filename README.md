@@ -42,11 +42,9 @@ All of the bold points should be implemented before sprint 2
     - **If muckraker buff is large enough, buff EC it just spawned from**
     - Concentrate patrolling on the side where the attacks come from
     - Account for enemy sending buffrakers
-    - **Defense politician only needs to spread out from other defense, otherwise muckrakers can slip by**
-    - **Need to attack EC if there's a ton of attack politicians not doing anything**
     - Check if there's too much of an imbalance between attack and defense politicians
 - Slanderer
-    - **Position the slanderers away from the enemy ECs if they are known**
+    - Position the slanderers away from the enemy ECs if they are known
     - Try to avoid muckrakers from a further range
 - Muckraker AI
     - __Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis__
@@ -60,17 +58,21 @@ All of the bold points should be implemented before sprint 2
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola
     - ~~**Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**~~
+
+Order:
+4. When wandering has a tendency to move in groups, split them up somehow?
+5. Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10
+6. If muckraker buff is large enough, buff EC it just spawned from
+
+
+Done:
+- ~~Defense politician only needs to spread out from other defense, otherwise muckrakers can slip by~~
+- ~~Need to attack EC if there's a ton of attack politicians not doing anything~~
 - ~~Communicate EC influence~~
 - ~~Change the cost of the search() politician, since devs changed the specs accordingly~~
 - ~~Need to spawn more slanderers for more eco: I think pp does 1:1:1 ratio?~~
     - ~~Maybe separate between the initial ECs and the new ECs:~~
     - ~~The initial ECS focus on slanderers and politicians, while the new ones focus on muckrakers~~
-    - Still need more eco for the newer ecs
+    - ~~Still need more eco for the newer ecs~~
+- ~~Fix bug where IC.MUCKRAKER is being used for ID and location, and also it sometimes overrides the signal for the muckraker to escape properly~~
 
-Order:
-1. ~~Defense politician only needs to spread out from other defense, otherwise muckrakers can slip by~~
-2. ~~Need to attack EC if there's a ton of attack politicians not doing anything~~
-3. Position the slanderers away from the enemy ECs if they are known
-4. When wandering has a tendency to move in groups, split them up somehow?
-5. Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10
-6. If muckraker buff is large enough, buff EC it just spawned from

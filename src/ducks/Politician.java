@@ -252,13 +252,13 @@ public class Politician extends Robot {
                         boolean defended = false;
                         RobotInfo[] near = rc.senseNearbyRobots(closestMuck.getLocation(), 4, team);
                         for (RobotInfo r : near) {
-                            if (Coms.getCat(rc.getFlag(r.getID())) == Coms.IC.MUCKRAKER && Coms.getID(rc.getFlag(r.getID())) == closestMuck.getID()) {
+                            if (Coms.getCat(rc.getFlag(r.getID())) == Coms.IC.MUCKRAKER_ID && Coms.getID(rc.getFlag(r.getID())) == closestMuck.getID()) {
                                 defended = true;
                                 break;
                             }
                         }
                         if (!defended) {
-                            rc.setFlag(Coms.getMessage(Coms.IC.MUCKRAKER, closestMuck.getID()));
+                            rc.setFlag(Coms.getMessage(Coms.IC.MUCKRAKER_ID, closestMuck.getID()));
                             if (closestMuckDist > 2) nav.bugNavigate(closestMuck.getLocation());
                         }
                     }

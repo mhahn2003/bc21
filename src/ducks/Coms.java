@@ -31,6 +31,7 @@ public class Coms {
         NEUTRAL_EC,
         POLITICIAN,
         SLANDERER,
+        MUCKRAKER_ID,
         MAP_CORNER,
         MAP_NW,
         MAP_NE,
@@ -54,18 +55,19 @@ public class Coms {
             case NEUTRAL_EC    : message = 5; break;
             case POLITICIAN    : message = 6; break;
             case SLANDERER     : message = 7; break;
-            case MAP_CORNER    : message = 8; break;
-            case MAP_NW        : message = 9; break;
-            case MAP_NE        : message = 10; break;
-            case MAP_SW        : message = 11; break;
-            case MAP_SE        : message = 12; break;
-            case MUCKRAKER     : message = 13; break;
-            case EDGE_N        : message = 14; break;
-            case EDGE_E        : message = 15; break;
-            case EDGE_S        : message = 16; break;
-            case EDGE_W        : message = 17; break;
-            case ATTACK        : message = 18; break;
-            default            : message = 19;
+            case MUCKRAKER_ID  : message = 8; break;
+            case MAP_CORNER    : message = 9; break;
+            case MAP_NW        : message = 10; break;
+            case MAP_NE        : message = 11; break;
+            case MAP_SW        : message = 12; break;
+            case MAP_SE        : message = 13; break;
+            case MUCKRAKER     : message = 14; break;
+            case EDGE_N        : message = 15; break;
+            case EDGE_E        : message = 16; break;
+            case EDGE_S        : message = 17; break;
+            case EDGE_W        : message = 18; break;
+            case ATTACK        : message = 19; break;
+            default            : message = 20;
         }
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
@@ -80,18 +82,19 @@ public class Coms {
             case NEUTRAL_EC    : message = 5; break;
             case POLITICIAN    : message = 6; break;
             case SLANDERER     : message = 7; break;
-            case MAP_CORNER    : message = 8; break;
-            case MAP_NW        : message = 9; break;
-            case MAP_NE        : message = 10; break;
-            case MAP_SW        : message = 11; break;
-            case MAP_SE        : message = 12; break;
-            case MUCKRAKER     : message = 13; break;
-            case EDGE_N        : message = 14; break;
-            case EDGE_E        : message = 15; break;
-            case EDGE_S        : message = 16; break;
-            case EDGE_W        : message = 17; break;
-            case ATTACK        : message = 18; break;
-            default            : message = 19;
+            case MUCKRAKER_ID  : message = 8; break;
+            case MAP_CORNER    : message = 9; break;
+            case MAP_NW        : message = 10; break;
+            case MAP_NE        : message = 11; break;
+            case MAP_SW        : message = 12; break;
+            case MAP_SE        : message = 13; break;
+            case MUCKRAKER     : message = 14; break;
+            case EDGE_N        : message = 15; break;
+            case EDGE_E        : message = 16; break;
+            case EDGE_S        : message = 17; break;
+            case EDGE_W        : message = 18; break;
+            case ATTACK        : message = 19; break;
+            default            : message = 20;
         }
         message = addCoord(message, coord) + typeInt(rc.getType()) + addInf(inf);
         return message;
@@ -107,18 +110,19 @@ public class Coms {
             case NEUTRAL_EC    : message = 5; break;
             case POLITICIAN    : message = 6; break;
             case SLANDERER     : message = 7; break;
-            case MAP_CORNER    : message = 8; break;
-            case MAP_NW        : message = 9; break;
-            case MAP_NE        : message = 10; break;
-            case MAP_SW        : message = 11; break;
-            case MAP_SE        : message = 12; break;
-            case MUCKRAKER     : message = 13; break;
-            case EDGE_N        : message = 14; break;
-            case EDGE_E        : message = 15; break;
-            case EDGE_S        : message = 16; break;
-            case EDGE_W        : message = 17; break;
-            case ATTACK        : message = 18; break;
-            default            : message = 19;
+            case MUCKRAKER_ID  : message = 8; break;
+            case MAP_CORNER    : message = 9; break;
+            case MAP_NW        : message = 10; break;
+            case MAP_NE        : message = 11; break;
+            case MAP_SW        : message = 12; break;
+            case MAP_SE        : message = 13; break;
+            case MUCKRAKER     : message = 14; break;
+            case EDGE_N        : message = 15; break;
+            case EDGE_E        : message = 16; break;
+            case EDGE_S        : message = 17; break;
+            case EDGE_W        : message = 18; break;
+            case ATTACK        : message = 19; break;
+            default            : message = 20;
         }
         message = addID(message, ID) + typeInt(rc.getType());
         return message;
@@ -164,17 +168,18 @@ public class Coms {
             case 5: return IC.NEUTRAL_EC;
             case 6: return IC.POLITICIAN;
             case 7: return IC.SLANDERER;
-            case 8: return IC.MAP_CORNER;
-            case 9: return IC.MAP_NW;
-            case 10: return IC.MAP_NE;
-            case 11: return IC.MAP_SW;
-            case 12: return IC.MAP_SE;
-            case 13: return IC.MUCKRAKER;
-            case 14: return IC.EDGE_N;
-            case 15: return IC.EDGE_E;
-            case 16: return IC.EDGE_S;
-            case 17: return IC.EDGE_W;
-            case 18: return IC.ATTACK;
+            case 8: return IC.MUCKRAKER_ID;
+            case 9: return IC.MAP_CORNER;
+            case 10: return IC.MAP_NW;
+            case 11: return IC.MAP_NE;
+            case 12: return IC.MAP_SW;
+            case 13: return IC.MAP_SE;
+            case 14: return IC.MUCKRAKER;
+            case 15: return IC.EDGE_N;
+            case 16: return IC.EDGE_E;
+            case 17: return IC.EDGE_S;
+            case 18: return IC.EDGE_W;
+            case 19: return IC.ATTACK;
             default: return null;
         }
     }
@@ -334,7 +339,7 @@ public class Coms {
                 }
             }
             // whether you're a guarding a slanderer
-            RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
+            RobotInfo[] closeRobots = rc.senseNearbyRobots(20, team);
             boolean guard = false;
             for (RobotInfo rob : closeRobots) {
                 if (getTyp(rc.getFlag(rob.getID())) == RobotType.SLANDERER) {
@@ -808,6 +813,10 @@ public class Coms {
                     rc.getLocation().distanceSquaredTo(coord) <= RobotType.POLITICIAN.sensorRadiusSquared) {
                     defendSlanderer = true;
                     enemyMuck = coord;
+                }
+                if (rc.getType() == RobotType.SLANDERER) {
+                    runAway = true;
+                    danger = coord;
                 }
                 break;
             case SLANDERER:
