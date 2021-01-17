@@ -62,6 +62,15 @@ public class EC extends Robot {
                 }
             }
         }
+        if (rc.getEmpowerFactor(team,10)>1.5){
+            for (int i = 0; i < 4; i++) {
+                Direction dir = Direction.cardinalDirections()[i];
+                if (rc.canBuildRobot(RobotType.POLITICIAN,dir,rc.getInfluence())){
+                    rc.buildRobot(RobotType.POLITICIAN,dir,rc.getInfluence());
+                    break;
+                }
+            }
+        }
 //
 //        if (turnCount < 250) {
 //            if (rc.getInfluence() < 150) {

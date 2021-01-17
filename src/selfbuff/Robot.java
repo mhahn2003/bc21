@@ -2,6 +2,8 @@ package selfbuff;
 
 import battlecode.common.*;
 
+import java.util.Map;
+
 public class Robot {
     static RobotController rc;
     static Nav nav;
@@ -89,6 +91,23 @@ public class Robot {
                         }
                     }
                     if (optDir != null) rc.move(optDir);
+                }
+            }else if(rc.getType()!=RobotType.POLITICIAN &&
+                     rc.getEmpowerFactor(team,10)>1.5){
+                for (MapLocation ec: friendECs){
+                    if (rc==null) continue;
+                    int furthestDist = rc.getLocation().distanceSquaredTo(ec);
+                    if (furthestDist<=4){
+                        Direction optDir = null;
+                        for (int i = 0; i < 8; i++) {
+                            int dist = ec.distanceSquaredTo(rc.getLocation().add(directions[i]));
+                            if (dist > furthestDist && rc.canMove(directions[i])) {
+                                furthestDist = dist;
+                                optDir = directions[i];
+                            }
+                        }
+                        if (optDir != null) rc.move(optDir); break;
+                    }
                 }
             }
         }

@@ -11,15 +11,20 @@ public class Politician extends Robot {
     private static int effThreshold = 50;
     private static int effect;
 
+    private static boolean ecoBuff;
+
 
     public Politician(RobotController rc) {
         super(rc);
-        if (rc.getInfluence() >= 50) attack = true;
+        if (rc.getEmpowerFactor(team,10)>1.5){ecoBuff = true;}
+        else if (rc.getInfluence() >= 50){attack = true;}
+
     }
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
         if (attack) attack();
+        else if (ecoBuff) buff();
         else defend();
     }
 
@@ -107,6 +112,13 @@ public class Politician extends Robot {
     // assist with the attack by killing any muckrakers/politicians around the EC
     static void assist() {
 
+    }
+
+    static void buff() throws GameActionException {
+        RobotInfo[] rbs =rc.senseNearbyRobots(1);
+        if (rbs.length<rc.getEmpowerFactor(team,0)){
+            rc.empower(1);
+        }
     }
 
     static void defend() throws GameActionException {

@@ -131,7 +131,7 @@ public class ECComs extends Coms {
         loopBots();
         loopECS();
         if (turnCount < 7) {
-            lastFlags[9] = getMessage(IC.EC_ID, rc.getID()) % 1000000;
+            lastFlags[9] = getMessage(IC.EC_ID, rc.getID()) &0x7ffff;
             rc.setFlag(getMessage(IC.EC_ID, rc.getID()));
             loopFlags();
         } else {
@@ -139,9 +139,13 @@ public class ECComs extends Coms {
                 // add it to a list of last displayed flags to reduce redundancy between ecs
                 int flag = signalQueue.poll();
                 Debug.p("getting from signalQueue");
-                lastFlags[flagIndex % 10] = flag % 1000000;
+                lastFlags[flagIndex % 10] = flag &0x7ffff;
                 flagIndex++;
-                rc.setFlag(flag);
+                if (rc.canSetFlag(flag)) {
+                    rc.setFlag(flag);
+                }else{
+                    Debug.p(flag);
+                }
             } else {
                 rc.setFlag(relevantFlags[relevantInd % relevantSize]);
                 relevantInd++;
@@ -151,10 +155,10 @@ public class ECComs extends Coms {
 
     public void processFlag(int flag) {
         IC cat = getCat(flag);
-        if (flag % 1000000 == 0 || cat == null) return;
+        if ((flag &0x7ffff) == 0 || cat == null) return;
         boolean processed = false;
         for (int i = 0; i < 10; i++) {
-            if (lastFlags[i] == flag % 1000000) {
+            if (lastFlags[i] == (flag &0x7ffff)) {
                 processed = true;
                 break;
             }
@@ -168,7 +172,7 @@ public class ECComs extends Coms {
     }
 
     public int convertFlag(int flag) {
-        flag = flag % 1000000;
+        flag = flag &0x7ffff;
         return flag + typeInt(rc.getType());
     }
 

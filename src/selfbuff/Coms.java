@@ -79,16 +79,16 @@ public class Coms {
             case ATTACK    : message = 11; break;
             default        : message = 12;
         }
-        message = addID(message, ID) + typeInt(rc.getType())<<19;
+        message = addID(message, ID) + typeInt(rc.getType());
         return message;
     }
 
     public static int typeInt(RobotType type) {
         switch (type) {
-            case POLITICIAN: return 1;
-            case SLANDERER: return 2;
-            case MUCKRAKER: return 3;
-            case ENLIGHTENMENT_CENTER: return 4;
+            case POLITICIAN: return 0x80000;
+            case SLANDERER: return 0x100000;
+            case MUCKRAKER: return 0x180000;
+            case ENLIGHTENMENT_CENTER: return 0x200000;
         }
         return 0;
     }
