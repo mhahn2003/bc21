@@ -70,6 +70,32 @@ public class Coms {
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
     }
+    public static int getMessage(IC cat, MapLocation coord, int inf) {
+        int message;
+        switch (cat) {
+            case MUCKRAKER_HELP: message = 1; break;
+            case FRIEND_EC     : message = 2; break;
+            case EC_ID         : message = 3; break;
+            case ENEMY_EC      : message = 4; break;
+            case NEUTRAL_EC    : message = 5; break;
+            case POLITICIAN    : message = 6; break;
+            case SLANDERER     : message = 7; break;
+            case MAP_CORNER    : message = 8; break;
+            case MAP_NW        : message = 9; break;
+            case MAP_NE        : message = 10; break;
+            case MAP_SW        : message = 11; break;
+            case MAP_SE        : message = 12; break;
+            case MUCKRAKER     : message = 13; break;
+            case EDGE_N        : message = 14; break;
+            case EDGE_E        : message = 15; break;
+            case EDGE_S        : message = 16; break;
+            case EDGE_W        : message = 17; break;
+            case ATTACK        : message = 18; break;
+            default            : message = 19;
+        }
+        message = addCoord(message, coord) + typeInt(rc.getType()) + addInf(inf);
+        return message;
+    }
 
     public static int getMessage(IC cat, int ID) {
         int message;
@@ -108,12 +134,14 @@ public class Coms {
         return 0;
     }
     public static int addCoord(int message, MapLocation coord) {
-        return (message << 16) + ((coord.x % 128) << 7) + (coord.y % 128);
+        return (message << 17) + ((coord.x % 128) << 7) + (coord.y % 128);
     }
 
     public static int addID(int message, int ID) {
-        return (message << 16)+ID;
+        return (message << 17)+ID;
     }
+
+    public static int addInf(int inf) { return ((Math.min(inf/70, 7)) << 14); }
 
     public static RobotType getTyp(int message) {
         switch (message >> 22) {
@@ -128,7 +156,7 @@ public class Coms {
 
     public static IC getCat(int message) {
         message = message % (1 << 22);
-        switch (message >> 16) {
+        switch (message >> 17) {
             case 1: return IC.MUCKRAKER_HELP;
             case 2: return IC.FRIEND_EC;
             case 3: return IC.EC_ID;
@@ -152,14 +180,14 @@ public class Coms {
     }
 
     public static int getID(int message) {
-        return message % (1 << 16);
+        return message % (1 << 17);
     }
 
     public static MapLocation getCoord(int message) {
         MapLocation here = rc.getLocation();
         int remX = here.x % 128;
         int remY = here.y % 128;
-        message = message % (1 << 16);
+        message = message % (1 << 17);
         int x = message >> 7;
         int y = message % 128;
         if (Math.abs(x - remX) >= 64) {
@@ -172,6 +200,8 @@ public class Coms {
         } else y = here.y - remY + y;
         return new MapLocation(x, y);
     }
+
+    public static int getInf(int message) { return getID(message) >> 14; }
 
     // relay information about surroundings
     public void collectInfo() throws GameActionException {
@@ -303,36 +333,6 @@ public class Coms {
                     }
                 }
             }
-//            Nav.getEnds();
-//            // check for any corners
-//            boolean update = false;
-//            for (int i = 0; i < 9; i++) {
-//                if (corners[i]) continue;
-//                if (rc.canSenseLocation(ends[i])) {
-//                    corners[i] = true;
-//                    update = true;
-//                }
-//            }
-//            if (update) {
-//                int msgSum = 0;
-//                for (int i = 0; i < 9; i++) {
-//                    if (corners[i]) {
-//                        Debug.p("corner i: " + ends[i]);
-//                        msgSum += (1 << i);
-//                    }
-//                }
-//                Debug.p("msgSum: " + msgSum);
-//                signalQueue.add(getMessage(IC.ENDS, msgSum));
-//                // need to check relevant flags and replace the previous ends flag if there is any
-//                for (int i = 0; i < 20; i++) {
-//                    if (getCat(relevantFlags[i]) == IC.ENDS) {
-//                        removeRelevantFlag(relevantFlags[i]);
-//                        break;
-//                    }
-//                }
-//                addRelevantFlag(getMessage(IC.ENDS, msgSum));
-//            }
-
             // whether you're a guarding a slanderer
             RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
             boolean guard = false;
@@ -378,6 +378,7 @@ public class Coms {
                             if (loc.equals(neutralECs[i])) {
                                 neutralECs[i] = null;
                                 removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                neutralInf[i] = 0;
                                 break;
                             }
                         }
@@ -407,6 +408,7 @@ public class Coms {
                             if (loc.equals(neutralECs[i])) {
                                 neutralECs[i] = null;
                                 removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                neutralInf[i] = 0;
                                 break;
                             }
                         }
@@ -438,6 +440,8 @@ public class Coms {
                             }
                         }
                         if (minInd != -1 && !seen) {
+                            neutralECs[minInd] = r.getLocation();
+                            neutralInf[minInd] = r.getInfluence();
                             Debug.p("NEUTRAL: Adding to signal queue");
                             signalQueue.add(getMessage(IC.NEUTRAL_EC, loc));
                             addRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
@@ -703,6 +707,7 @@ public class Coms {
                     if (coord.equals(neutralECs[i])) {
                         neutralECs[i] = null;
                         removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
+                        neutralInf[i] = 0;
                         break;
                     }
                 }
@@ -732,6 +737,7 @@ public class Coms {
                     if (coord.equals(neutralECs[i])) {
                         neutralECs[i] = null;
                         removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
+                        neutralInf[i] = 0;
                         break;
                     }
                 }
@@ -764,6 +770,7 @@ public class Coms {
                 }
                 if (minInd != -1 && !seen) {
                     neutralECs[minInd] = coord;
+                    neutralInf[minInd] = getInf(flag);
                     addRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
                 }
                 break;

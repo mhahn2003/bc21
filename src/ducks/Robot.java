@@ -29,6 +29,7 @@ public class Robot {
     static int[] ECIds = new int[12];
     static MapLocation[] friendECs = new MapLocation[12];
     static MapLocation[] neutralECs = new MapLocation[12];
+    static int[] neutralInf = new int[12];
     static MapLocation[] enemyECs = new MapLocation[12];
 
     // variables changed by coms

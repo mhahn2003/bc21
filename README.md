@@ -36,31 +36,31 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
-- ~~**Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**~~
-- Need to spawn more slanderers for more eco: I think pp does 1:1:1 ratio?
-    - Maybe separate between the initial ECs and the new ECs:
-    - The initial ECS focus on slanderers and politicians, while the new ones focus on muckrakers
-- Communicate EC influence
-- Change the cost of the search() politician, since devs changed the specs accordingly
-- Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
-    - Keep track of fPolcount and limit politician spawn
-    - Just spam muckrakers anyway
-- Some politician either running out of bytecode or giving an error
+- Slanderer coms doesn't seem to be working properly? Need to test/debug more
+
 - Politician
     - **If muckraker buff is large enough, buff EC it just spawned from**
     - Concentrate patrolling on the side where the attacks come from
-    - Maybe do something like: if there's a slanderer further away from the EC than it, then go towards it, otherwise stay where it can see a lot of slanderers and not a lot of other politicians?
+    - Account for enemy sending buffrakers
 - Slanderer
     - Position the slanderers away from the enemy ECs if they are known
     - Try to avoid muckrakers from a further range
 - Muckraker AI
     - **Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis**
     - Don't only crowd around the enemy EC, spread around and look for slanderers
+    - **When wandering has a tendency to move in groups, split them up somehow?**
 - General attack plan on enemy EC
     - If there's a lot of politicians around the EC, you should just keep attacking, and not wait for maximum efficiency
     - Count how many of our units are around the enemy EC and just attack
-- EC building logic
-    - If it's too clogged up, use coms to indicate to increase the politician patrol radius
+- Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
+    - Keep track of fPolcount and limit politician spawn
+    - Just spam muckrakers anyway
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola
+    - ~~**Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**~~
+- ~~Communicate EC influence~~
+- ~~Change the cost of the search() politician, since devs changed the specs accordingly~~
+- ~~Need to spawn more slanderers for more eco: I think pp does 1:1:1 ratio?~~
+    - ~~Maybe separate between the initial ECs and the new ECs:~~
+    - ~~The initial ECS focus on slanderers and politicians, while the new ones focus on muckrakers~~
