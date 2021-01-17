@@ -12,7 +12,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = true;
+    public static boolean debugOn = false;
 
     static int minX = 9999;
     static int maxX = 30065;
@@ -31,6 +31,7 @@ public class Robot {
     static MapLocation[] neutralECs = new MapLocation[12];
     static int[] neutralInf = new int[12];
     static MapLocation[] enemyECs = new MapLocation[12];
+    static int[] neutralCooldown = new int[12];
 
     // variables changed by coms
     static boolean moveAway = false;
@@ -125,6 +126,7 @@ public class Robot {
         Debug.p("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
 //        Debug.p("Robot.takeTurn: " + Clock.getBytecodeNum());
         for (int i = 0; i < 6; i++) staleness[i]--;
+        for (int i = 0; i < 12; i++) neutralCooldown[i]--;
     }
 
 

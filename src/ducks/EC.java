@@ -87,12 +87,16 @@ public class EC extends Robot {
             if (rc.getRoundNum() <= 100) {
                 if (2*tP < tS) {
                     // check available neutral ecs
-                    int lowNeutral = 400;
+                    int lowNeutral = 1000;
+                    int lowInd = -1;
                     for (int i = 0; i < 12; i++) {
-                        if (neutralInf[i] != 0) {
+                        if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
                             lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                            lowInd = i;
                         }
                     }
+                    if (lowInd == -1) lowNeutral = 400;
+                    else neutralCooldown[lowInd] = 40;
                     if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
                     else build(RobotType.POLITICIAN, 20);
                 }
@@ -105,12 +109,16 @@ public class EC extends Robot {
             }
             else if (rc.getRoundNum() <= 400) {
                 if (tP < tS) {
-                    int lowNeutral = 400;
+                    int lowNeutral = 1000;
+                    int lowInd = -1;
                     for (int i = 0; i < 12; i++) {
-                        if (neutralInf[i] != 0) {
+                        if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
                             lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                            lowInd = i;
                         }
                     }
+                    if (lowInd == -1) lowNeutral = 400;
+                    else neutralCooldown[lowInd] = 40;
                     if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
                     build(RobotType.POLITICIAN, 25);
                 }
@@ -121,7 +129,17 @@ public class EC extends Robot {
             }
             else {
                 if (tP < 2*tS) {
-                    if (rc.getInfluence() >= 800) build(RobotType.POLITICIAN, Math.max(400, rc.getInfluence()/20));
+                    int lowNeutral = 1000;
+                    int lowInd = -1;
+                    for (int i = 0; i < 12; i++) {
+                        if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                            lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                            lowInd = i;
+                        }
+                    }
+                    if (lowInd == -1) lowNeutral = 600;
+                    else neutralCooldown[lowInd] = 40;
+                    if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
                     build(RobotType.POLITICIAN, 30);
                 }
                 if (tM < 2*tS) {
@@ -130,71 +148,48 @@ public class EC extends Robot {
                 build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-250, 21)));
             }
         } else {
+            // initially build in a 1:2:1 ratio of p, s, m
             // then build in a 1:1:1 ratio of p, s, m
-            if (tP < tS) {
-                int lowNeutral = 400;
-                for (int i = 0; i < 12; i++) {
-                    if (neutralInf[i] != 0) {
-                        lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+            if (rc.getRoundNum() <= 150) {
+                if (2*tP < tS) {
+                    int lowNeutral = 1000;
+                    int lowInd = -1;
+                    for (int i = 0; i < 12; i++) {
+                        if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                            lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                            lowInd = i;
+                        }
                     }
+                    if (lowInd == -1) lowNeutral = 400;
+                    else neutralCooldown[lowInd] = 40;
+                    if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
+                    build(RobotType.POLITICIAN, 25);
                 }
-                if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
-                build(RobotType.POLITICIAN, 25);
+                if (2*tM < tS) {
+                    build(RobotType.MUCKRAKER, 1);
+                }
+                build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
+            } else {
+                if (tP < tS) {
+                    int lowNeutral = 1000;
+                    int lowInd = -1;
+                    for (int i = 0; i < 12; i++) {
+                        if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                            lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                            lowInd = i;
+                        }
+                    }
+                    if (lowInd == -1) lowNeutral = 400;
+                    else neutralCooldown[lowInd] = 40;
+                    if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
+                    build(RobotType.POLITICIAN, 25);
+                }
+                if (tM < tS) {
+                    build(RobotType.MUCKRAKER, 1);
+                }
+                build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence() - 150, 21)));
             }
-            if (tM < tS) {
-                build(RobotType.MUCKRAKER, 1);
-            }
-            build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-100, 21)));
         }
-
-//        if (muckCount > 0) {
-//            if (fPolCount <= 3) {
-//                build(RobotType.POLITICIAN, 15+muckCount);
-//            }
-//        }
-//        if (polCount > 0) {
-//            if (fMuckCount <= 16) {
-//                build(RobotType.MUCKRAKER, 1);
-//            }
-//        }
-//        if (polCount == 0 && muckCount == 0) {
-//            if (turnCount >= 700) {
-//                build(RobotType.SLANDERER, 150);
-//                if (rc.getInfluence() > 600) {
-//                    if (rc.canBid(rc.getInfluence()-600)) rc.bid(rc.getInfluence()-600);
-//                }
-//            } else {
-//                if (rc.getInfluence() > 150) {
-//                    build(RobotType.POLITICIAN, rc.getInfluence());
-//                } else {
-//                    int rand = (int) (Math.random() * 2);
-//                    if (rand == 0) build(RobotType.POLITICIAN,  16);
-//                    else build(RobotType.MUCKRAKER, 1);
-//                }
-//            }
-//        }
-//
-//        if (turnCount < 250) {
-//            if (rc.getInfluence() < 150) {
-//                if (turnCount % 15 == 0) build(RobotType.SLANDERER, rc.getInfluence());
-//                else build(RobotType.MUCKRAKER, 1);
-//            } else {
-//                build(RobotType.POLITICIAN, rc.getInfluence());
-//            }
-//        } else {
-//            int rand = (int) (Math.random() * 4);
-//            if (rand == 0) {
-//                build(RobotType.POLITICIAN, 16);
-//            }
-//            else if (rand == 3) {
-//                build(RobotType.MUCKRAKER, 1);
-//            }
-//            else {
-//                if (rc.getInfluence() > 150) {
-//                    build(RobotType.POLITICIAN, rc.getInfluence());
-//                }
-//            }
-//        }
     }
 
     public void build(RobotType toBuild, int influence) throws GameActionException {

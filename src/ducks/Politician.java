@@ -22,17 +22,10 @@ public class Politician extends Robot {
         if (rc.getType() == RobotType.SLANDERER) return;
         if (rc.getConviction() >= 300) attack();
         else {
-            if (rc.getRoundNum() <= 200) {
+            if (rc.getRoundNum() <= 400) {
                 if (rc.getInfluence() >= 50) attack();
-                else if (rc.getID() % 5 == 0) attack();
                 else defend();
-            } else if (rc.getRoundNum() <= 400) {
-                if (rc.getID() % 4 == 0) attack();
-                else defend();
-            } else {
-                if (rc.getID() % 3 == 0) attack();
-                else defend();
-            }
+            } else defend();
         }
     }
 
@@ -181,62 +174,6 @@ public class Politician extends Robot {
         }
     }
 
-    // search for nearby cheap neutral ECs
-//    static void search() throws GameActionException {
-//        int closestECDist = 100000;
-//        MapLocation closestEC = null;
-//        for (int i = 0; i < 12; i++) {
-//            if (neutralECs[i] != null) {
-//                int dist = rc.getLocation().distanceSquaredTo(neutralECs[i]);
-//                if (dist < closestECDist) {
-//                    closestECDist = dist;
-//                    closestEC = neutralECs[i];
-//                }
-//            }
-//        }
-//        if (closestEC != null) {
-//            if (closestECDist <= 9) {
-//                Debug.p("Within empower distance");
-//                // check if can kill
-//                RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
-//                int size = empowered.length;
-//                int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10) / size;
-//                RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
-//                if (enemyEC.getConviction() + 1 <= effect) {
-//                    Debug.p("Can kill, will kill");
-//                    if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
-//                } else {
-//                    // signal that you're attacking, so move out of the way
-//                    Debug.p("Signalling attack");
-//                    rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
-//                    // check if we can get closer, or if there's a lot of our own units in the way
-//                    int closerDist = rc.getLocation().distanceSquaredTo(closestEC);
-//                    Direction optDir = null;
-//                    for (int i = 0; i < 8; i++) {
-//                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestEC);
-//                        if (dist < closerDist && rc.canMove(directions[i])) {
-//                            closerDist = dist;
-//                            optDir = directions[i];
-//                        }
-//                    }
-//                    if (optDir != null) {
-//                        Debug.p("The optimal direction to move is: " + optDir);
-//                        rc.move(optDir);
-//                    } else {
-//                        // just empower
-//                        if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
-//                    }
-//                }
-//            } else {
-//                Debug.p("navbugging");
-//                nav.bugNavigate(closestEC);
-//            }
-//        } else {
-//            wander();
-//            nav.bugNavigate(wandLoc);
-//        }
-//    }
-
     static void defend() throws GameActionException {
         Debug.p("Defending");
         // check if it should just explode
@@ -276,12 +213,12 @@ public class Politician extends Robot {
                 // search for other friendly politicians near
                 RobotInfo[] near = rc.senseNearbyRobots(enemyMuck, 2, team);
                 for (RobotInfo r : near) {
-                    if (r.getType() == RobotType.POLITICIAN) {
+                    if (r.getType() == RobotType.POLITICIAN && r.getInfluence() < 50) {
                         defended = true;
                         break;
                     }
                 }
-                if (!defended || (muck != null && rc.getLocation().isWithinDistanceSquared(muck.getLocation(), 8))) {
+                if (!defended || (muck != null && rc.getLocation().isWithinDistanceSquared(muck.getLocation(), 16))) {
                     if (muck != null) {
                         // either blow up the muckraker, or go closer to it
                         int locDist = rc.getLocation().distanceSquaredTo(muck.getLocation());
@@ -330,7 +267,7 @@ public class Politician extends Robot {
                         int poliInd = 0;
                         RobotInfo[] nearP = rc.senseNearbyRobots(16, team);
                         for (RobotInfo r : nearP) {
-                            if (Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN) {
+                            if (Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN && r.getInfluence() < 50) {
                                 if (poliInd < 5) {
                                     nearPolis[poliInd] = r.getLocation();
                                     poliInd++;
@@ -375,31 +312,6 @@ public class Politician extends Robot {
                             }
                             if (optDir != null) rc.move(optDir);
                         }
-//                        if (closestPolitician != null) {
-//                            boolean defended = false;
-//                            RobotInfo[] near = rc.senseNearbyRobots(closestPolitician, 2, team);
-//                            for (RobotInfo r : near) {
-//                                if (Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN) {
-//                                    defended = true;
-//                                    break;
-//                                }
-//                            }
-//                            if (!defended) nav.bugNavigate(closestPolitician);
-//                        } else {
-//                            // if there's nothing, just patrol around HQ
-//                            int closestECDist = 1000000;
-//                            MapLocation closestEC = null;
-//                            for (int i = 0; i < 12; i++) {
-//                                if (friendECs[i] != null) {
-//                                    int dist = rc.getLocation().distanceSquaredTo(friendECs[i]);
-//                                    if (dist < closestECDist) {
-//                                        closestECDist = dist;
-//                                        closestEC = friendECs[i];
-//                                    }
-//                                }
-//                            }
-//                            if (closestEC != null) patrol(closestEC, 25, 45);
-//                            else wander();
                     }
                 }
             }

@@ -36,25 +36,26 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
-- Slanderer coms doesn't seem to be working properly? Need to test/debug more
+All of the bold points should be implemented before sprint 2
 
 - Politician
     - **If muckraker buff is large enough, buff EC it just spawned from**
     - Concentrate patrolling on the side where the attacks come from
     - Account for enemy sending buffrakers
+    - **Defense politician only needs to spread out from other defense, otherwise muckrakers can slip by**
+    - **Need to attack EC if there's a ton of attack politicians not doing anything**
+    - Check if there's too much of an imbalance between attack and defense politicians
 - Slanderer
-    - Position the slanderers away from the enemy ECs if they are known
+    - **Position the slanderers away from the enemy ECs if they are known**
     - Try to avoid muckrakers from a further range
 - Muckraker AI
-    - **Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis**
-    - Don't only crowd around the enemy EC, spread around and look for slanderers
+    - __Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis__
+    - **Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10**
     - **When wandering has a tendency to move in groups, split them up somehow?**
-- General attack plan on enemy EC
-    - If there's a lot of politicians around the EC, you should just keep attacking, and not wait for maximum efficiency
-    - Count how many of our units are around the enemy EC and just attack
 - Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
     - Keep track of fPolcount and limit politician spawn
     - Just spam muckrakers anyway
+- Slanderer coms doesn't seem to be working properly? Need to test/debug more
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola
@@ -64,3 +65,12 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - ~~Need to spawn more slanderers for more eco: I think pp does 1:1:1 ratio?~~
     - ~~Maybe separate between the initial ECs and the new ECs:~~
     - ~~The initial ECS focus on slanderers and politicians, while the new ones focus on muckrakers~~
+    - Still need more eco for the newer ecs
+
+Order:
+1. ~~Defense politician only needs to spread out from other defense, otherwise muckrakers can slip by~~
+2. Need to attack EC if there's a ton of attack politicians not doing anything
+3. Position the slanderers away from the enemy ECs if they are known
+4. When wandering has a tendency to move in groups, split them up somehow?
+5. Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10
+6. If muckraker buff is large enough, buff EC it just spawned from
