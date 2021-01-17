@@ -69,7 +69,7 @@ All of the bold points should be implemented before sprint 2
 
 Order:
 1. ~~Defense politician only needs to spread out from other defense, otherwise muckrakers can slip by~~
-2. Need to attack EC if there's a ton of attack politicians not doing anything
+2. ~~Need to attack EC if there's a ton of attack politicians not doing anything~~
 3. Position the slanderers away from the enemy ECs if they are known
 4. When wandering has a tendency to move in groups, split them up somehow?
 5. Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10

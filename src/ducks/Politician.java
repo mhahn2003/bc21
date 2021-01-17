@@ -58,6 +58,7 @@ public class Politician extends Robot {
             }
         }
         if (closestNeutral != null) {
+            // should be able to kill if there's no units beside it
             Debug.p("Going to closest neutral EC: " + closestNeutral);
             if (closestNeutralDist <= 9) {
                 Debug.p("Within empower distance");
@@ -70,8 +71,10 @@ public class Politician extends Robot {
                     Debug.p("Can kill, will kill");
                     if (rc.canEmpower(closestNeutralDist)) rc.empower(closestNeutralDist);
                 } else {
-                    Debug.p("Signalling attack");
-                    rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestNeutral));
+                    if (!moveAway) {
+                        Debug.p("Signalling attack");
+                        rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestNeutral));
+                    }
                     int closerDist = rc.getLocation().distanceSquaredTo(closestNeutral);
                     Direction optDir = null;
                     for (int i = 0; i < 8; i++) {
@@ -86,18 +89,18 @@ public class Politician extends Robot {
                         rc.move(optDir);
                     } else {
                         // if can't move, then try to see whether it's good to just blast away
-                        int teamCount = 0;
-                        for (RobotInfo r : empowered) {
-                            if (r.getTeam() == team) teamCount++;
+                        int teamPoli = (int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10;
+                        for (RobotInfo r : robots) {
+                            if (r.getTeam() == team && Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN) {
+                                teamPoli += (int) ((double) r.getConviction() * rc.getEmpowerFactor(team, 0)) - 10;
+                            }
                         }
-                        Debug.p("There's teammates around me: " + teamCount);
-//                        int eff = attackEffect(closestECDist)[0];
-//                        Debug.p("Efficiency: " + eff);
+                        Debug.p("Total team conviction: " + teamPoli);
                         if (attackEffect(closestNeutralDist)[1] > 2) {
                             Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestNeutralDist)) rc.empower(closestNeutralDist);
                         } else {
-                            if (rc.getConviction() <= 100) {
+                            if (teamPoli >= 2*neutralEC.getConviction() || rc.getConviction() <= 100) {
                                 // just empower
                                 if (rc.canEmpower(closestNeutralDist)) rc.empower(closestNeutralDist);
                             }
@@ -124,7 +127,7 @@ public class Politician extends Robot {
                 } else {
                     // signal that you're attacking, so move out of the way
                     // only signal if you're a fat politician
-                    if (rc.getConviction() >= 300) {
+                    if (rc.getConviction() >= 300 && !moveAway) {
                         Debug.p("Signalling attack");
                         rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
                     }
@@ -144,23 +147,21 @@ public class Politician extends Robot {
                     }
                     else {
                         // if can't move, then try to see whether it's good to just blast away
-                        int teamCount = 0;
-                        for (RobotInfo r : empowered) {
-                            if (r.getTeam() == team) teamCount++;
+                        int teamPoli = (int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10;
+                        for (RobotInfo r : robots) {
+                            if (r.getTeam() == team && Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN) {
+                                teamPoli += (int) ((double) r.getConviction() * rc.getEmpowerFactor(team, 0)) - 10;
+                            }
                         }
-                        Debug.p("There's teammates around me: " + teamCount);
-//                        int eff = attackEffect(closestECDist)[0];
-//                        Debug.p("Efficiency: " + eff);
+                        Debug.p("Total team conviction: " + teamPoli);
                         if (attackEffect(closestECDist)[1] > 2) {
                             Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                         } else {
-                            if (rc.getConviction() <= 100) {
+                            if (teamPoli >= 3*enemyEC.getConviction() || rc.getConviction() <= 100) {
                                 // just empower
                                 if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                             }
-                            // wait for others to move
-                            // maybe ask for assist?
                         }
                     }
                 }

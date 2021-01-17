@@ -337,7 +337,7 @@ public class Coms {
             RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
             boolean guard = false;
             for (RobotInfo rob : closeRobots) {
-                if (rob.getType() == RobotType.SLANDERER) {
+                if (getTyp(rc.getFlag(rob.getID())) == RobotType.SLANDERER) {
                     guard = true;
                     break;
                 }
