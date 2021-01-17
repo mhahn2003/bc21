@@ -90,7 +90,7 @@ public class ECComs extends Coms {
         while (Clock.getBytecodesLeft() >= 4000 && IDcheck <= 14096) {
             if (rc.canGetFlag(IDcheck)) {
                 int flag = rc.getFlag(IDcheck);
-                if (getTyp(flag) == RobotType.ENLIGHTENMENT_CENTER) {
+                if (getTyp(flag) == RobotType.ENLIGHTENMENT_CENTER && getCat(flag) != null) {
                     // found an EC!
                     boolean knownID = false;
                     for (int i = 0; i < 12; i++) {

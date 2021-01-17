@@ -167,7 +167,7 @@ public class Muckraker extends Robot {
                         MapLocation adj = rc.getLocation().add(directions[i]);
                         optDirH[i] += adj.distanceSquaredTo(loc);
                         if (rc.canSenseLocation(adj)) optDirH[i] += 2*((int) (1.0/rc.sensePassability(adj)));
-                        if (optDirH[i] < minH && rc.canMove(optDir)) {
+                        if (optDirH[i] < minH && rc.canMove(directions[i])) {
                             minH = optDirH[i];
                             optDir = directions[i];
                         }

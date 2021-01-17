@@ -36,7 +36,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
-- **Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**
+- ~~**Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**~~
 - Need to spawn more slanderers for more eco: I think pp does 1:1:1 ratio?
     - Maybe separate between the initial ECs and the new ECs:
     - The initial ECS focus on slanderers and politicians, while the new ones focus on muckrakers
@@ -49,6 +49,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Politician
     - **If muckraker buff is large enough, buff EC it just spawned from**
     - Concentrate patrolling on the side where the attacks come from
+    - Maybe do something like: if there's a slanderer further away from the EC than it, then go towards it, otherwise stay where it can see a lot of slanderers and not a lot of other politicians?
 - Slanderer
     - Position the slanderers away from the enemy ECs if they are known
     - Try to avoid muckrakers from a further range
