@@ -31,9 +31,19 @@ public class EC extends Robot {
     public void takeTurn() throws GameActionException {
         super.takeTurn();
         if (rc.getRoundNum() >= 500) bid();
+        if (!noSlanderer && rc.getInfluence() == 100000000) {
+            noSlanderer = true;
+            Coms.signalQueue.add(Coms.getMessage(Coms.IC.NO_SLANDERER, 0));
+            Coms.addRelevantFlag(Coms.getMessage(Coms.IC.NO_SLANDERER, 0));
+        }
         Debug.p("tS: " + tS);
         Debug.p("tP: " + tP);
         Debug.p("tM: " + tM);
+        if (noSlanderer) {
+            rich();
+            return;
+        }
+        // TODO : still not no slanderer, but the case where you have a lot of money
         // check what kind of units are outside our base
         muckCount = 0;
         polCount = 0;
@@ -230,5 +240,10 @@ public class EC extends Robot {
         } else bidded = false;
         bidCount -= bidCount/16;
         voteCount = curVote;
+    }
+
+    // stuff to do if you're rich
+    public void rich() throws GameActionException {
+
     }
 }
