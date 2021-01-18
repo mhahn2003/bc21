@@ -6,36 +6,41 @@ import selfbuff.utils.Debug;
 import java.util.PriorityQueue;
 
 import static selfbuff.Robot.*;
+import static selfbuff.utils.Constants.staleCooldown;
 
 public class Coms {
-    protected final PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
+    public static PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
     protected int relevantSize = 0;
     protected int relevantInd = 0;
-    protected int[] relevantFlags = new int[20];
+    protected int[] relevantFlags = new int[30];
     protected RobotInfo processingRobot = null;
 
 
     // number of possible cases for InfoCategory enum class
-    private static int numCase = 11;
+    private static int numCase = 17;
 
-    // first 15 bit is message (only 14 is used for transimitting location) (only 12 is really needed)
-    // next 4 bits are catagory (an extra bit is only added for the 8 (1000) since it is 4 bits)
-    // next 3 bits are unit type (an extra bit is only added for the 4 (100) since it is 3 bits)
-    // discuss: want to cut it down by one?
-
-    // (every trailing f is 4 bit. lead can be f,7,3,1 standing for 4,3,2,1 bits)
+    //[0,16] bits for information (16 bits) (msg)    ( msg&0x00ffff     )
+    //[17,22] for IC (6 bits)               (msg<<16)((msg&0x3f0000)>>16)
+    //[23,24] for robot type (2 bits)       (msg<<22)((msg&0xc00000)>>22)
 
     public Coms() {
     }
 
     // TODO: need to order in terms of priority
     public enum IC {
+        MUCKRAKER_HELP,
         FRIEND_EC,
         EC_ID,
         ENEMY_EC,
         NEUTRAL_EC,
-        MUCKRAKER,
+        POLITICIAN,
         SLANDERER,
+        MAP_CORNER,
+        MAP_NW,
+        MAP_NE,
+        MAP_SW,
+        MAP_SE,
+        MUCKRAKER,
         EDGE_N,
         EDGE_E,
         EDGE_S,
@@ -46,18 +51,25 @@ public class Coms {
     public static int getMessage(IC cat, MapLocation coord) {
         int message;
         switch (cat) {
-            case FRIEND_EC : message = 1; break;
-            case EC_ID     : message = 2; break;
-            case ENEMY_EC  : message = 3; break;
-            case NEUTRAL_EC: message = 4; break;
-            case MUCKRAKER : message = 5; break;
-            case SLANDERER : message = 6; break;
-            case EDGE_N    : message = 7; break;
-            case EDGE_E    : message = 8; break;
-            case EDGE_S    : message = 9; break;
-            case EDGE_W    : message = 10; break;
-            case ATTACK    : message = 11; break;
-            default        : message = 12;
+            case MUCKRAKER_HELP: message = 1; break;
+            case FRIEND_EC     : message = 2; break;
+            case EC_ID         : message = 3; break;
+            case ENEMY_EC      : message = 4; break;
+            case NEUTRAL_EC    : message = 5; break;
+            case POLITICIAN    : message = 6; break;
+            case SLANDERER     : message = 7; break;
+            case MAP_CORNER    : message = 8; break;
+            case MAP_NW        : message = 9; break;
+            case MAP_NE        : message = 10; break;
+            case MAP_SW        : message = 11; break;
+            case MAP_SE        : message = 12; break;
+            case MUCKRAKER     : message = 13; break;
+            case EDGE_N        : message = 14; break;
+            case EDGE_E        : message = 15; break;
+            case EDGE_S        : message = 16; break;
+            case EDGE_W        : message = 17; break;
+            case ATTACK        : message = 18; break;
+            default            : message = 19;
         }
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
@@ -66,18 +78,25 @@ public class Coms {
     public static int getMessage(IC cat, int ID) {
         int message;
         switch (cat) {
-            case FRIEND_EC : message = 1; break;
-            case EC_ID     : message = 2; break;
-            case ENEMY_EC  : message = 3; break;
-            case NEUTRAL_EC: message = 4; break;
-            case MUCKRAKER : message = 5; break;
-            case SLANDERER : message = 6; break;
-            case EDGE_N    : message = 7; break;
-            case EDGE_E    : message = 8; break;
-            case EDGE_S    : message = 9; break;
-            case EDGE_W    : message = 10; break;
-            case ATTACK    : message = 11; break;
-            default        : message = 12;
+            case MUCKRAKER_HELP: message = 1; break;
+            case FRIEND_EC     : message = 2; break;
+            case EC_ID         : message = 3; break;
+            case ENEMY_EC      : message = 4; break;
+            case NEUTRAL_EC    : message = 5; break;
+            case POLITICIAN    : message = 6; break;
+            case SLANDERER     : message = 7; break;
+            case MAP_CORNER    : message = 8; break;
+            case MAP_NW        : message = 9; break;
+            case MAP_NE        : message = 10; break;
+            case MAP_SW        : message = 11; break;
+            case MAP_SE        : message = 12; break;
+            case MUCKRAKER     : message = 13; break;
+            case EDGE_N        : message = 14; break;
+            case EDGE_E        : message = 15; break;
+            case EDGE_S        : message = 16; break;
+            case EDGE_W        : message = 17; break;
+            case ATTACK        : message = 18; break;
+            default            : message = 19;
         }
         message = addID(message, ID) + typeInt(rc.getType());
         return message;
@@ -85,60 +104,66 @@ public class Coms {
 
     public static int typeInt(RobotType type) {
         switch (type) {
-            case POLITICIAN: return 0x80000;
-            case SLANDERER: return 0x100000;
-            case MUCKRAKER: return 0x180000;
-            case ENLIGHTENMENT_CENTER: return 0x200000;
+            case POLITICIAN: return 0;
+            case SLANDERER: return 1 << 22;
+            case MUCKRAKER: return 2 << 22;
+            case ENLIGHTENMENT_CENTER: return 3 << 22;
         }
         return 0;
     }
     public static int addCoord(int message, MapLocation coord) {
-        return (message << 15) + ((coord.x % 128) << 7) + (coord.y % 128);
+        return (message << 16) + ((coord.x % 128) << 7) + (coord.y % 128);
     }
 
     public static int addID(int message, int ID) {
-        return (message << 15)+ID;
+        return (message << 16)+ID;
     }
 
     public static RobotType getTyp(int message) {
-        switch (message>>19) {
-            case 1: return RobotType.POLITICIAN;
-            case 2: return RobotType.SLANDERER;
-            case 3: return RobotType.MUCKRAKER;
-            case 4: return RobotType.ENLIGHTENMENT_CENTER;
+        switch (message >> 22) {
+            case 0: return RobotType.POLITICIAN;
+            case 1: return RobotType.SLANDERER;
+            case 2: return RobotType.MUCKRAKER;
+            case 3: return RobotType.ENLIGHTENMENT_CENTER;
         }
         return null;
     }
 
+
     public static IC getCat(int message) {
-        message = message & 0x7ffff;
-        switch (message >> 15) {
-            case 1: return IC.FRIEND_EC;
-            case 2: return IC.EC_ID;
-            case 3: return IC.ENEMY_EC;
-            case 4: return IC.NEUTRAL_EC;
-            case 5: return IC.MUCKRAKER;
-            case 6: return IC.SLANDERER;
-            case 7: return IC.EDGE_N;
-            case 8: return IC.EDGE_E;
-            case 9: return IC.EDGE_S;
-            case 10: return IC.EDGE_W;
-            case 11: return IC.ATTACK;
+        message = message % (1 << 22);
+        switch (message >> 16) {
+            case 1: return IC.MUCKRAKER_HELP;
+            case 2: return IC.FRIEND_EC;
+            case 3: return IC.EC_ID;
+            case 4: return IC.ENEMY_EC;
+            case 5: return IC.NEUTRAL_EC;
+            case 6: return IC.POLITICIAN;
+            case 7: return IC.SLANDERER;
+            case 8: return IC.MAP_CORNER;
+            case 9: return IC.MAP_NW;
+            case 10: return IC.MAP_NE;
+            case 11: return IC.MAP_SW;
+            case 12: return IC.MAP_SE;
+            case 13: return IC.MUCKRAKER;
+            case 14: return IC.EDGE_N;
+            case 15: return IC.EDGE_E;
+            case 16: return IC.EDGE_S;
+            case 17: return IC.EDGE_W;
+            case 18: return IC.ATTACK;
             default: return null;
         }
     }
 
     public static int getID(int message) {
-        message = message & 0x7ffff;
-        return message % 32768;
+        return message % (1 << 16);
     }
 
     public static MapLocation getCoord(int message) {
-        message = message & 0x7ffff;
         MapLocation here = rc.getLocation();
         int remX = here.x % 128;
         int remY = here.y % 128;
-        message = message % 32768;
+        message = message % (1 << 16);
         int x = message >> 7;
         int y = message % 128;
         if (Math.abs(x - remX) >= 64) {
@@ -154,172 +179,296 @@ public class Coms {
 
     // relay information about surroundings
     public void collectInfo() throws GameActionException {
-        // first check for any edges
-        for (int i = 0; i < 4; i++) {
-            if (edges[i]) continue;
-            Direction dir = Direction.cardinalDirections()[i];
-            MapLocation checkLoc = rc.getLocation().add(dir);
-            while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
-                if (!rc.onTheMap(checkLoc)) {
-                    System.out.println("I see an edge");
-                    edges[i] = true;
-                    int msg = 0;
-                    if (i == 0) {
-                        maxY = checkLoc.y-1;
-                        msg=getMessage(IC.EDGE_N, maxY);
-                    } else if (i == 1) {
-                        maxX = checkLoc.x-1;
-                        msg=getMessage(IC.EDGE_E, maxX);
-                    } else if (i == 2) {
-                        minY = checkLoc.y+1;
-                        msg=getMessage(IC.EDGE_S, minY);
-                    } else if (i == 3) {
-                        minX = checkLoc.x+1;
-                        msg=getMessage(IC.EDGE_W, minX);
-                    }
-                    signalQueue.add(msg);
-                    addRelevantFlag(msg);
-                    relevantSize++;
-                    System.out.println("updated "+i+"th edge");
+        // temporary fix for reducing bytecode for slanderers: fix
+        // TODO: reduce bytecode usage in general
+        if (rc.getType() == RobotType.SLANDERER) {
+            RobotInfo[] enemies = rc.senseNearbyRobots(-1, team.opponent());
+            for (RobotInfo r : enemies) {
+                if (r.getType() == RobotType.MUCKRAKER) {
+                    signalQueue.add(getMessage(IC.MUCKRAKER_HELP, r.getLocation()));
                     break;
                 }
-                checkLoc = checkLoc.add(dir);
             }
-        }
-        // whether you're a muckraker guarding a slanderer
-        RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
-        boolean guard = false;
-        for (RobotInfo rob : closeRobots) {
-            if (rob.getType() == RobotType.SLANDERER) {
-                guard = true;
-                break;
+        } else {
+            // first check for any edges
+            for (int a = 0; a < 4; a++) {
+                if (edges[a]) continue;
+                Direction dir = Direction.cardinalDirections()[a];
+                MapLocation checkLoc = rc.getLocation().add(dir);
+                while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
+                    if (!rc.onTheMap(checkLoc)) {
+                        Debug.p("I see an edge");
+                        edges[a] = true;
+                        if (a == 0) {
+                            maxY = checkLoc.y-1;
+                            signalQueue.add(getMessage(IC.EDGE_N, maxY));
+                            addRelevantFlag(getMessage(IC.EDGE_N, maxY));
+                            if (mapGenerated) {
+                                // rule out some spots
+                                for (int i = 7; i >= 0; i--) {
+                                    for (int j = 7; j >= 0; j--) {
+                                        if (mapSpots[i][j].y > maxY) visited[i][j] = true;
+                                    }
+                                }
+                            }
+                        } else if (a == 1) {
+                            maxX = checkLoc.x-1;
+                            signalQueue.add(getMessage(IC.EDGE_E, maxX));
+                            addRelevantFlag(getMessage(IC.EDGE_E, maxX));
+                            if (mapGenerated) {
+                                // rule out some spots
+                                for (int i = 7; i >= 0; i--) {
+                                    for (int j = 7; j >= 0; j--) {
+                                        if (mapSpots[i][j].x > maxX) visited[i][j] = true;
+                                    }
+                                }
+                            }
+                        } else if (a == 2) {
+                            minY = checkLoc.y+1;
+                            signalQueue.add(getMessage(IC.EDGE_S, minY));
+                            addRelevantFlag(getMessage(IC.EDGE_S, minY));
+                            if (mapGenerated) {
+                                // rule out some spots
+                                for (int i = 7; i >= 0; i--) {
+                                    for (int j = 7; j >= 0; j--) {
+                                        if (mapSpots[i][j].y < minY) visited[i][j] = true;
+                                    }
+                                }
+                            }
+                        } else if (a == 3) {
+                            minX = checkLoc.x+1;
+                            signalQueue.add(getMessage(IC.EDGE_W, minX));
+                            addRelevantFlag(getMessage(IC.EDGE_W, minX));
+                            if (mapGenerated) {
+                                // rule out some spots
+                                for (int i = 7; i >= 0; i--) {
+                                    for (int j = 7; j >= 0; j--) {
+                                        if (mapSpots[i][j].x < minX) visited[i][j] = true;
+                                    }
+                                }
+                            }
+                        }
+                        Debug.p("updated "+a+"th edge");
+                        break;
+                    }
+                    checkLoc = checkLoc.add(dir);
+                }
             }
-        }
-        for (RobotInfo r: robots) {
-            // check for any ECs
-            if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                Debug.p("Found an EC!");
-                int id = r.getID();
-                Debug.p("ID is: " + id);
-                MapLocation loc = r.getLocation();
-                Debug.p("Location is: " + loc);
-                if (r.getTeam() == team) {
-                    int minInd = -1;
-                    boolean seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (ECIds[i] == 0) {
-                            minInd = i;
+            if (mapGenerated && rc.getType() != RobotType.ENLIGHTENMENT_CENTER) {
+                int offsetX = (rc.getLocation().x - mapSpots[0][0].x + 8) % 8;
+                int offsetY = (rc.getLocation().y - mapSpots[0][0].y + 8) % 8;
+                if ((offsetX == 0 || offsetX == 7) && (offsetY == 0 || offsetY == 7)) {
+                    Debug.p("I'm at one of the middle spots");
+                    // at one of the middle spots
+                    int x = (rc.getLocation().x - mapSpots[0][0].x + 1)/8;
+                    int y = (rc.getLocation().y - mapSpots[0][0].y + 1)/8;
+                    if (!visited[x][y]) {
+                        visited[x][y] = true;
+                        if (x < 4 && y < 4) {
+                            // SW
+                            int msgSum = 0;
+                            for (int i = 0; i < 4; i++) {
+                                for (int j = 0; j < 4; j++) {
+                                    if (visited[i][j]) msgSum += (1 << (i*4+j));
+                                }
+                            }
+                            if (rc.getType() == RobotType.MUCKRAKER) signalQueue.add(getMessage(IC.MAP_SW, msgSum));
                         }
-                        if (ECIds[i] == id) {
-                            seen = true;
-                            break;
+                        if (x >= 4 && y < 4) {
+                            // SE
+                            int msgSum = 0;
+                            for (int i = 4; i < 8; i++) {
+                                for (int j = 0; j < 4; j++) {
+                                    if (visited[i][j]) msgSum += (1 << ((i-4)*4+j));
+                                }
+                            }
+                            if (rc.getType() == RobotType.MUCKRAKER) signalQueue.add(getMessage(IC.MAP_SE, msgSum));
                         }
-                    }
-                    if (minInd != -1 && !seen) {
-                        ECIds[minInd] = id;
-                        Debug.p("ID: Adding to signal queue");
-                        int msg = getMessage(IC.EC_ID, id);
-                        signalQueue.add(msg);
-                        addRelevantFlag(msg);
-                    }
-                    for (int i = 0; i < 12; i++) {
-                        if (loc.equals(enemyECs[i])) {
-                            enemyECs[i] = null;
-                            removeRelevantFlag(getMessage(IC.ENEMY_EC, loc));
-                            break;
+                        if (x < 4 && y >= 4) {
+                            // NW
+                            int msgSum = 0;
+                            for (int i = 0; i < 4; i++) {
+                                for (int j = 4; j < 8; j++) {
+                                    if (visited[i][j]) msgSum += (1 << (i*4+j-4));
+                                }
+                            }
+                            if (rc.getType() == RobotType.MUCKRAKER) signalQueue.add(getMessage(IC.MAP_NW, msgSum));
                         }
-                        if (loc.equals(neutralECs[i])) {
-                            neutralECs[i] = null;
-                            removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
-                            break;
+                        if (x >= 4 && y >= 4) {
+                            // NE
+                            int msgSum = 0;
+                            for (int i = 4; i < 8; i++) {
+                                for (int j = 4; j < 8; j++) {
+                                    if (visited[i][j]) msgSum += (1 << ((i-4)*4+j-4));
+                                }
+                            }
+                            if (rc.getType() == RobotType.MUCKRAKER) signalQueue.add(getMessage(IC.MAP_NE, msgSum));
                         }
-                    }
-                    minInd = -1;
-                    seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (friendECs[i] == null) {
-                            minInd = i;
-                        } else if (friendECs[i].equals(r.getLocation())) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        friendECs[minInd] = r.getLocation();
-                        Debug.p("FRIENDLY: Adding to signal queue");
-                        int msg = getMessage(IC.FRIEND_EC, loc);
-                        signalQueue.add(msg);
-                        addRelevantFlag(msg);
-                    }
-                } else if (r.getTeam() == team.opponent()) {
-                    for (int i = 0; i < 12; i++) {
-                        if (loc.equals(friendECs[i])) {
-                            friendECs[i] = null;
-                            removeRelevantFlag(getMessage(IC.FRIEND_EC, loc));
-                            break;
-                        }
-                        if (loc.equals(neutralECs[i])) {
-                            neutralECs[i] = null;
-                            removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
-                            break;
-                        }
-                    }
-                    int minInd = -1;
-                    boolean seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (enemyECs[i] == null) {
-                            minInd = i;
-                        } else if (enemyECs[i].equals(loc)) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        enemyECs[minInd] = r.getLocation();
-                        Debug.p("ENEMY: Adding to signal queue");
-
-                        signalQueue.add(getMessage(IC.ENEMY_EC, loc));
-                        addRelevantFlag(getMessage(IC.ENEMY_EC, loc));
-                    }
-                } else {
-                    int minInd = -1;
-                    boolean seen = false;
-                    for (int i = 11; i >= 0; i--) {
-                        if (neutralECs[i] == null) {
-                            minInd = i;
-                        } else if (neutralECs[i].equals(r.getLocation())) {
-                            seen = true;
-                            break;
-                        }
-                    }
-                    if (minInd != -1 && !seen) {
-                        Debug.p("NEUTRAL: Adding to signal queue");
-                        int msg = getMessage(IC.NEUTRAL_EC, loc);
-                        signalQueue.add(msg);
-                        addRelevantFlag(msg);
                     }
                 }
             }
-            // if you're a muckraker, check for units
-            if (rc.getType() == RobotType.MUCKRAKER) {
-                if (guard) {
-                    // then relay info about any muckrakers you see
-                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
-                        signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
-                        guard = false;
-                    }
-                }
-                // discuss: do we even need to signal slanderers?
-//                if (r.getType() == RobotType.SLANDERER && r.getTeam() == team.opponent()) {
-//                    signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
+//            Nav.getEnds();
+//            // check for any corners
+//            boolean update = false;
+//            for (int i = 0; i < 9; i++) {
+//                if (corners[i]) continue;
+//                if (rc.canSenseLocation(ends[i])) {
+//                    corners[i] = true;
+//                    update = true;
 //                }
+//            }
+//            if (update) {
+//                int msgSum = 0;
+//                for (int i = 0; i < 9; i++) {
+//                    if (corners[i]) {
+//                        Debug.p("corner i: " + ends[i]);
+//                        msgSum += (1 << i);
+//                    }
+//                }
+//                Debug.p("msgSum: " + msgSum);
+//                signalQueue.add(getMessage(IC.ENDS, msgSum));
+//                // need to check relevant flags and replace the previous ends flag if there is any
+//                for (int i = 0; i < 20; i++) {
+//                    if (getCat(relevantFlags[i]) == IC.ENDS) {
+//                        removeRelevantFlag(relevantFlags[i]);
+//                        break;
+//                    }
+//                }
+//                addRelevantFlag(getMessage(IC.ENDS, msgSum));
+//            }
+
+            // whether you're a guarding a slanderer
+            RobotInfo[] closeRobots = rc.senseNearbyRobots(8, team);
+            boolean guard = false;
+            for (RobotInfo rob : closeRobots) {
+                if (rob.getType() == RobotType.SLANDERER) {
+                    guard = true;
+                    break;
+                }
+            }
+            boolean foundSlanderer = false;
+            for (RobotInfo r: robots) {
+                // check for any ECs
+                if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+                    Debug.p("Found an EC!");
+                    int id = r.getID();
+                    Debug.p("ID is: " + id);
+                    MapLocation loc = r.getLocation();
+                    Debug.p("Location is: " + loc);
+                    if (r.getTeam() == team) {
+                        int minInd = -1;
+                        boolean seen = false;
+                        for (int i = 11; i >= 0; i--) {
+                            if (ECIds[i] == 0) {
+                                minInd = i;
+                            }
+                            if (ECIds[i] == id) {
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (minInd != -1 && !seen) {
+                            ECIds[minInd] = id;
+                            Debug.p("ID: Adding to signal queue");
+                            signalQueue.add(getMessage(IC.EC_ID, id));
+                            addRelevantFlag(getMessage(IC.EC_ID, id));
+                        }
+                        for (int i = 0; i < 12; i++) {
+                            if (loc.equals(enemyECs[i])) {
+                                enemyECs[i] = null;
+                                removeRelevantFlag(getMessage(IC.ENEMY_EC, loc));
+                                break;
+                            }
+                            if (loc.equals(neutralECs[i])) {
+                                neutralECs[i] = null;
+                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                break;
+                            }
+                        }
+                        minInd = -1;
+                        seen = false;
+                        for (int i = 11; i >= 0; i--) {
+                            if (friendECs[i] == null) {
+                                minInd = i;
+                            } else if (friendECs[i].equals(r.getLocation())) {
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (minInd != -1 && !seen) {
+                            friendECs[minInd] = r.getLocation();
+                            Debug.p("FRIENDLY: Adding to signal queue");
+                            signalQueue.add(getMessage(IC.FRIEND_EC, loc));
+                            addRelevantFlag(getMessage(IC.FRIEND_EC, loc));
+                        }
+                    } else if (r.getTeam() == team.opponent()) {
+                        for (int i = 0; i < 12; i++) {
+                            if (loc.equals(friendECs[i])) {
+                                friendECs[i] = null;
+                                removeRelevantFlag(getMessage(IC.FRIEND_EC, loc));
+                                break;
+                            }
+                            if (loc.equals(neutralECs[i])) {
+                                neutralECs[i] = null;
+                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                break;
+                            }
+                        }
+                        int minInd = -1;
+                        boolean seen = false;
+                        for (int i = 11; i >= 0; i--) {
+                            if (enemyECs[i] == null) {
+                                minInd = i;
+                            } else if (enemyECs[i].equals(loc)) {
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (minInd != -1 && !seen) {
+                            enemyECs[minInd] = r.getLocation();
+                            Debug.p("ENEMY: Adding to signal queue");
+                            signalQueue.add(getMessage(IC.ENEMY_EC, loc));
+                            addRelevantFlag(getMessage(IC.ENEMY_EC, loc));
+                        }
+                    } else {
+                        int minInd = -1;
+                        boolean seen = false;
+                        for (int i = 11; i >= 0; i--) {
+                            if (neutralECs[i] == null) {
+                                minInd = i;
+                            } else if (neutralECs[i].equals(r.getLocation())) {
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (minInd != -1 && !seen) {
+                            Debug.p("NEUTRAL: Adding to signal queue");
+                            signalQueue.add(getMessage(IC.NEUTRAL_EC, loc));
+                            addRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                        }
+                    }
+                }
+                if (rc.getType() != RobotType.ENLIGHTENMENT_CENTER && r.getType() == RobotType.MUCKRAKER && r.getTeam() == team.opponent()) {
+                    if (rc.getType() == RobotType.SLANDERER)
+                        signalQueue.add(getMessage(IC.MUCKRAKER_HELP, r.getLocation()));
+                    else if (guard) {
+                        // if you're near a slanderer
+                        signalQueue.add(getMessage(IC.MUCKRAKER, r.getLocation()));
+                    }
+                }
+                // if you're a muckraker, check for units
+                if (rc.getType() == RobotType.MUCKRAKER && !foundSlanderer) {
+                    if (r.getType() == RobotType.SLANDERER && r.getTeam() == team.opponent()) {
+                        foundSlanderer = true;
+                        signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
+                    }
+                }
             }
         }
     }
 
     // get information from flags
     public void getInfo() throws GameActionException {
-        robots = rc.senseNearbyRobots();
         // first get the flags from ECs
         for (int i = 0; i < 12; i++) {
             if (ECIds[i] != 0) {
@@ -342,11 +491,11 @@ public class Coms {
     // process the information gained from flag
     public void processFlag(int flag) {
         IC cat = getCat(flag);
-        if ((flag & 0x7ffff) == 0 || cat == null) return;
+        if (flag % (1 << 22) == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
+        int ID = getID(flag);
         Debug.p("Signal type: " + cat.toString());
         Debug.p("Signal Coords: " + coord.toString());
-        int ID = getID(flag);
         Debug.p("Signal ID: " + ID);
         int minInd;
         boolean seen;
@@ -357,6 +506,14 @@ public class Coms {
                     maxY = ID;
                     Debug.p("updated "+0+"th edge");
                     addRelevantFlag(getMessage(IC.EDGE_N, maxY));
+                    if (mapGenerated) {
+                        // rule out some spots
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                if (mapSpots[i][j].y > maxY) visited[i][j] = true;
+                            }
+                        }
+                    }
                 }
                 break;
             case EDGE_E:
@@ -365,6 +522,14 @@ public class Coms {
                     maxX = ID;
                     Debug.p("updated "+1+"st edge");
                     addRelevantFlag(getMessage(IC.EDGE_E, maxX));
+                    if (mapGenerated) {
+                        // rule out some spots
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                if (mapSpots[i][j].x > maxX) visited[i][j] = true;
+                            }
+                        }
+                    }
                 }
                 break;
             case EDGE_S:
@@ -373,6 +538,14 @@ public class Coms {
                     minY = ID;
                     Debug.p("updated "+2+"nd edge");
                     addRelevantFlag(getMessage(IC.EDGE_S, minY));
+                    if (mapGenerated) {
+                        // rule out some spots
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                if (mapSpots[i][j].y < minY) visited[i][j] = true;
+                            }
+                        }
+                    }
                 }
                 break;
             case EDGE_W:
@@ -381,6 +554,147 @@ public class Coms {
                     minX = ID;
                     Debug.p("updated "+3+"rd edge");
                     addRelevantFlag(getMessage(IC.EDGE_W, minX));
+                    if (mapGenerated) {
+                        // rule out some spots
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                if (mapSpots[i][j].x > minX) visited[i][j] = true;
+                            }
+                        }
+                    }
+                }
+                break;
+//            case ENDS:
+//                boolean changed = false;
+//                for (int i = 0; i < 9; i++) {
+//                    if (!corners[i] && (ID & (1 << i)) != 0) {
+//                        corners[i] = true;
+//                        changed = true;
+//                    }
+//                }
+//                if (changed && rc.getType() == RobotType.ENLIGHTENMENT_CENTER) {
+//                    int msgSum = 0;
+//                    for (int i = 0; i < 9; i++) {
+//                        if (corners[i]) msgSum += (1 << i);
+//                    }
+//                    signalQueue.add(getMessage(IC.ENDS, msgSum));
+//                    // need to check relevant flags and replace the previous ends flag if there is any
+//                    for (int i = 0; i < 20; i++) {
+//                        if (getCat(relevantFlags[i]) == IC.ENDS) {
+//                            removeRelevantFlag(relevantFlags[i]);
+//                            break;
+//                        }
+//                    }
+//                    addRelevantFlag(getMessage(IC.ENDS, msgSum));
+//                }
+//                break;
+            case MAP_CORNER:
+                if (!mapGenerated) {
+                    mapType = ID;
+                    if (mapType == 0 && edges[0] && edges[1]) {
+                        mapGenerated = true;
+                        Debug.p("Generating map on NE corner");
+                        // NE corner
+                        int initX = maxX-3;
+                        int initY = maxY-3;
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                visited[i][j] = false;
+                                mapSpots[i][j] = new MapLocation(initX-8*(7-i), initY-8*(7-j));
+                            }
+                        }
+                        addRelevantFlag(getMessage(IC.MAP_CORNER, 0));
+                    }
+                    if (mapType == 1 && edges[1] && edges[2]) {
+                        mapGenerated = true;
+                        Debug.p("Generating map on SE corner");
+                        // SE corner
+                        int initX = maxX-3;
+                        int initY = minY+4;
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                visited[i][j] = false;
+                                mapSpots[i][j] = new MapLocation(initX-8*(7-i), initY+8*j);
+                            }
+                        }
+                        addRelevantFlag(getMessage(IC.MAP_CORNER, 1));
+                    }
+                    if (mapType == 2 && edges[2] && edges[3]) {
+                        mapGenerated = true;
+                        Debug.p("Generating map on SW corner");
+                        // SW corner
+                        int initX = minX+4;
+                        int initY = minY+4;
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                visited[i][j] = false;
+                                mapSpots[i][j] = new MapLocation(initX+8*i, initY+8*j);
+                            }
+                        }
+                        addRelevantFlag(getMessage(IC.MAP_CORNER, 2));
+                    }
+                    if (mapType == 3 && edges[3] && edges[0]) {
+                        mapGenerated = true;
+                        Debug.p("Generating map on NW corner");
+                        // NW corner
+                        int initX = minX+4;
+                        int initY = maxY-3;
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                visited[i][j] = false;
+                                mapSpots[i][j] = new MapLocation(initX+8*i, initY-8*(7-j));
+                            }
+                        }
+                        addRelevantFlag(getMessage(IC.MAP_CORNER, 3));
+                    }
+                    if (mapGenerated) {
+                        for (int i = 7; i >= 0; i--) {
+                            for (int j = 7; j >= 0; j--) {
+                                MapLocation loc = mapSpots[i][j];
+                                if (loc.x > maxX || loc.y > maxY || loc.x < minX || loc.y < minY) visited[i][j] = true;
+                            }
+                        }
+                    }
+                }
+                break;
+            case MAP_NE:
+                for (int i = 4; i < 8; i++) {
+                    for (int j = 4; j < 8; j++) {
+                        if (!visited[i][j] && (ID & (1 << ((i-4)*4+j-4))) != 0) {
+                            visited[i][j] = true;
+                            updateNE = true;
+                        }
+                    }
+                }
+                break;
+            case MAP_NW:
+                for (int i = 0; i < 4; i++) {
+                    for (int j = 4; j < 8; j++) {
+                        if (!visited[i][j] && (ID & (1 << (i*4+j-4))) != 0) {
+                            visited[i][j] = true;
+                            updateNW = true;
+                        }
+                    }
+                }
+                break;
+            case MAP_SE:
+                for (int i = 4; i < 8; i++) {
+                    for (int j = 0; j < 4; j++) {
+                        if (!visited[i][j] && (ID & (1 << ((i-4)*4+j))) != 0) {
+                            visited[i][j] = true;
+                            updateSE = true;
+                        }
+                    }
+                }
+                break;
+            case MAP_SW:
+                for (int i = 0; i < 4; i++) {
+                    for (int j = 0; j < 4; j++) {
+                        if (!visited[i][j] && (ID & (1 << (i*4+j))) != 0) {
+                            visited[i][j] = true;
+                            updateSW = true;
+                        }
+                    }
                 }
                 break;
             case ENEMY_EC:
@@ -485,10 +799,37 @@ public class Coms {
                     runAway = true;
                     danger = coord;
                 }
-                if (rc.getType() == RobotType.POLITICIAN) {
+                break;
+            case MUCKRAKER_HELP:
+                if (rc.getType() == RobotType.POLITICIAN &&
+                    rc.getLocation().distanceSquaredTo(coord) <= RobotType.POLITICIAN.sensorRadiusSquared) {
                     defendSlanderer = true;
                     enemyMuck = coord;
                 }
+                break;
+            case SLANDERER:
+                boolean inserted = false;
+                for (int i = 0; i < 6; i++) {
+                    if (slandererLoc[i] == null || slandererLoc[i].isWithinDistanceSquared(coord, 9)) {
+                        slandererLoc[i] = coord;
+                        staleness[i] = staleCooldown;
+                        inserted = true;
+                        break;
+                    }
+                }
+                if (!inserted) {
+                    int minStale = 1000;
+                    int minStaleInd = -1;
+                    for (int i = 0; i < 6; i++) {
+                        if (staleness[i] < minStale) {
+                            minStale = staleness[i];
+                            minStaleInd = i;
+                        }
+                    }
+                    slandererLoc[minStaleInd] = coord;
+                    staleness[minStaleInd] = staleCooldown;
+                }
+                break;
         }
     }
 
@@ -527,5 +868,9 @@ public class Coms {
         moveAway = false;
         defendSlanderer = false;
         runAway = false;
+        updateNE = false;
+        updateNW = false;
+        updateSE = false;
+        updateSW = false;
     }
 }

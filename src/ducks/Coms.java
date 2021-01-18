@@ -19,6 +19,10 @@ public class Coms {
     // number of possible cases for InfoCategory enum class
     private static int numCase = 17;
 
+    //[0,16] bits for information (16 bits) (msg)    ( msg&0x00ffff     )
+    //[17,22] for IC (6 bits)               (msg<<16)((msg&0x3f0000)>>16)
+    //[23,24] for robot type (2 bits)       (msg<<22)((msg&0xc00000)>>22)
+
     public Coms() {
     }
 

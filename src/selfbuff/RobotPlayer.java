@@ -3,6 +3,7 @@ package selfbuff;
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotController;
+import selfbuff.utils.Debug;
 
 public strictfp class RobotPlayer {
     static RobotController rc;
@@ -38,7 +39,7 @@ public strictfp class RobotPlayer {
                 Clock.yield();
 
             } catch (Exception e) {
-                System.out.println(rc.getType() + " Exception");
+                Debug.p(rc.getType() + " Exception");
                 e.printStackTrace();
             }
         }

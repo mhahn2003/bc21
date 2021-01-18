@@ -13,11 +13,10 @@ public class Muckraker extends Robot {
         super.takeTurn();
         int closestPoliticianDist = 100000;
         MapLocation closestPolitician = null;
+        RobotInfo[] nearPoliticians = new RobotInfo[5];
+        int nearPolSize = 0;
         int closestSlandererDist = 100000;
         MapLocation closestSlanderer = null;
-        // friendly slanderer
-        int closestProtectorDist = 100000;
-        MapLocation closestProtector = null;
         int maxSlanderer = -1;
         MapLocation maxSlandererLocation = null;
         for (RobotInfo robot : robots) {
@@ -34,16 +33,13 @@ public class Muckraker extends Robot {
             }
             if (robot.getTeam() == enemy && robot.type == RobotType.POLITICIAN) {
                 int dist = rc.getLocation().distanceSquaredTo(robot.getLocation());
-                if (dist > 2 && dist <= closestPoliticianDist) {
+                if (dist <= closestPoliticianDist) {
                     closestPoliticianDist = dist;
                     closestPolitician = robot.location;
                 }
-            }
-            if (robot.getTeam() == team && robot.type == RobotType.SLANDERER) {
-                int dist = rc.getLocation().distanceSquaredTo(robot.getLocation());
-                if (dist <= closestProtectorDist) {
-                    closestProtectorDist = dist;
-                    closestProtector = robot.location;
+                if (dist <= 13 && nearPolSize < 5) {
+                    nearPoliticians[nearPolSize] = robot;
+                    nearPolSize++;
                 }
             }
         }
@@ -54,75 +50,150 @@ public class Muckraker extends Robot {
                     rc.expose(maxSlandererLocation);
                 }
             }
-            int closestECDist = 100000;
-            MapLocation closestEC = null;
+            int closestEnemyECDist = 100000;
+            MapLocation closestEnemyEC = null;
             for (int i = 0; i < 12; i++) {
                 if (enemyECs[i] != null) {
                     int dist = rc.getLocation().distanceSquaredTo(enemyECs[i]);
+                    if (dist < closestEnemyECDist) {
+                        closestEnemyECDist = dist;
+                        closestEnemyEC = enemyECs[i];
+                    }
+                }
+            }
+            int closestECDist = 100000;
+            MapLocation closestEC = null;
+            for (int i = 0; i < 12; i++) {
+                if (friendECs[i] != null) {
+                    int dist = rc.getLocation().distanceSquaredTo(friendECs[i]);
                     if (dist < closestECDist) {
                         closestECDist = dist;
-                        closestEC = enemyECs[i];
+                        closestEC = friendECs[i];
                     }
                 }
             }
             // move to the closest slanderer
-            if (closestSlandererDist != 100000) {
+            if (closestSlanderer != null) {
                 nav.bugNavigate(closestSlanderer);
             }
-            // else move to protect our slanderer
-            if (closestProtectorDist <= 8) {
-                boolean protect = true;
-                // first check if anybody else is on the slanderer
-                RobotInfo[] surroundSlanderer = rc.senseNearbyRobots(closestProtector, 2, team);
-                for (RobotInfo r : surroundSlanderer) {
-                    if (r.getType() == RobotType.MUCKRAKER && r.getTeam() == team) {
-                        protect = false;
-                        break;
+            // are we defending or attacking?
+            if (closestEC != null && rc.getLocation().isWithinDistanceSquared(closestEC, 50)) {
+                // defending
+                if (closestPolitician == null) {
+                    // just go outside and move to attack mode
+                    MapLocation loc = null;
+                    if (mapGenerated || closestEnemyEC == null) {
+                        loc = wander();
+                    } else loc = closestEnemyEC;
+                    nav.bugNavigate(loc);
+                } else {
+                    if (nearPolSize == 0) {
+                        // move to the closest politician
+                        nav.bugNavigate(closestPolitician);
+                    } else {
+                        // check if it's already surrounded by muckrakers tagging that thing
+                        boolean needed = false;
+                        for (int i = 0; i < nearPolSize; i++) {
+                            int tagCount = 0;
+                            MapLocation polLoc = nearPoliticians[i].getLocation();
+                            RobotInfo[] near = rc.senseNearbyRobots(polLoc, 9, team);
+                            for (RobotInfo r : near) {
+                                if (r.getType() == RobotType.MUCKRAKER &&
+                                    Coms.getCat(rc.getFlag(r.getID())) == Coms.IC.POLITICIAN &&
+                                    nearPoliticians[i].getID() == Coms.getID(rc.getFlag(r.getID()))) {
+                                    tagCount++;
+                                }
+                            }
+                            if (tagCount < 2) {
+                                // move towards that politician
+                                rc.setFlag(Coms.getMessage(Coms.IC.MUCKRAKER, nearPoliticians[i].getID()));
+                                if (!rc.getLocation().isWithinDistanceSquared(polLoc, 1)) nav.bugNavigate(polLoc);
+                                needed = true;
+                                break;
+                            }
+                        }
+                        if (!needed) {
+                            // if not needed, just do your own thing
+                            // just go outside and move to attack mode
+                            MapLocation loc = null;
+                            if (mapGenerated || closestEnemyEC == null) {
+                                loc = wander();
+                            } else loc = closestEnemyEC;
+                            nav.bugNavigate(loc);
+                        }
                     }
                 }
-                if (protect) {
-                    int closestDist = rc.getLocation().distanceSquaredTo(closestProtector);
+            }
+            else {
+                // attacking, searching for slanderers
+                MapLocation suspectSlanderer = null;
+                int maxStale = -50;
+                for (int i = 0; i < 6; i++) {
+                    if (slandererLoc[i] != null) {
+                        // if too close, update staleness and move on
+                        if (slandererLoc[i].isWithinDistanceSquared(rc.getLocation(), 4)) staleness[i] = -50;
+                        else if (staleness[i] > maxStale) {
+                            maxStale = staleness[i];
+                            suspectSlanderer = slandererLoc[i];
+                        }
+                    }
+                }
+                MapLocation loc = null;
+                if (suspectSlanderer != null) loc = suspectSlanderer;
+                else {
+                    // there's no suspect location, go to nearby ecs? or wander
+                    if (mapGenerated || closestEnemyEC == null) {
+                        loc = wander();
+                    } else loc = closestEnemyEC;
+                }
+                // loc is our destination
+                if (nearPolSize != 0) {
+                    // politician is near
+                    int[] optDirH = new int[8];
+                    for (int i = 0; i < nearPolSize; i++) {
+                        MapLocation polLoc = nearPoliticians[i].getLocation();
+                        int teamSize = rc.senseNearbyRobots(polLoc, 9, team).length;
+                        if (teamSize > 1) {
+                            for (int j = 0; j < 8; j++) {
+                                if (rc.getLocation().add(directions[i]).isWithinDistanceSquared(polLoc, 9)) {
+                                    optDirH[j] = Math.max(optDirH[j], (teamSize-1)*100);
+                                }
+                            }
+                        }
+                    }
                     Direction optDir = null;
+                    int minH = 10000;
                     for (int i = 0; i < 8; i++) {
-                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestProtector);
-                        if (dist < closestDist && rc.canMove(directions[i])) {
-                            closestDist = dist;
+                        MapLocation adj = rc.getLocation().add(directions[i]);
+                        optDirH[i] += adj.distanceSquaredTo(loc);
+                        if (rc.canSenseLocation(adj)) optDirH[i] += 2*((int) (1.0/rc.sensePassability(adj)));
+                        if (optDirH[i] < minH && rc.canMove(optDir)) {
+                            minH = optDirH[i];
                             optDir = directions[i];
                         }
                     }
                     if (optDir != null) rc.move(optDir);
-                }
+                } else nav.bugNavigate(loc);
             }
-            // else move to the closest enemy HQ if known
-            if (closestEC != null) {
-                if (!rc.getLocation().isAdjacentTo(closestEC)) {
-                    if (rc.getLocation().isWithinDistanceSquared(closestEC, 13)) {
-                        // move to an adjacent spot
-                        int closestSpotDist = 100000;
-                        MapLocation closestSpot = null;
-                        for (Direction dir : directions) {
-                            MapLocation loc = closestEC.add(dir);
-                            if (!rc.isLocationOccupied(loc)) {
-                                int dist = rc.getLocation().distanceSquaredTo(loc);
-                                if (dist < closestSpotDist) {
-                                    closestSpotDist = dist;
-                                    closestSpot = loc;
-                                }
-                            }
-                        }
-                        if (closestSpot != null) {
-                            nav.bugNavigate(closestSpot);
-                        } else {
-                            // TODO: call for attack
-                        }
-                    } else nav.bugNavigate(closestEC);
-                }
-            } else {
-                // else move to the nearest politician not adjacent
-                if (closestPolitician != null) nav.bugNavigate(closestPolitician);
-                    // otherwise wander
-                else wander();
-            }
+//            else if (closestPolitician != null) {
+//
+//                int muckCount = 0;
+//                RobotInfo[] near = rc.senseNearbyRobots(closestPolitician, 2, team);
+//                for (RobotInfo r : near) {
+//                    if (r.getType() == RobotType.MUCKRAKER) {
+//                        muckCount++;
+//                    }
+//                }
+//                if (muckCount <= 2) nav.bugNavigate(closestPolitician);
+//            }
+//            else {
+//                if (closestEnemyEC != null) {
+//                    if (rc.getLocation().isWithinDistanceSquared(closestEnemyEC, 30)) patrol(closestEnemyEC, 16, 25);
+//                    else nav.bugNavigate(closestEnemyEC);
+//                } else {
+////                    wander();
+//                }
+//            }
         }
     }
 }
