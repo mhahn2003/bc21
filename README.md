@@ -61,10 +61,9 @@ All of the bold points should be implemented before sprint 2
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-8. If muckraker buff is large enough, buff EC it just spawned from
+8. 
 9. Change moveAway such that it's in the movement so that people don't walk into it accidentally, and then this makes the people in the +4 radius not have to move away
 10. Debug wander and why units get stuck -> java ghosthug last round
-11. Not spawning polis to take over neutral ECs fast enough
 
 
 Done:
@@ -79,5 +78,8 @@ Done:
 - ~~Fix bug where IC.MUCKRAKER is being used for ID and location, and also it sometimes overrides the signal for the muckraker to escape properly~~
 - ~~When wandering has a tendency to move in groups, split them up somehow?~~
 - ~~Improve muckraker spacing from each other, sometimes they just go wayy backwards~~
-- Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10
+- ~~Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10~~
+- ~~Not spawning polis to take over neutral ECs fast enough~~
+- ~~If muckraker buff is large enough, buff EC it just spawned from~~
+
 

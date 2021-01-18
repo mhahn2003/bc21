@@ -9,7 +9,8 @@ public class EC extends Robot {
     int voteCount = -1;
     int bidCount = 1;
     boolean bidded = true;
-    boolean initial = true;
+    boolean initial;
+    boolean mid = false;
 
     // unit count near EC
     int muckCount = 0;
@@ -19,6 +20,8 @@ public class EC extends Robot {
 
     // total unit count
     int tS = 0;
+    int tDP = 0;
+    int tAP = 0;
     int tP = 0;
     int tM = 0;
 
@@ -30,21 +33,16 @@ public class EC extends Robot {
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
-        if (rc.getRoundNum() >= 500) bid();
         if (!noSlanderer && rc.getInfluence() == 100000000) {
             noSlanderer = true;
             Coms.signalQueue.add(Coms.getMessage(Coms.IC.NO_SLANDERER, 0));
             Coms.addRelevantFlag(Coms.getMessage(Coms.IC.NO_SLANDERER, 0));
         }
+        if (rc.getRoundNum() >= 500) bid();
         Debug.p("tS: " + tS);
-        Debug.p("tP: " + tP);
+        Debug.p("tDP: " + tDP);
+        Debug.p("tAP: " + tAP);
         Debug.p("tM: " + tM);
-        if (noSlanderer) {
-            rich();
-            return;
-        }
-        // TODO : still not no slanderer, but the case where you have a lot of money
-        // check what kind of units are outside our base
         muckCount = 0;
         polCount = 0;
         fMuckCount = 0;
@@ -71,6 +69,17 @@ public class EC extends Robot {
                 if (r.getType() == RobotType.MUCKRAKER) fMuckCount++;
             }
         }
+        if (muckHelp) Coms.signalQueue.add(Coms.getMessage(Coms.IC.MUCKRAKER_HELP, muckHelpLoc));
+        if (noSlanderer) {
+            rich();
+            return;
+        }
+        if (rc.getInfluence() >= 10000) {
+            medium();
+            return;
+        }
+        // TODO : still not no slanderer, but the case where you have a lot of money
+        // check what kind of units are outside our base
         // if muckraker nearby, signal for help
         if (muckHelp) Coms.signalQueue.add(Coms.getMessage(Coms.IC.MUCKRAKER_HELP, muckHelpLoc));
         // scenario 1: if enemy units nearby
@@ -80,9 +89,15 @@ public class EC extends Robot {
                 build(RobotType.MUCKRAKER, 1);
                 tM--;
             }
-            else build(RobotType.POLITICIAN, 30);
+            else {
+                build(RobotType.POLITICIAN, 30);
+                tDP--;
+            }
         }
-        else if (muckCount > 0) build(RobotType.POLITICIAN, 25);
+        else if (muckCount > 0) {
+            build(RobotType.POLITICIAN, 25);
+            tDP--;
+        }
         // if can self buff do self buff
         if (rc.getEmpowerFactor(team,12) > 2.5) {
             if (rc.getInfluence() <= 100) build(RobotType.POLITICIAN, 25, true);
@@ -112,12 +127,15 @@ public class EC extends Robot {
                     }
                     if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
-                    if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
-                    else build(RobotType.POLITICIAN, 20);
+                    if (rc.getInfluence() >= lowNeutral) {
+                        build(RobotType.POLITICIAN, lowNeutral);
+                    }
+                    else {
+                        if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                        build(RobotType.POLITICIAN, 20);
+                    }
                 }
                 else if (2*tM < tS) {
-                    // testing
-                    if (rc.getInfluence() >= 700) build(RobotType.MUCKRAKER, 500);
                     build(RobotType.MUCKRAKER, 1);
                 }
                 else build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
@@ -134,8 +152,13 @@ public class EC extends Robot {
                     }
                     if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
-                    if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
-                    build(RobotType.POLITICIAN, 25);
+                    if (rc.getInfluence() >= lowNeutral && 2*tAP < tDP) {
+                        build(RobotType.POLITICIAN, lowNeutral);
+                    }
+                    else {
+                        if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                        build(RobotType.POLITICIAN, 25);
+                    }
                 }
                 if (tM < tS) {
                     build(RobotType.MUCKRAKER, 1);
@@ -152,10 +175,15 @@ public class EC extends Robot {
                             lowInd = i;
                         }
                     }
-                    if (lowInd == -1) lowNeutral = 600;
+                    if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
-                    if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
-                    build(RobotType.POLITICIAN, 30);
+                    if (rc.getInfluence() >= lowNeutral && tAP < tDP) {
+                        build(RobotType.POLITICIAN, lowNeutral);
+                    }
+                    else {
+                        if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                        build(RobotType.POLITICIAN, 30);
+                    }
                 }
                 if (tM < 2*tS) {
                     build(RobotType.MUCKRAKER, 1);
@@ -177,8 +205,13 @@ public class EC extends Robot {
                     }
                     if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
-                    if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
-                    build(RobotType.POLITICIAN, 25);
+                    if (rc.getInfluence() >= lowNeutral) {
+                        build(RobotType.POLITICIAN, lowNeutral);
+                    }
+                    else {
+                        if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                        build(RobotType.POLITICIAN, 25);
+                    }
                 }
                 if (2*tM < tS) {
                     build(RobotType.MUCKRAKER, 1);
@@ -196,8 +229,13 @@ public class EC extends Robot {
                     }
                     if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
-                    if (rc.getInfluence() >= lowNeutral) build(RobotType.POLITICIAN, lowNeutral);
-                    build(RobotType.POLITICIAN, 25);
+                    if (rc.getInfluence() >= lowNeutral) {
+                        build(RobotType.POLITICIAN, lowNeutral);
+                    }
+                    else {
+                        if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                        build(RobotType.POLITICIAN, 25);
+                    }
                 }
                 if (tM < tS) {
                     build(RobotType.MUCKRAKER, 1);
@@ -220,7 +258,11 @@ public class EC extends Robot {
         for (Direction dir : onlyCardinal? Direction.cardinalDirections(): directions) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
                 switch (toBuild) {
-                    case POLITICIAN: tP++; break;
+                    case POLITICIAN:
+                        if (influence >= 50) tAP++;
+                        else tDP++;
+                        tP++;
+                        break;
                     case SLANDERER: tS++; break;
                     case MUCKRAKER: tM++; break;
                 }
@@ -242,8 +284,78 @@ public class EC extends Robot {
         voteCount = curVote;
     }
 
-    // stuff to do if you're rich
-    public void rich() throws GameActionException {
+    // stuff to do if you're decently rich, aka over 10000 inf
+    // need to focus on making more buff mucks to gain more buff to reach the 100 mil point
+    public void medium() throws GameActionException {
+        if (!mid) {
+            mid = true;
+            // reset total count
+            tS = 0;
+            tP = 0;
+            tAP = 0;
+            tDP = 0;
+            tM = 0;
+        }
+        if (polCount > 0) {
+            int random = (int) (Math.random() * 4);
+            if (random < 3) {
+                build(RobotType.MUCKRAKER, rc.getInfluence()/200);
+                tM--;
+            }
+            else {
+                build(RobotType.POLITICIAN, 40);
+                tDP--;
+            }
+        }
+        else if (muckCount > 0) {
+            build(RobotType.POLITICIAN, 40);
+            tDP--;
+        }
+        // if can self buff do self buff
+        if (rc.getEmpowerFactor(team,12) > 2.5) {
+            if (rc.getInfluence() <= 100) build(RobotType.POLITICIAN, 40, true);
+            else build(RobotType.POLITICIAN,rc.getInfluence(),true);
+        }
+        // build in a 3:1:3 ratio I think
+        if (tP < 3*tS) {
+            int lowNeutral = 1000;
+            int lowInd = -1;
+            for (int i = 0; i < 12; i++) {
+                if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                    lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                    lowInd = i;
+                }
+            }
+            if (lowInd == -1) lowNeutral = Math.max(400, rc.getInfluence()/50);
+            else neutralCooldown[lowInd] = 40;
+            if (rc.getInfluence() >= lowNeutral && tAP < tDP) {
+                build(RobotType.POLITICIAN, lowNeutral);
+            }
+            else {
+                if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                build(RobotType.POLITICIAN, 40);
+            }
+        }
+        if (tM < 3*tS) {
+            build(RobotType.MUCKRAKER, rc.getInfluence()/200);
+        }
+        build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
+    }
 
+    // stuff to do if you're rich, aka one ec has reached 100 mil
+    public void rich() throws GameActionException {
+        // no slanderers
+        if (rc.getInfluence() >= 10000000) {
+            if (tP < tM) {
+                if (tAP < 2*tDP) {
+                    build(RobotType.POLITICIAN, 5000);
+                } else build(RobotType.POLITICIAN, 49);
+                // TODO: up the influence of defense politician when you have lots of money
+            } else build(RobotType.MUCKRAKER, 5000);
+        } else {
+            if (tP < tM) {
+                build(RobotType.POLITICIAN, 49);
+            } else build(RobotType.MUCKRAKER, 1);
+        }
     }
 }
