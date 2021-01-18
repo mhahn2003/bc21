@@ -20,10 +20,13 @@ public class Politician extends Robot {
     }
 
     public void takeTurn() throws GameActionException {
-        super.takeTurn();
+        if (ecoBuff) {
+            buff();
+        }else{
+            super.takeTurn();
+        }
         if (rc.getType() == RobotType.SLANDERER) return;
-        if (ecoBuff) buff();
-        else if (rc.getConviction() >= 300) attack();
+        if (rc.getConviction() >= 300) attack();
         else {
             if (rc.getRoundNum() <= 200) {
                 if (rc.getID() % 4 == 0) search();
@@ -40,7 +43,9 @@ public class Politician extends Robot {
 
     static void buff() throws GameActionException {
         RobotInfo[] rbs =rc.senseNearbyRobots(1);
-        if (rbs.length<rc.getEmpowerFactor(team,0)){
+        if (rc.canEmpower(1) & rbs.length<rc.getEmpowerFactor(team,0)){
+            //todo: remove this statement afterwards
+            System.out.println("buff at"+rc.getLocation().toString());
             rc.empower(1);
         }else if(rc.getEmpowerFactor(team,0)==1){
             // discuss: does it go for an attack or return all influence to the base?

@@ -19,9 +19,16 @@ public class Coms {
     // number of possible cases for InfoCategory enum class
     private static int numCase = 17;
 
-    //[0,16] bits for information (16 bits) (msg)    ( msg&0x00ffff     )
-    //[17,22] for IC (6 bits)               (msg<<16)((msg&0x3f0000)>>16)
-    //[23,24] for robot type (2 bits)       (msg<<22)((msg&0xc00000)>>22)
+    //[0,16] bits for information (17 bits) (msg)    ( msg&0x00ffff     )
+    //[17,21] for IC (5 bits)               (msg<<17)((msg&0x1f0000)>>17)
+    //[22,23] for robot type (2 bits)       (msg<<22)((msg&0x600000)>>22)
+
+    private static int bitMaskInfo = 0x01ffff; //0000 0001 1111 1111 1111 1111
+    private static int bitMaskIC   = 0x3e0000; //0011 1110 0000 0000 0000 0000
+    private static int bitMaskType = 0xc00000; //1100 0000 0000 0000 0000 0000
+    // private static int bitShiftInfo = 0 ;
+    private static int bitShiftIC   = 17;
+    private static int bitShiftType = 22;
 
     public Coms() {
     }
@@ -49,99 +56,77 @@ public class Coms {
     }
 
     public static int getMessage(IC cat, MapLocation coord) {
-        int message;
-        switch (cat) {
-            case MUCKRAKER_HELP: message = 1; break;
-            case FRIEND_EC     : message = 2; break;
-            case EC_ID         : message = 3; break;
-            case ENEMY_EC      : message = 4; break;
-            case NEUTRAL_EC    : message = 5; break;
-            case POLITICIAN    : message = 6; break;
-            case SLANDERER     : message = 7; break;
-            case MAP_CORNER    : message = 8; break;
-            case MAP_NW        : message = 9; break;
-            case MAP_NE        : message = 10; break;
-            case MAP_SW        : message = 11; break;
-            case MAP_SE        : message = 12; break;
-            case MUCKRAKER     : message = 13; break;
-            case EDGE_N        : message = 14; break;
-            case EDGE_E        : message = 15; break;
-            case EDGE_S        : message = 16; break;
-            case EDGE_W        : message = 17; break;
-            case ATTACK        : message = 18; break;
-            default            : message = 19;
-        }
-        message = addCoord(message, coord) + typeInt(rc.getType());
-        return message;
+        return typeInt(rc.getType()) + addIC(cat) + addCoord(coord);
     }
 
     public static int getMessage(IC cat, int ID) {
-        int message;
-        switch (cat) {
-            case MUCKRAKER_HELP: message = 1; break;
-            case FRIEND_EC     : message = 2; break;
-            case EC_ID         : message = 3; break;
-            case ENEMY_EC      : message = 4; break;
-            case NEUTRAL_EC    : message = 5; break;
-            case POLITICIAN    : message = 6; break;
-            case SLANDERER     : message = 7; break;
-            case MAP_CORNER    : message = 8; break;
-            case MAP_NW        : message = 9; break;
-            case MAP_NE        : message = 10; break;
-            case MAP_SW        : message = 11; break;
-            case MAP_SE        : message = 12; break;
-            case MUCKRAKER     : message = 13; break;
-            case EDGE_N        : message = 14; break;
-            case EDGE_E        : message = 15; break;
-            case EDGE_S        : message = 16; break;
-            case EDGE_W        : message = 17; break;
-            case ATTACK        : message = 18; break;
-            default            : message = 19;
-        }
-        message = addID(message, ID) + typeInt(rc.getType());
-        return message;
+        return typeInt(rc.getType()) + addIC(cat) + addID(ID);
     }
+
 
     public static int typeInt(RobotType type) {
         switch (type) {
-            case POLITICIAN: return 0;
-            case SLANDERER: return 1 << 22;
-            case MUCKRAKER: return 2 << 22;
-            case ENLIGHTENMENT_CENTER: return 3 << 22;
+            case POLITICIAN          : return 0;
+            case SLANDERER           : return 1 << bitShiftType;
+            case MUCKRAKER           : return 2 << bitShiftType;
+            case ENLIGHTENMENT_CENTER: return 3 << bitShiftType;
         }
         return 0;
     }
-    public static int addCoord(int message, MapLocation coord) {
-        return (message << 16) + ((coord.x % 128) << 7) + (coord.y % 128);
+
+    public static int addIC(IC cat){
+        switch (cat) {
+            case MUCKRAKER_HELP: return 1  << bitShiftIC;
+            case FRIEND_EC     : return 2  << bitShiftIC;
+            case EC_ID         : return 3  << bitShiftIC;
+            case ENEMY_EC      : return 4  << bitShiftIC;
+            case NEUTRAL_EC    : return 5  << bitShiftIC;
+            case POLITICIAN    : return 6  << bitShiftIC;
+            case SLANDERER     : return 7  << bitShiftIC;
+            case MAP_CORNER    : return 8  << bitShiftIC;
+            case MAP_NW        : return 9  << bitShiftIC;
+            case MAP_NE        : return 10 << bitShiftIC;
+            case MAP_SW        : return 11 << bitShiftIC;
+            case MAP_SE        : return 12 << bitShiftIC;
+            case MUCKRAKER     : return 13 << bitShiftIC;
+            case EDGE_N        : return 14 << bitShiftIC;
+            case EDGE_E        : return 15 << bitShiftIC;
+            case EDGE_S        : return 16 << bitShiftIC;
+            case EDGE_W        : return 17 << bitShiftIC;
+            case ATTACK        : return 18 << bitShiftIC;
+            default            : return 19 << bitShiftIC;
+        }
     }
 
-    public static int addID(int message, int ID) {
-        return (message << 16)+ID;
+    public static int addCoord( MapLocation coord) {
+        return ((coord.x % 128) << 7) + (coord.y % 128);
+    }
+
+    public static int addID( int ID) {
+        return ID;
     }
 
     public static RobotType getTyp(int message) {
-        switch (message >> 22) {
-            case 0: return RobotType.POLITICIAN;
-            case 1: return RobotType.SLANDERER;
-            case 2: return RobotType.MUCKRAKER;
+        switch ( (message & bitMaskType) >> bitMaskType) {
+            case 0: return RobotType.POLITICIAN          ;
+            case 1: return RobotType.SLANDERER           ;
+            case 2: return RobotType.MUCKRAKER           ;
             case 3: return RobotType.ENLIGHTENMENT_CENTER;
         }
         return null;
     }
 
-
     public static IC getCat(int message) {
-        message = message % (1 << 22);
-        switch (message >> 16) {
-            case 1: return IC.MUCKRAKER_HELP;
-            case 2: return IC.FRIEND_EC;
-            case 3: return IC.EC_ID;
-            case 4: return IC.ENEMY_EC;
-            case 5: return IC.NEUTRAL_EC;
-            case 6: return IC.POLITICIAN;
-            case 7: return IC.SLANDERER;
-            case 8: return IC.MAP_CORNER;
-            case 9: return IC.MAP_NW;
+        switch ( (message & bitMaskIC) >> bitShiftIC) {
+            case 1 : return IC.MUCKRAKER_HELP;
+            case 2 : return IC.FRIEND_EC;
+            case 3 : return IC.EC_ID;
+            case 4 : return IC.ENEMY_EC;
+            case 5 : return IC.NEUTRAL_EC;
+            case 6 : return IC.POLITICIAN;
+            case 7 : return IC.SLANDERER;
+            case 8 : return IC.MAP_CORNER;
+            case 9 : return IC.MAP_NW;
             case 10: return IC.MAP_NE;
             case 11: return IC.MAP_SW;
             case 12: return IC.MAP_SE;
@@ -155,15 +140,11 @@ public class Coms {
         }
     }
 
-    public static int getID(int message) {
-        return message % (1 << 16);
-    }
-
     public static MapLocation getCoord(int message) {
         MapLocation here = rc.getLocation();
         int remX = here.x % 128;
         int remY = here.y % 128;
-        message = message % (1 << 16);
+        message = message & bitMaskInfo;
         int x = message >> 7;
         int y = message % 128;
         if (Math.abs(x - remX) >= 64) {
@@ -175,6 +156,10 @@ public class Coms {
             else y = here.y + y + 128 - remY;
         } else y = here.y - remY + y;
         return new MapLocation(x, y);
+    }
+
+    public static int getID(int message) {
+        return message & bitMaskInfo;
     }
 
     // relay information about surroundings
@@ -486,12 +471,11 @@ public class Coms {
         }
     }
 
-
     // todo: allow ec switching sides
     // process the information gained from flag
     public void processFlag(int flag) {
         IC cat = getCat(flag);
-        if (flag % (1 << 22) == 0 || cat == null) return;
+        if ( (flag & (bitMaskIC | bitMaskInfo)) == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
         int ID = getID(flag);
         Debug.p("Signal type: " + cat.toString());
