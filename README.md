@@ -60,7 +60,6 @@ All of the bold points should be implemented before sprint 2
     - ~~**Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**~~
 
 Order:
-7. Slanderers not moving away from the EC for some reason
 8. If muckraker buff is large enough, buff EC it just spawned from
 9. Change moveAway such that it's in the movement so that people don't walk into it accidentally, and then this makes the people in the +4 radius not have to move away
 

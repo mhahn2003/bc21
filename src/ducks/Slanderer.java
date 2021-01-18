@@ -101,7 +101,7 @@ public class Slanderer extends Politician {
                         // move!
                         int maxDist = 0;
                         Direction optDir = null;
-                        Direction suboptDir = null;
+                        Direction subOptDir = null;
                         for (int i = 0; i < 8; i++) {
                             MapLocation loc = rc.getLocation().add(directions[i]);
                             if (!loc.isWithinDistanceSquared(closestEC, 4)
@@ -111,11 +111,11 @@ public class Slanderer extends Politician {
                             int dist = loc.distanceSquaredTo(closestEC);
                             if (dist > maxDist && rc.canMove(directions[i])) {
                                 maxDist = dist;
-                                suboptDir = directions[i];
+                                subOptDir = directions[i];
                             }
                         }
                         if (optDir != null) rc.move(optDir);
-                        else if (suboptDir != null) rc.move(suboptDir);
+                        else if (subOptDir != null) rc.move(subOptDir);
                     } else {
                         // move closer if possible
                         for (int i = 1; i < 8; i += 2) {
@@ -129,6 +129,39 @@ public class Slanderer extends Politician {
                     }
                 } else {
                     // position slightly away from the enemy EC
+                    if (rc.getLocation().distanceSquaredTo(closestEnemy) < closestEC.distanceSquaredTo(closestEnemy)
+                        || rc.getLocation().isWithinDistanceSquared(closestEC, 4) || (rc.getLocation().x + rc.getLocation().y) % 2 != 0) {
+                        // move!
+                        int maxDist = 0;
+                        Direction optDir = null;
+                        Direction subOptDir = null;
+                        for (int i = 0; i < 8; i++) {
+                            MapLocation loc = rc.getLocation().add(directions[i]);
+                            if (!loc.isWithinDistanceSquared(closestEC, 4)
+                                && (loc.x + loc.y) % 2 == 0 && rc.canMove(directions[i])
+                                && loc.distanceSquaredTo(closestEnemy) >= closestEC.distanceSquaredTo(closestEnemy)) {
+                                optDir = directions[i];
+                            }
+                            int dist = loc.distanceSquaredTo(closestEC) + loc.distanceSquaredTo(closestEnemy);
+                            if (dist > maxDist && rc.canMove(directions[i])) {
+                                maxDist = dist;
+                                subOptDir = directions[i];
+                            }
+                        }
+                        if (optDir != null) rc.move(optDir);
+                        else if (subOptDir != null) rc.move(subOptDir);
+                    } else {
+                        // move closer to EC but still away if possible
+                        for (int i = 1; i < 8; i += 2) {
+                            MapLocation loc = rc.getLocation().add(directions[i]);
+                            if (loc.distanceSquaredTo(closestEC) + loc.distanceSquaredTo(closestEnemy) < rc.getLocation().distanceSquaredTo(closestEC) + rc.getLocation().distanceSquaredTo(closestEnemy)
+                                && loc.distanceSquaredTo(closestEnemy) >= closestEC.distanceSquaredTo(closestEnemy)
+                                && !loc.isWithinDistanceSquared(closestEC, 4) && rc.canMove(directions[i])) {
+                                rc.move(directions[i]);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
