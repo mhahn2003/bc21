@@ -29,7 +29,9 @@ public class Robot {
     static int[] ECIds = new int[12];
     static MapLocation[] friendECs = new MapLocation[12];
     static MapLocation[] neutralECs = new MapLocation[12];
+    static int[] neutralInf = new int[12];
     static MapLocation[] enemyECs = new MapLocation[12];
+    static int[] neutralCooldown = new int[12];
 
     // variables changed by coms
     static boolean moveAway = false;
@@ -124,6 +126,7 @@ public class Robot {
         Debug.p("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
 //        Debug.p("Robot.takeTurn: " + Clock.getBytecodeNum());
         for (int i = 0; i < 6; i++) staleness[i]--;
+        for (int i = 0; i < 12; i++) neutralCooldown[i]--;
     }
 
 

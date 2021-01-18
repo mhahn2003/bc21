@@ -90,7 +90,7 @@ public class ECComs extends Coms {
         while (Clock.getBytecodesLeft() >= 4000 && IDcheck <= 14096) {
             if (rc.canGetFlag(IDcheck)) {
                 int flag = rc.getFlag(IDcheck);
-                if (getTyp(flag) == RobotType.ENLIGHTENMENT_CENTER) {
+                if (getTyp(flag) == RobotType.ENLIGHTENMENT_CENTER && getCat(flag) != null) {
                     // found an EC!
                     boolean knownID = false;
                     for (int i = 0; i < 12; i++) {
@@ -192,7 +192,7 @@ public class ECComs extends Coms {
             }
         }
         if (!processed) {
-            if (cat != IC.MUCKRAKER && cat != IC.MUCKRAKER_HELP
+            if (cat != IC.MUCKRAKER && cat != IC.MUCKRAKER_HELP && cat != IC.MUCKRAKER_ID && cat != IC.POLITICIAN
             && cat != IC.MAP_NE && cat != IC.MAP_NW && cat != IC.MAP_SE
             && cat != IC.MAP_SW && cat != IC.ATTACK) {
                 Debug.p("not processed yet, adding to queue: " + flag);
@@ -200,7 +200,7 @@ public class ECComs extends Coms {
                 flagIndex++;
                 signalQueue.add(convertFlag(flag));
             }
-            if (cat != IC.MUCKRAKER_HELP && cat != IC.MUCKRAKER && cat != IC.ATTACK) super.processFlag(flag);
+            if (cat != IC.MUCKRAKER_HELP && cat != IC.MUCKRAKER && cat != IC.ATTACK && cat != IC.MUCKRAKER_ID && cat != IC.POLITICIAN) super.processFlag(flag);
         }
     }
 

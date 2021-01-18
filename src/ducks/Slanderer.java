@@ -85,38 +85,51 @@ public class Slanderer extends Politician {
             }
             if (closestEC != null) {
                 // do the pp lattice structure
-                if (rc.getLocation().isWithinDistanceSquared(closestEC, 4) || (rc.getLocation().x + rc.getLocation().y) % 2 != 0) {
-                    // move!
-                    int maxDist = 0;
-                    Direction optDir = null;
-                    Direction suboptDir = null;
-                    for (int i = 0; i < 8; i++) {
-                        MapLocation loc = rc.getLocation().add(directions[i]);
-                        if (!loc.isWithinDistanceSquared(closestEC, 4)
-                                && (loc.x + loc.y) % 2 == 0 && rc.canMove(directions[i])) {
-                            optDir = directions[i];
-                        }
-                        int dist = loc.distanceSquaredTo(closestEC);
-                        if (dist > maxDist && rc.canMove(directions[i])) {
-                            maxDist = dist;
-                            suboptDir = directions[i];
-                        }
-                    }
-                    if (optDir != null) rc.move(optDir);
-                    else if (suboptDir != null) rc.move(suboptDir);
-                } else {
-                    // move closer if possible
-                    for (int i = 1; i < 8; i += 2) {
-                        MapLocation loc = rc.getLocation().add(directions[i]);
-                        if (loc.distanceSquaredTo(closestEC) < rc.getLocation().distanceSquaredTo(closestEC)
-                                && !loc.isWithinDistanceSquared(closestEC, 4) && rc.canMove(directions[i])) {
-                            rc.move(directions[i]);
-                            break;
+                int closestEnemyECDist = 1000000;
+                MapLocation closestEnemy = null;
+                for (int i = 0; i < 12; i++) {
+                    if (enemyECs[i] != null) {
+                        int dist = rc.getLocation().distanceSquaredTo(enemyECs[i]);
+                        if (dist < closestEnemyECDist) {
+                            closestEnemyECDist = dist;
+                            closestEnemy = enemyECs[i];
                         }
                     }
                 }
-            } else {
-                // go to an edge maybe?
+                if (closestEnemy == null) {
+                    if (rc.getLocation().isWithinDistanceSquared(closestEC, 4) || (rc.getLocation().x + rc.getLocation().y) % 2 != 0) {
+                        // move!
+                        int maxDist = 0;
+                        Direction optDir = null;
+                        Direction suboptDir = null;
+                        for (int i = 0; i < 8; i++) {
+                            MapLocation loc = rc.getLocation().add(directions[i]);
+                            if (!loc.isWithinDistanceSquared(closestEC, 4)
+                                    && (loc.x + loc.y) % 2 == 0 && rc.canMove(directions[i])) {
+                                optDir = directions[i];
+                            }
+                            int dist = loc.distanceSquaredTo(closestEC);
+                            if (dist > maxDist && rc.canMove(directions[i])) {
+                                maxDist = dist;
+                                suboptDir = directions[i];
+                            }
+                        }
+                        if (optDir != null) rc.move(optDir);
+                        else if (suboptDir != null) rc.move(suboptDir);
+                    } else {
+                        // move closer if possible
+                        for (int i = 1; i < 8; i += 2) {
+                            MapLocation loc = rc.getLocation().add(directions[i]);
+                            if (loc.distanceSquaredTo(closestEC) < rc.getLocation().distanceSquaredTo(closestEC)
+                                    && !loc.isWithinDistanceSquared(closestEC, 4) && rc.canMove(directions[i])) {
+                                rc.move(directions[i]);
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    // position slightly away from the enemy EC
+                }
             }
         }
         Debug.p("After everything else: " + Clock.getBytecodeNum());
