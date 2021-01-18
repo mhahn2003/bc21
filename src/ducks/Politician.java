@@ -32,12 +32,9 @@ public class Politician extends Robot {
     static void buff() throws GameActionException {
         RobotInfo[] rbs = rc.senseNearbyRobots(1);
         if (rc.canEmpower(1) && rbs.length < rc.getEmpowerFactor(team,0)){
-            // todo: remove this statement afterwards
-            System.out.println("buff at "+rc.getLocation().toString());
             rc.empower(1);
         }
-        else if (rc.getEmpowerFactor(team,0) == 1){
-            // discuss: does it go for an attack or return all influence to the base?
+        else if (rc.getEmpowerFactor(team,0) == 1) {
             attack();
         }
     }
@@ -70,7 +67,59 @@ public class Politician extends Robot {
                 }
             }
         }
-        if (closestNeutral != null) {
+        int closestBuffMuckDist = 100000;
+        RobotInfo closestBuffMuck = null;
+        for (RobotInfo r : robots) {
+            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER && r.getConviction() >= 150) {
+                int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
+                if (dist < closestBuffMuckDist) {
+                    closestBuffMuckDist = dist;
+                    closestBuffMuck = r;
+                }
+            }
+        }
+        if (closestBuffMuck != null) {
+            Debug.p("Going to closest buffraker: " + closestBuffMuck);
+            if (closestBuffMuckDist <= 9) {
+                Debug.p("Within empower distance");
+                // check if can kill
+                RobotInfo[] empowered = rc.senseNearbyRobots(closestNeutralDist);
+                int size = empowered.length;
+                int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
+                if (closestBuffMuck.getConviction()+1 <= effect) {
+                    Debug.p("Can kill, will kill");
+                    if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
+                } else {
+                    if (!moveAway) {
+                        Debug.p("Signalling attack");
+                        rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestNeutral));
+                    }
+                    int closerDist = closestBuffMuckDist;
+                    Direction optDir = null;
+                    for (int i = 0; i < 8; i++) {
+                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestBuffMuck.getLocation());
+                        if (dist < closerDist && rc.canMove(directions[i])) {
+                            closerDist = dist;
+                            optDir = directions[i];
+                        }
+                    }
+                    if (optDir != null) {
+                        Debug.p("The optimal direction to move is: " + optDir);
+                        rc.move(optDir);
+                    } else {
+                        // if can't move, then try to see whether it's good to just blast away
+                        if (attackEffect(closestBuffMuckDist)[1] > 25) {
+                            Debug.p("Can't kill, kamikaze time");
+                            if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
+                        }
+                    }
+                }
+            } else {
+                Debug.p("navbugging");
+                nav.bugNavigate(closestBuffMuck.getLocation());
+            }
+        }
+        else if (closestNeutral != null) {
             // should be able to kill if there's no units beside it
             Debug.p("Going to closest neutral EC: " + closestNeutral);
             if (closestNeutralDist <= 9) {
