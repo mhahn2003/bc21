@@ -33,6 +33,7 @@ public strictfp class RobotPlayer {
                 // Here, we've separated the controls into a different method for each RobotType.
                 // You may rewrite this into your own control structure if you wish.
                 System.out.println("I'm a " + rc.getType() + "! Location " + rc.getLocation());
+                if (rc.getRoundNum() == 300) rc.resign();
                 me.takeTurn();
                 // Clock.yield() makes the robot wait until the next turn, then it will perform this loop again
                 Clock.yield();

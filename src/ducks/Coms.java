@@ -572,7 +572,7 @@ public class Coms {
                         // rule out some spots
                         for (int i = 7; i >= 0; i--) {
                             for (int j = 7; j >= 0; j--) {
-                                if (mapSpots[i][j].x > minX) visited[i][j] = true;
+                                if (mapSpots[i][j].x < minX) visited[i][j] = true;
                             }
                         }
                     }

@@ -40,8 +40,8 @@ All of the bold points should be implemented before sprint 2
 
 - Politician
     - Concentrate patrolling on the side where the attacks come from
-    - Account for enemy sending buffrakers
     - **Check if there's too much of an imbalance between attack and defense politicians**
+    - Attack politicians check for buffrakers on the way, and kill them if they can
 - Slanderer
     - **Make closeness to HQ have a lot more weight than closeness to enemy HQ**
 - Muckraker AI

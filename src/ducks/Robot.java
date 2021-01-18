@@ -12,7 +12,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = false;
+    public static boolean debugOn = true;
 
     static int minX = 9999;
     static int maxX = 30065;
@@ -146,7 +146,6 @@ public class Robot {
             // go to the corners
             Nav.getEnds();
             wandLoc = ends[(rc.getID() % 4)];
-            Debug.p("going to: " + wandLoc);
             nav.bugNavigate(wandLoc);
         } else {
             int closestWandDist = 100000;
@@ -165,6 +164,7 @@ public class Robot {
                 wandLoc = ends[(rc.getID() % 4)];
             } else wandLoc = closestWand;
         }
+        Debug.p("going to: " + wandLoc);
         return wandLoc;
     }
 
