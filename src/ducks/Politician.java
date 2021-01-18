@@ -294,22 +294,31 @@ public class Politician extends Robot {
                 }
             }
             if (rc.isReady()) {
-                // check if empowering right now is pretty efficient
-                if (maxEff >= 25) {
+                int closestMuckDist = 100000;
+                RobotInfo closestMuck = null;
+                int closestBuffMuckDist = 100000;
+                RobotInfo closestBuffMuck = null;
+                for (RobotInfo r : robots) {
+                    if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER) {
+                        int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
+                        if (dist < closestMuckDist) {
+                            closestMuckDist = dist;
+                            closestMuck = r;
+                        }
+                        if (r.getConviction() >= 10 && dist < closestBuffMuckDist) {
+                            closestBuffMuckDist = dist;
+                            closestBuffMuck = r;
+                        }
+                    }
+                }
+                if (closestBuffMuck != null) {
+                    if (closestBuffMuckDist <= 2 && rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
+                    else nav.bugNavigate(closestBuffMuck.getLocation());
+                }
+                else if (maxEff >= 25) {
                     if (rc.canEmpower(maxEffRadius)) rc.empower(maxEffRadius);
                 } else {
                     // otherwise, chase nearby muckrakers and politicians
-                    int closestMuckDist = 100000;
-                    RobotInfo closestMuck = null;
-                    for (RobotInfo r : robots) {
-                        if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER) {
-                            int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
-                            if (dist < closestMuckDist) {
-                                closestMuckDist = dist;
-                                closestMuck = r;
-                            }
-                        }
-                    }
                     if (closestMuck != null) {
                         boolean defended = false;
                         RobotInfo[] near = rc.senseNearbyRobots(closestMuck.getLocation(), 4, team);

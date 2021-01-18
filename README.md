@@ -58,7 +58,6 @@ All of the bold points should be implemented before sprint 2
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-13. Attack politicians check for buffrakers on the way, and kill them if they can
 14. Spawn buffrakers in place of buff polis
 
 
@@ -79,4 +78,5 @@ Done:
 - ~~If muckraker buff is large enough, buff EC it just spawned from~~
 - ~~Debug wander and why units get stuck -> java ghosthug last round~~
 - ~~Spawn less muckrakers and more politicians in the midgame~~
-
+- ~~Attack politicians check for buffrakers on the way, and kill them if they can~~
+- ~~Defense politician more efficient when defending against buffrakers~~
