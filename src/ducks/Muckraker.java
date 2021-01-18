@@ -13,7 +13,7 @@ public class Muckraker extends Robot {
     public void takeTurn() throws GameActionException {
         super.takeTurn();
         int closestPoliticianDist = 100000;
-        MapLocation closestPolitician = null;
+        RobotInfo closestPolitician = null;
         RobotInfo[] nearPoliticians = new RobotInfo[5];
         int nearPolSize = 0;
         int closestSlandererDist = 100000;
@@ -36,7 +36,7 @@ public class Muckraker extends Robot {
                 int dist = rc.getLocation().distanceSquaredTo(robot.getLocation());
                 if (dist <= closestPoliticianDist) {
                     closestPoliticianDist = dist;
-                    closestPolitician = robot.location;
+                    closestPolitician = robot;
                 }
                 if (dist <= 13 && nearPolSize < 5) {
                     nearPoliticians[nearPolSize] = robot;
@@ -47,9 +47,7 @@ public class Muckraker extends Robot {
         if (rc.isReady()) {
             // expose the max slanderer in range
             if (maxSlanderer != -1) {
-                if (rc.senseNearbyRobots(maxSlandererLocation, 1, enemy).length > 0 & rc.canExpose(maxSlandererLocation)) {
-                    rc.expose(maxSlandererLocation);
-                }
+                if (rc.canExpose(maxSlandererLocation)) rc.expose(maxSlandererLocation);
             }
             int closestEnemyECDist = 100000;
             MapLocation closestEnemyEC = null;
@@ -82,15 +80,33 @@ public class Muckraker extends Robot {
                 // defending
                 if (closestPolitician == null) {
                     // just go outside and move to attack mode
-                    MapLocation loc = null;
+                    MapLocation loc;
                     if (mapGenerated || closestEnemyEC == null) {
                         loc = wander();
                     } else loc = closestEnemyEC;
                     nav.bugNavigate(loc);
                 } else {
                     if (nearPolSize == 0) {
-                        // move to the closest politician
-                        nav.bugNavigate(closestPolitician);
+                        // check if it's already surrounded by muckrakers tagging that thing
+                        boolean tagged = false;
+                        RobotInfo[] near = rc.senseNearbyRobots(closestPolitician.getLocation(), 9, team);
+                        for (RobotInfo r : near) {
+                            if (r.getType() == RobotType.MUCKRAKER &&
+                                Coms.getCat(rc.getFlag(r.getID())) == Coms.IC.POLITICIAN &&
+                                closestPolitician.getID() == Coms.getID(rc.getFlag(r.getID()))) {
+                                tagged = true;
+                                break;
+                            }
+                        }
+                        if (!tagged) {
+                            nav.bugNavigate(closestPolitician.getLocation());
+                        } else {
+                            MapLocation loc;
+                            if (mapGenerated || closestEnemyEC == null) {
+                                loc = wander();
+                            } else loc = closestEnemyEC;
+                            nav.bugNavigate(loc);
+                        }
                     } else {
                         // check if it's already surrounded by muckrakers tagging that thing
                         boolean needed = false;
@@ -107,8 +123,11 @@ public class Muckraker extends Robot {
                             }
                             if (tagCount < 2) {
                                 // move towards that politician
-                                rc.setFlag(Coms.getMessage(Coms.IC.MUCKRAKER, nearPoliticians[i].getID()));
-                                if (!rc.getLocation().isWithinDistanceSquared(polLoc, 1)) nav.bugNavigate(polLoc);
+                                rc.setFlag(Coms.getMessage(Coms.IC.POLITICIAN, nearPoliticians[i].getID()));
+                                if (!rc.getLocation().isWithinDistanceSquared(polLoc, 1)) {
+                                    // TODO: optimize movement?
+                                    nav.bugNavigate(polLoc);
+                                }
                                 needed = true;
                                 break;
                             }
@@ -116,7 +135,7 @@ public class Muckraker extends Robot {
                         if (!needed) {
                             // if not needed, just do your own thing
                             // just go outside and move to attack mode
-                            MapLocation loc = null;
+                            MapLocation loc;
                             if (mapGenerated || closestEnemyEC == null) {
                                 loc = wander();
                             } else loc = closestEnemyEC;
@@ -154,10 +173,10 @@ public class Muckraker extends Robot {
                     for (int i = 0; i < nearPolSize; i++) {
                         MapLocation polLoc = nearPoliticians[i].getLocation();
                         int teamSize = rc.senseNearbyRobots(polLoc, 9, team).length;
-                        if (teamSize > 1) {
+                        if (teamSize > 0) {
                             for (int j = 0; j < 8; j++) {
                                 if (rc.getLocation().add(directions[i]).isWithinDistanceSquared(polLoc, 9)) {
-                                    optDirH[j] = Math.max(optDirH[j], (teamSize-1)*100);
+                                    optDirH[j] = Math.max(optDirH[j], teamSize*100);
                                 }
                             }
                         }
