@@ -1,6 +1,7 @@
 package ducks;
 
 import battlecode.common.*;
+import ducks.utils.Debug;
 
 public class Muckraker extends Robot {
 
@@ -138,7 +139,7 @@ public class Muckraker extends Robot {
                         }
                     }
                 }
-                MapLocation loc = null;
+                MapLocation loc;
                 if (suspectSlanderer != null) loc = suspectSlanderer;
                 else {
                     // there's no suspect location, go to nearby ecs? or wander
@@ -173,27 +174,40 @@ public class Muckraker extends Robot {
                         }
                     }
                     if (optDir != null) rc.move(optDir);
-                } else nav.bugNavigate(loc);
+                } else {
+                    // check if the round is early and it's too cramped
+                    boolean separate = false;
+                    MapLocation nearMuck = null;
+                    int nearRadius;
+                    if (rc.getRoundNum() <= 150) nearRadius = 16;
+                    else if (rc.getRoundNum() <= 400) nearRadius = 9;
+                    else if (rc.getRoundNum() <= 700) nearRadius = 4;
+                    else nearRadius = 4;
+                    RobotInfo[] near = rc.senseNearbyRobots(nearRadius, team);
+                    int nearMuckDist = 100000;
+                    for (RobotInfo r : near) {
+                        if (r.getType() == RobotType.MUCKRAKER) {
+                            separate = true;
+                            int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
+                            if (dist < nearMuckDist) {
+                                nearMuckDist = dist;
+                                nearMuck = r.getLocation();
+                            }
+                        }
+                    }
+                    Debug.p("loc: " + loc);
+                    Debug.p("separate: " + separate);
+                    if (separate && closestEC != null && rc.getLocation().distanceSquaredTo(closestEC) < nearMuck.distanceSquaredTo(closestEC)) {
+                        Debug.p("need to separate from others");
+                        // try to separate from the muckraker
+                        Direction opp = rc.getLocation().directionTo(nearMuck);
+                        if (rc.getID() % 2 == 0) opp = opp.rotateLeft().rotateLeft();
+                        else opp = opp.rotateRight().rotateRight();
+
+                        nav.bugNavigate(rc.getLocation().add(opp));
+                    } else nav.bugNavigate(loc);
+                }
             }
-//            else if (closestPolitician != null) {
-//
-//                int muckCount = 0;
-//                RobotInfo[] near = rc.senseNearbyRobots(closestPolitician, 2, team);
-//                for (RobotInfo r : near) {
-//                    if (r.getType() == RobotType.MUCKRAKER) {
-//                        muckCount++;
-//                    }
-//                }
-//                if (muckCount <= 2) nav.bugNavigate(closestPolitician);
-//            }
-//            else {
-//                if (closestEnemyEC != null) {
-//                    if (rc.getLocation().isWithinDistanceSquared(closestEnemyEC, 30)) patrol(closestEnemyEC, 16, 25);
-//                    else nav.bugNavigate(closestEnemyEC);
-//                } else {
-////                    wander();
-//                }
-//            }
         }
     }
 }

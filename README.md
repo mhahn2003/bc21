@@ -60,9 +60,11 @@ All of the bold points should be implemented before sprint 2
     - ~~**Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**~~
 
 Order:
-4. When wandering has a tendency to move in groups, split them up somehow?
 5. Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10
-6. If muckraker buff is large enough, buff EC it just spawned from
+6. Fix rc.senseNearbyRobots bug with center 
+7. Slanderers not moving away from the EC for some reason
+8. If muckraker buff is large enough, buff EC it just spawned from
+9. Change moveAway such that it's in the movement so that people don't walk into it accidentally, and then this makes the people in the +4 radius not have to move away
 
 
 Done:
@@ -75,4 +77,6 @@ Done:
     - ~~The initial ECS focus on slanderers and politicians, while the new ones focus on muckrakers~~
     - ~~Still need more eco for the newer ecs~~
 - ~~Fix bug where IC.MUCKRAKER is being used for ID and location, and also it sometimes overrides the signal for the muckraker to escape properly~~
+- ~~When wandering has a tendency to move in groups, split them up somehow?~~
+- ~~Improve muckraker spacing from each other, sometimes they just go wayy backwards~~
 
