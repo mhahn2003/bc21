@@ -83,8 +83,9 @@ public class EC extends Robot {
         // if muckraker nearby, signal for help
         if (muckHelp) Coms.signalQueue.add(Coms.getMessage(Coms.IC.MUCKRAKER_HELP, muckHelpLoc));
         // scenario 1: if enemy units nearby
+        double rand = Math.random();
         if (polCount > 0) {
-            int random = (int) (Math.random() * 4);
+            int random = (int) (rand * 4);
             if (random < 3) {
                 build(RobotType.MUCKRAKER, 1);
                 tM--;
@@ -153,7 +154,11 @@ public class EC extends Robot {
                     if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
                     if (rc.getInfluence() >= lowNeutral && 2*tAP < tDP) {
-                        build(RobotType.POLITICIAN, lowNeutral);
+                        int random = (int) (rand * 6);
+                        if (random == 0) {
+                            build(RobotType.MUCKRAKER, lowNeutral);
+                            if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                        } else build(RobotType.POLITICIAN, lowNeutral);
                     }
                     else {
                         if (lowInd != -1) neutralCooldown[lowInd] = 0;
@@ -178,7 +183,11 @@ public class EC extends Robot {
                     if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
                     if (rc.getInfluence() >= lowNeutral && tAP < tDP) {
-                        build(RobotType.POLITICIAN, lowNeutral);
+                        int random = (int) (rand * 6);
+                        if (random == 0) {
+                            build(RobotType.MUCKRAKER, lowNeutral);
+                            if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                        } else build(RobotType.POLITICIAN, lowNeutral);
                     }
                     else {
                         if (lowInd != -1) neutralCooldown[lowInd] = 0;
@@ -206,7 +215,11 @@ public class EC extends Robot {
                     if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
                     if (rc.getInfluence() >= lowNeutral) {
-                        build(RobotType.POLITICIAN, lowNeutral);
+                        int random = (int) (rand * 6);
+                        if (random == 0) {
+                            build(RobotType.MUCKRAKER, lowNeutral);
+                            if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                        } else build(RobotType.POLITICIAN, lowNeutral);
                     }
                     else {
                         if (lowInd != -1) neutralCooldown[lowInd] = 0;
@@ -230,7 +243,11 @@ public class EC extends Robot {
                     if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
                     if (rc.getInfluence() >= lowNeutral) {
-                        build(RobotType.POLITICIAN, lowNeutral);
+                        int random = (int) (rand * 6);
+                        if (random == 0) {
+                            build(RobotType.MUCKRAKER, lowNeutral);
+                            if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                        } else build(RobotType.POLITICIAN, lowNeutral);
                     }
                     else {
                         if (lowInd != -1) neutralCooldown[lowInd] = 0;
@@ -253,7 +270,7 @@ public class EC extends Robot {
         int safetyNet = 0;
         if (muckCount > 0 && toBuild == RobotType.SLANDERER) return;
         if (polCount > 0) safetyNet = 100;
-        if (toBuild == RobotType.MUCKRAKER) safetyNet = 0;
+        if (influence == 1) safetyNet = 0;
         if (influence + safetyNet > rc.getInfluence()) return;
         for (Direction dir : onlyCardinal? Direction.cardinalDirections(): directions) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
@@ -287,6 +304,7 @@ public class EC extends Robot {
     // stuff to do if you're decently rich, aka over 10000 inf
     // need to focus on making more buff mucks to gain more buff to reach the 100 mil point
     public void medium() throws GameActionException {
+        double rand = Math.random();
         if (!mid) {
             mid = true;
             // reset total count
@@ -329,7 +347,11 @@ public class EC extends Robot {
             if (lowInd == -1) lowNeutral = Math.max(400, rc.getInfluence()/50);
             else neutralCooldown[lowInd] = 40;
             if (rc.getInfluence() >= lowNeutral && tAP < tDP) {
-                build(RobotType.POLITICIAN, lowNeutral);
+                int random = (int) (rand * 6);
+                if (random == 0) {
+                    build(RobotType.MUCKRAKER, lowNeutral);
+                    if (lowInd != -1) neutralCooldown[lowInd] = 0;
+                } else build(RobotType.POLITICIAN, lowNeutral);
             }
             else {
                 if (lowInd != -1) neutralCooldown[lowInd] = 0;

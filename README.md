@@ -40,17 +40,11 @@ All of the bold points should be implemented before sprint 2
 
 - Politician
     - Concentrate patrolling on the side where the attacks come from
-    - **Check if there's too much of an imbalance between attack and defense politicians**
-    - Attack politicians check for buffrakers on the way, and kill them if they can
 - Slanderer
     - Make closeness to HQ have a lot more weight than closeness to enemy HQ
-- Muckraker AI
+- Muckraker
     - __Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis__
-- EC AI
-    - Spawn less muckrakers after initial scouting, ~~and spawn more defensive politicians~~
-- Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
-    - Keep track of fPolcount and limit politician spawn
-    - Just spam muckrakers anyway
+- EC
 - There's an instance where politicians and muckrakers get stuck on the middle spots, running out of bytecode? Seems like a nullpointer issue
 - Improve moveAway functionality
 - Analyze top teams:
