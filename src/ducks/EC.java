@@ -99,7 +99,7 @@ public class EC extends Robot {
             tDP--;
         }
         // if can self buff do self buff
-        if (rc.getEmpowerFactor(team,12) > 2.5) {
+        if (rc.getEmpowerFactor(team,12) > 4) {
             if (rc.getInfluence() <= 100) build(RobotType.POLITICIAN, 25, true);
             else build(RobotType.POLITICIAN,rc.getInfluence(),true);
         }
@@ -312,7 +312,7 @@ public class EC extends Robot {
             tDP--;
         }
         // if can self buff do self buff
-        if (rc.getEmpowerFactor(team,12) > 2.5) {
+        if (rc.getEmpowerFactor(team,12) > 4) {
             if (rc.getInfluence() <= 100) build(RobotType.POLITICIAN, 40, true);
             else build(RobotType.POLITICIAN,rc.getInfluence(),true);
         }

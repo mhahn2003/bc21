@@ -46,24 +46,23 @@ All of the bold points should be implemented before sprint 2
     - **Make closeness to HQ have a lot more weight than closeness to enemy HQ**
 - Muckraker AI
     - __Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis__
-    - **Don't think wander is still completely functional, lots of units run into walls and not do anything for some reason??**
     - Spawn less muckrakers and more politicians in the midgame
 - EC AI
-    - Not spawning polis to take over neutral ECs fast enough
-    - Spawn less muckrakers after initial scouting, and spawn more defensive politicians
+    - Spawn less muckrakers after initial scouting, ~~and spawn more defensive politicians~~
 - Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
     - Keep track of fPolcount and limit politician spawn
     - Just spam muckrakers anyway
-- Slanderer coms doesn't seem to be working properly? Need to test/debug more
+- There's an instance where politicians and muckrakers get stuck on the middle spots, running out of bytecode? Seems like a nullpointer issue
 - Improve moveAway functionality
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-10. Debug wander and why units get stuck -> java ghosthug last round
+
 11. Make closeness to HQ have a lot more weight than closeness to enemy HQ
 12. Spawn less muckrakers and more politicians in the midgame
+13. Attack politicians check for buffrakers on the way, and kill them if they can
 
 
 Done:
@@ -81,5 +80,6 @@ Done:
 - ~~Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10~~
 - ~~Not spawning polis to take over neutral ECs fast enough~~
 - ~~If muckraker buff is large enough, buff EC it just spawned from~~
+- ~~Debug wander and why units get stuck -> java ghosthug last round~~
 
 

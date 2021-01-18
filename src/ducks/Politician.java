@@ -12,7 +12,7 @@ public class Politician extends Robot {
 
     public Politician(RobotController rc) {
         super(rc);
-        if (rc.getEmpowerFactor(team,11) > 2.5 && !noSlanderer) ecoBuff = true;
+        if (rc.getEmpowerFactor(team,11) > 4 && !noSlanderer) ecoBuff = true;
     }
 
     public void takeTurn() throws GameActionException {
