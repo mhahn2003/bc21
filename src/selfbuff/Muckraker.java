@@ -195,10 +195,7 @@ public class Muckraker extends Robot {
                             }
                         }
                     }
-                    Debug.p("loc: " + loc);
-                    Debug.p("separate: " + separate);
                     if (separate && closestEC != null && rc.getLocation().distanceSquaredTo(closestEC) < nearMuck.distanceSquaredTo(closestEC)) {
-                        Debug.p("need to separate from others");
                         // try to separate from the muckraker
                         Direction opp = rc.getLocation().directionTo(nearMuck);
                         if (rc.getID() % 2 == 0) opp = opp.rotateLeft().rotateLeft();

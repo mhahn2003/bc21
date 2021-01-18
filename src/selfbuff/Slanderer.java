@@ -38,7 +38,6 @@ public class Slanderer extends Politician {
 //                }
 //            }
         }
-        Debug.p("After iteration over robots: " + Clock.getBytecodeNum());
         if (runAway && !included) {
             dangers[size] = danger;
             size++;
@@ -119,6 +118,5 @@ public class Slanderer extends Politician {
                 // go to an edge maybe?
             }
         }
-        Debug.p("After everything else: " + Clock.getBytecodeNum());
-    }
+            }
 }

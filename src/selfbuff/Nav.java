@@ -52,7 +52,6 @@ public class Nav {
                 interCardinalNewSense = new int[][]{{-2, 4}, {-1, 4}, {-0, 4}, {1, 4}, {2, 4}, {2, 3}, {3, 3}, {3, 2}, {4, 2}, {4, 1}, {4, 0}, {4, -1}, {4, -2}};
                 break;
         }
-        Debug.p("made nav");
     }
 
 //    public static void move(Direction dir) throws GameActionException {
@@ -73,8 +72,7 @@ public class Nav {
 //                case 1: nloc = loc.translate( xypair[1],-xypair[0]); break;
 //                case 2: nloc = loc.translate(-xypair[0],-xypair[1]); break;
 //                case 3: nloc = loc.translate(-xypair[1], xypair[0]); break;
-//                default: nloc = loc.translate( xypair[0], xypair[1]); Debug.p("nav move wrong");
-//            }
+//                default: nloc = loc.translate( xypair[0], xypair[1]); //            }
 //            nx=nloc.x%128;
 //            ny=nloc.y%128;
 //            if (mapPassibility[nx][ny]==0 && rc.canSenseLocation(nloc)){
@@ -163,7 +161,7 @@ public class Nav {
     public Direction bugNavigate (MapLocation target) throws GameActionException {
         Direction just = justMove(target);
         if (just != null) return just;
-        Debug.p("Bug navigating to " + target);
+        //Debug.p("Bug navigating to " + target);
 
         if (isTrapped()) {
             return null;
@@ -183,12 +181,6 @@ public class Nav {
 
         Direction destDir = rc.getLocation().directionTo(bugTarget);
 
-        Debug.p("BUG_NAVIGATE");
-        Debug.p("bugTarget: " + bugTarget);
-        Debug.p("bugClosestDistanceToTarget: " + bugClosestDistanceToTarget);
-        Debug.p("destDir: " + destDir);
-        Debug.p("bugTracing: " + bugTracing);
-
         if (!bugTracing) { // try to go directly towards the target
             Direction tryMoveResult = tryMoveInDirection(destDir);
             if (tryMoveResult != null) {
@@ -199,10 +191,8 @@ public class Nav {
         } else { // we are on obstacle, trying to get off of it
             if (rc.getLocation().distanceSquaredTo(bugTarget) < bugClosestDistanceToTarget) {
                 Direction tryMoveResult = tryMoveInDirection(destDir);
-                Debug.p("on obstacle");
-                if (tryMoveResult != null) { // we got off of the obstacle
-                    Debug.p("We're free!");
-                    bugTracing = false;
+                    if (tryMoveResult != null) { // we got off of the obstacle
+                            bugTracing = false;
                     return tryMoveResult;
                 }
             }
@@ -264,9 +254,6 @@ public class Nav {
             bugRotateLeft = false;
             bugLastWall = rc.adjacentLocation(rightDir.rotateLeft());
         }
-        Debug.p("START_TRACING");
-        Debug.p("bugRotateLeft: " + bugRotateLeft);
-        Debug.p("bugLastWall: " + bugLastWall);
     }
 
     /*
@@ -296,7 +283,6 @@ public class Nav {
             }
             MapLocation curDest = rc.adjacentLocation(curDir);
             if (!rc.onTheMap(curDest) && !recursed) {
-                Debug.p("Hit the edge of map, reverse and recurse");
                 // if we hit the edge of the map, reverse direction and recurse
                 bugRotateLeft = !bugRotateLeft;
                 return bugTraceMove(true);
@@ -305,7 +291,6 @@ public class Nav {
                 rc.move(curDir);
                 for (int x = 0; x < bugVisitedLocationsLength; x++) {
                     if (bugVisitedLocations[x].equals(curDest)) {
-                        Debug.p("Resetting bugTracing");
                         bugTracing = false;
                         break;
                     }

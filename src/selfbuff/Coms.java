@@ -182,7 +182,6 @@ public class Coms {
                 MapLocation checkLoc = rc.getLocation().add(dir);
                 while (checkLoc.isWithinDistanceSquared(rc.getLocation(), rc.getType().sensorRadiusSquared)) {
                     if (!rc.onTheMap(checkLoc)) {
-                        Debug.p("I see an edge");
                         edges[a] = true;
                         if (a == 0) {
                             maxY = checkLoc.y-1;
@@ -233,7 +232,6 @@ public class Coms {
                                 }
                             }
                         }
-                        Debug.p("updated "+a+"th edge");
                         break;
                     }
                     checkLoc = checkLoc.add(dir);
@@ -243,7 +241,6 @@ public class Coms {
                 int offsetX = (rc.getLocation().x - mapSpots[0][0].x + 8) % 8;
                 int offsetY = (rc.getLocation().y - mapSpots[0][0].y + 8) % 8;
                 if ((offsetX == 0 || offsetX == 7) && (offsetY == 0 || offsetY == 7)) {
-                    Debug.p("I'm at one of the middle spots");
                     // at one of the middle spots
                     int x = (rc.getLocation().x - mapSpots[0][0].x + 1)/8;
                     int y = (rc.getLocation().y - mapSpots[0][0].y + 1)/8;
@@ -306,11 +303,9 @@ public class Coms {
 //                int msgSum = 0;
 //                for (int i = 0; i < 9; i++) {
 //                    if (corners[i]) {
-//                        Debug.p("corner i: " + ends[i]);
 //                        msgSum += (1 << i);
 //                    }
 //                }
-//                Debug.p("msgSum: " + msgSum);
 //                signalQueue.add(getMessage(IC.ENDS, msgSum));
 //                // need to check relevant flags and replace the previous ends flag if there is any
 //                for (int i = 0; i < 20; i++) {
@@ -335,12 +330,9 @@ public class Coms {
             for (RobotInfo r: robots) {
                 // check for any ECs
                 if (r.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-                    Debug.p("Found an EC!");
-                    int id = r.getID();
-                    Debug.p("ID is: " + id);
-                    MapLocation loc = r.getLocation();
-                    Debug.p("Location is: " + loc);
-                    if (r.getTeam() == team) {
+                        int id = r.getID();
+                        MapLocation loc = r.getLocation();
+                        if (r.getTeam() == team) {
                         int minInd = -1;
                         boolean seen = false;
                         for (int i = 11; i >= 0; i--) {
@@ -354,7 +346,6 @@ public class Coms {
                         }
                         if (minInd != -1 && !seen) {
                             ECIds[minInd] = id;
-                            Debug.p("ID: Adding to signal queue");
                             signalQueue.add(getMessage(IC.EC_ID, id));
                             addRelevantFlag(getMessage(IC.EC_ID, id));
                         }
@@ -382,7 +373,6 @@ public class Coms {
                         }
                         if (minInd != -1 && !seen) {
                             friendECs[minInd] = r.getLocation();
-                            Debug.p("FRIENDLY: Adding to signal queue");
                             signalQueue.add(getMessage(IC.FRIEND_EC, loc));
                             addRelevantFlag(getMessage(IC.FRIEND_EC, loc));
                         }
@@ -411,7 +401,6 @@ public class Coms {
                         }
                         if (minInd != -1 && !seen) {
                             enemyECs[minInd] = r.getLocation();
-                            Debug.p("ENEMY: Adding to signal queue");
                             signalQueue.add(getMessage(IC.ENEMY_EC, loc));
                             addRelevantFlag(getMessage(IC.ENEMY_EC, loc));
                         }
@@ -427,7 +416,6 @@ public class Coms {
                             }
                         }
                         if (minInd != -1 && !seen) {
-                            Debug.p("NEUTRAL: Adding to signal queue");
                             signalQueue.add(getMessage(IC.NEUTRAL_EC, loc));
                             addRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
                         }
@@ -478,9 +466,6 @@ public class Coms {
         if ( (flag & (bitMaskIC | bitMaskInfo)) == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
         int ID = getID(flag);
-        Debug.p("Signal type: " + cat.toString());
-        Debug.p("Signal Coords: " + coord.toString());
-        Debug.p("Signal ID: " + ID);
         int minInd;
         boolean seen;
         switch (cat) {
@@ -488,7 +473,6 @@ public class Coms {
                 if (!edges[0]) {
                     edges[0] = true;
                     maxY = ID;
-                    Debug.p("updated "+0+"th edge");
                     addRelevantFlag(getMessage(IC.EDGE_N, maxY));
                     if (mapGenerated) {
                         // rule out some spots
@@ -504,7 +488,6 @@ public class Coms {
                 if (!edges[1]) {
                     edges[1] = true;
                     maxX = ID;
-                    Debug.p("updated "+1+"st edge");
                     addRelevantFlag(getMessage(IC.EDGE_E, maxX));
                     if (mapGenerated) {
                         // rule out some spots
@@ -520,7 +503,6 @@ public class Coms {
                 if (!edges[2]) {
                     edges[2] = true;
                     minY = ID;
-                    Debug.p("updated "+2+"nd edge");
                     addRelevantFlag(getMessage(IC.EDGE_S, minY));
                     if (mapGenerated) {
                         // rule out some spots
@@ -536,7 +518,6 @@ public class Coms {
                 if (!edges[3]) {
                     edges[3] = true;
                     minX = ID;
-                    Debug.p("updated "+3+"rd edge");
                     addRelevantFlag(getMessage(IC.EDGE_W, minX));
                     if (mapGenerated) {
                         // rule out some spots
@@ -548,36 +529,11 @@ public class Coms {
                     }
                 }
                 break;
-//            case ENDS:
-//                boolean changed = false;
-//                for (int i = 0; i < 9; i++) {
-//                    if (!corners[i] && (ID & (1 << i)) != 0) {
-//                        corners[i] = true;
-//                        changed = true;
-//                    }
-//                }
-//                if (changed && rc.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-//                    int msgSum = 0;
-//                    for (int i = 0; i < 9; i++) {
-//                        if (corners[i]) msgSum += (1 << i);
-//                    }
-//                    signalQueue.add(getMessage(IC.ENDS, msgSum));
-//                    // need to check relevant flags and replace the previous ends flag if there is any
-//                    for (int i = 0; i < 20; i++) {
-//                        if (getCat(relevantFlags[i]) == IC.ENDS) {
-//                            removeRelevantFlag(relevantFlags[i]);
-//                            break;
-//                        }
-//                    }
-//                    addRelevantFlag(getMessage(IC.ENDS, msgSum));
-//                }
-//                break;
             case MAP_CORNER:
                 if (!mapGenerated) {
                     mapType = ID;
                     if (mapType == 0 && edges[0] && edges[1]) {
                         mapGenerated = true;
-                        Debug.p("Generating map on NE corner");
                         // NE corner
                         int initX = maxX-3;
                         int initY = maxY-3;
@@ -591,7 +547,6 @@ public class Coms {
                     }
                     if (mapType == 1 && edges[1] && edges[2]) {
                         mapGenerated = true;
-                        Debug.p("Generating map on SE corner");
                         // SE corner
                         int initX = maxX-3;
                         int initY = minY+4;
@@ -605,7 +560,6 @@ public class Coms {
                     }
                     if (mapType == 2 && edges[2] && edges[3]) {
                         mapGenerated = true;
-                        Debug.p("Generating map on SW corner");
                         // SW corner
                         int initX = minX+4;
                         int initY = minY+4;
@@ -619,7 +573,6 @@ public class Coms {
                     }
                     if (mapType == 3 && edges[3] && edges[0]) {
                         mapGenerated = true;
-                        Debug.p("Generating map on NW corner");
                         // NW corner
                         int initX = minX+4;
                         int initY = maxY-3;

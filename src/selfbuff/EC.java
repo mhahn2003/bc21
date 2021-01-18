@@ -26,9 +26,6 @@ public class EC extends Robot {
     public void takeTurn() throws GameActionException {
         super.takeTurn();
         if (rc.getRoundNum() >= 500) bid();
-        Debug.p("tS: " + tS);
-        Debug.p("tP: " + tP);
-        Debug.p("tM: " + tM);
         // check what kind of units are outside our base
         muckCount = 0;
         polCount = 0;
@@ -68,11 +65,27 @@ public class EC extends Robot {
             else build(RobotType.POLITICIAN, 30);
         }
         else if (muckCount > 0) build(RobotType.POLITICIAN, 25);
-        // scenario 2: no enemy units nearby
+        // scenario 2
+        // if there is a gain from self buffing, start self buffing
+        if ((rc.getEmpowerFactor(team,10)>1.05) &&
+            (rc.getInfluence()/(float) GameConstants.ROBOT_INFLUENCE_LIMIT<0.8) ){
+            if (rc.getInfluence()>200){
+                // prevent low influence self buffing politician
+                if (build(RobotType.POLITICIAN,rc.getInfluence(),true)){
+                    Debug.p("ec at " + rc.getLocation().toString() + " build an buffer" );
+                }else {
+                    Debug.p("ec at " + rc.getLocation().toString() + " failed to build an buffer" );
+                }
+            }
+        }
+        // todo: some how connect this scenerario to self buff mode.
+        // if spamming, politicians can't empower only base
+        // the else is just an temperary fix
+        // scenario 3: no enemy units nearby
         // initially build in a 1:4:4 ratio of p, s, m
         // then build in a 2:1:5 ratio of p, s, m
         // then build in a 4:1:2 ratio of p, s, m
-        if (rc.getRoundNum() <= 50) {
+        else if (rc.getRoundNum() <= 50) {
             if (4*tP < tS) {
                 if (rc.getInfluence() >= 400) build(RobotType.POLITICIAN, 400);
                 build(RobotType.POLITICIAN, 20);
@@ -102,69 +115,18 @@ public class EC extends Robot {
             }
             build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-200, 21)));
         }
-        if (rc.getEmpowerFactor(team,10)>1.5){
-            build(RobotType.POLITICIAN,rc.getInfluence(),true);
-        }
-//        if (muckCount > 0) {
-//            if (fPolCount <= 3) {
-//                build(RobotType.POLITICIAN, 15+muckCount);
-//            }
-//        }
-//        if (polCount > 0) {
-//            if (fMuckCount <= 16) {
-//                build(RobotType.MUCKRAKER, 1);
-//            }
-//        }
-//        if (polCount == 0 && muckCount == 0) {
-//            if (turnCount >= 700) {
-//                build(RobotType.SLANDERER, 150);
-//                if (rc.getInfluence() > 600) {
-//                    if (rc.canBid(rc.getInfluence()-600)) rc.bid(rc.getInfluence()-600);
-//                }
-//            } else {
-//                if (rc.getInfluence() > 150) {
-//                    build(RobotType.POLITICIAN, rc.getInfluence());
-//                } else {
-//                    int rand = (int) (Math.random() * 2);
-//                    if (rand == 0) build(RobotType.POLITICIAN,  16);
-//                    else build(RobotType.MUCKRAKER, 1);
-//                }
-//            }
-//        }
-//
-//        if (turnCount < 250) {
-//            if (rc.getInfluence() < 150) {
-//                if (turnCount % 15 == 0) build(RobotType.SLANDERER, rc.getInfluence());
-//                else build(RobotType.MUCKRAKER, 1);
-//            } else {
-//                build(RobotType.POLITICIAN, rc.getInfluence());
-//            }
-//        } else {
-//            int rand = (int) (Math.random() * 4);
-//            if (rand == 0) {
-//                build(RobotType.POLITICIAN, 16);
-//            }
-//            else if (rand == 3) {
-//                build(RobotType.MUCKRAKER, 1);
-//            }
-//            else {
-//                if (rc.getInfluence() > 150) {
-//                    build(RobotType.POLITICIAN, rc.getInfluence());
-//                }
-//            }
-//        }
     }
 
-    public void build(RobotType toBuild, int influence) throws GameActionException {
-        build( toBuild, influence,false);
+    public boolean build(RobotType toBuild, int influence) throws GameActionException {
+        return build( toBuild, influence,false);
     }
 
-    public void build(RobotType toBuild, int influence, boolean onlyCardial) throws GameActionException {
+    public boolean build(RobotType toBuild, int influence, boolean onlyCardial) throws GameActionException {
         int safetyNet = 0;
-        if (muckCount > 0 && toBuild == RobotType.SLANDERER) return;
+        if (muckCount > 0 && toBuild == RobotType.SLANDERER) return false;
         if (polCount > 0) safetyNet = 100;
         if (toBuild == RobotType.MUCKRAKER) safetyNet = 0;
-        if (influence + safetyNet > rc.getInfluence()) return;
+        if (influence + safetyNet > rc.getInfluence()) return false;
         for (Direction dir : onlyCardial? Direction.cardinalDirections(): directions) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
                 switch (toBuild) {
@@ -173,9 +135,10 @@ public class EC extends Robot {
                     case MUCKRAKER: tM++; break;
                 }
                 rc.buildRobot(toBuild, dir, influence);
-                return;
+                return true;
             }
         }
+        return  false;
     }
 
     public void bid() throws GameActionException {

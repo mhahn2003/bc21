@@ -12,7 +12,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = false;
+    public static boolean debugOn = true;
 
     static int minX = 9999;
     static int maxX = 30065;
@@ -87,15 +87,11 @@ public class Robot {
         if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
             eccoms.getInfo();
         } else {
-//            Debug.p("Before coms: " + Clock.getBytecodeNum());
             coms.getInfo();
-//            Debug.p("After getInfo: " + Clock.getBytecodeNum());
             coms.collectInfo();
-//            Debug.p("After collectInfo: " + Clock.getBytecodeNum());
             // TODO: fiddle around with this condition
             if (rc.getType() == RobotType.SLANDERER || rc.getRoundNum() < 200 || turnCount > 15) coms.displaySignal();
             else Coms.signalQueue.clear();
-//            Debug.p("After displaySignal: " + Clock.getBytecodeNum());
             if (moveAway) {
                 // move away from the attacker if needed
                 if (rc.getLocation().isWithinDistanceSquared(attacker, attackDist+4)) {
@@ -121,8 +117,6 @@ public class Robot {
                 }
             }
         }
-        Debug.p("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
-//        Debug.p("Robot.takeTurn: " + Clock.getBytecodeNum());
         for (int i = 0; i < 6; i++) staleness[i]--;
     }
 
@@ -134,7 +128,6 @@ public class Robot {
             // go to the corners
             Nav.getEnds();
             wandLoc = ends[(rc.getID() % 4)];
-            Debug.p("going to: " + wandLoc);
             nav.bugNavigate(wandLoc);
         } else {
             int closestWandDist = 100000;

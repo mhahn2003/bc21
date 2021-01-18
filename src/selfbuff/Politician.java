@@ -15,18 +15,25 @@ public class Politician extends Robot {
 
     public Politician(RobotController rc) {
         super(rc);
-        if (rc.getEmpowerFactor(team,10)>1.5){ecoBuff = true;}
-        else if (rc.getInfluence() >= 50){attack = true;}
+        if (rc.getEmpowerFactor(team,10)>1.05 &&
+            rc.getType()==RobotType.POLITICIAN &&
+            rc.getInfluence()>200){
+            for(RobotInfo rb : rc.senseNearbyRobots(1)){
+                if (rb.type == RobotType.ENLIGHTENMENT_CENTER & rb.influence<rc.getInfluence()){
+                    Debug.p("self buffer");
+                    ecoBuff = true;
+                    break;
+                }
+            }
+        }
+        if (rc.getInfluence() >= 50){attack = true;}
     }
 
     public void takeTurn() throws GameActionException {
-        if (ecoBuff) {
-            buff();
-        }else{
-            super.takeTurn();
-        }
+        super.takeTurn();
         if (rc.getType() == RobotType.SLANDERER) return;
-        if (rc.getConviction() >= 300) attack();
+        if (ecoBuff) {buff();}
+        else if (rc.getConviction() >= 300) attack();
         else {
             if (rc.getRoundNum() <= 200) {
                 if (rc.getID() % 4 == 0) search();
@@ -42,13 +49,18 @@ public class Politician extends Robot {
     }
 
     static void buff() throws GameActionException {
+        if (!rc.canEmpower(1)) return;
+
         RobotInfo[] rbs =rc.senseNearbyRobots(1);
-        if (rc.canEmpower(1) & rbs.length<rc.getEmpowerFactor(team,0)){
-            //todo: remove this statement afterwards
-            System.out.println("buff at"+rc.getLocation().toString());
+
+        if (rbs.length<rc.getEmpowerFactor(team,0)){
+            Debug.p("buff at"+rc.getLocation().toString());
             rc.empower(1);
+        }else if(rbs.length>2){
+            Debug.p("buffer at"+rc.getLocation().toString() +"is blocked");
         }else if(rc.getEmpowerFactor(team,0)==1){
-            // discuss: does it go for an attack or return all influence to the base?
+            ecoBuff=false;
+            attack=true;
         }
     }
 
@@ -75,22 +87,18 @@ public class Politician extends Robot {
             }
         }
         if (closestEC != null) {
-            Debug.p("Going to closest EC: " + closestEC);
             if (closestECDist <= 9) {
-                Debug.p("Within empower distance");
                 // check if can kill
                 RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
                 int size = empowered.length;
                 int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
                 RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
                 if (enemyEC.getConviction()+1 <= effect) {
-                    Debug.p("Can kill, will kill");
                     if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                 } else {
                     // signal that you're attacking, so move out of the way
                     // only signal if you're a fat politician
                     if (rc.getConviction() >= 300) {
-                        Debug.p("Signalling attack");
                         rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
                     }
                     // check if we can get closer, or if there's a lot of our own units in the way
@@ -104,7 +112,6 @@ public class Politician extends Robot {
                         }
                     }
                     if (optDir != null) {
-                        Debug.p("The optimal direction to move is: " + optDir);
                         rc.move(optDir);
                     }
                     else {
@@ -113,11 +120,8 @@ public class Politician extends Robot {
                         for (RobotInfo r : empowered) {
                             if (r.getTeam() == team) teamCount++;
                         }
-                        Debug.p("There's teammates around me: " + teamCount);
 //                        int eff = attackEffect(closestECDist)[0];
-//                        Debug.p("Efficiency: " + eff);
                         if (attackEffect(closestECDist)[1] > 2) {
-                            Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                         } else {
                             if (rc.getConviction() <= 100) {
@@ -130,7 +134,6 @@ public class Politician extends Robot {
                     }
                 }
             } else {
-                Debug.p("navbugging");
                 nav.bugNavigate(closestEC);
             }
         } else {
@@ -165,18 +168,15 @@ public class Politician extends Robot {
         }
         if (closestEC != null) {
             if (closestECDist <= 9) {
-                Debug.p("Within empower distance");
                 // check if can kill
                 RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
                 int size = empowered.length;
                 int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10) / size;
                 RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
                 if (enemyEC.getConviction() + 1 <= effect) {
-                    Debug.p("Can kill, will kill");
                     if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                 } else {
                     // signal that you're attacking, so move out of the way
-                    Debug.p("Signalling attack");
                     rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
                     // check if we can get closer, or if there's a lot of our own units in the way
                     int closerDist = rc.getLocation().distanceSquaredTo(closestEC);
@@ -189,7 +189,6 @@ public class Politician extends Robot {
                         }
                     }
                     if (optDir != null) {
-                        Debug.p("The optimal direction to move is: " + optDir);
                         rc.move(optDir);
                     } else {
                         // just empower
@@ -197,7 +196,6 @@ public class Politician extends Robot {
                     }
                 }
             } else {
-                Debug.p("navbugging");
                 nav.bugNavigate(closestEC);
             }
         } else wander();
