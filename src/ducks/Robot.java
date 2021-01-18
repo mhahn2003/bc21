@@ -102,6 +102,14 @@ public class Robot {
             if (moveAway) {
                 // move away from the attacker if needed
                 if (rc.getLocation().isWithinDistanceSquared(attacker, attackDist+4)) {
+                    boolean stay = false;
+                    if (rc.getType() == RobotType.POLITICIAN && rc.getConviction() >= 300) {
+                        // check if right next to an ec
+                        RobotInfo[] near = rc.senseNearbyRobots(1);
+                        for (RobotInfo r : near) {
+                            if (r.getType() == RobotType.ENLIGHTENMENT_CENTER && r.getTeam() != team) stay = true;
+                        }
+                    }
                     int furthestDist = rc.getLocation().distanceSquaredTo(attacker);
                     Direction optDir = null;
                     for (int i = 0; i < 8; i++) {
@@ -111,7 +119,7 @@ public class Robot {
                             optDir = directions[i];
                         }
                     }
-                    if (optDir != null) rc.move(optDir);
+                    if (optDir != null && !stay) rc.move(optDir);
                 }
             }
         }

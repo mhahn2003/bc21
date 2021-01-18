@@ -39,7 +39,6 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 All of the bold points should be implemented before sprint 2
 
 - Politician
-    - **If muckraker buff is large enough, buff EC it just spawned from**
     - Concentrate patrolling on the side where the attacks come from
     - Account for enemy sending buffrakers
     - **Check if there's too much of an imbalance between attack and defense politicians**
@@ -56,14 +55,15 @@ All of the bold points should be implemented before sprint 2
     - Keep track of fPolcount and limit politician spawn
     - Just spam muckrakers anyway
 - Slanderer coms doesn't seem to be working properly? Need to test/debug more
+- Improve moveAway functionality
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-8. 
-9. Change moveAway such that it's in the movement so that people don't walk into it accidentally, and then this makes the people in the +4 radius not have to move away
 10. Debug wander and why units get stuck -> java ghosthug last round
+11. Make closeness to HQ have a lot more weight than closeness to enemy HQ
+12. Spawn less muckrakers and more politicians in the midgame
 
 
 Done:
