@@ -43,10 +43,9 @@ All of the bold points should be implemented before sprint 2
     - **Check if there's too much of an imbalance between attack and defense politicians**
     - Attack politicians check for buffrakers on the way, and kill them if they can
 - Slanderer
-    - **Make closeness to HQ have a lot more weight than closeness to enemy HQ**
+    - Make closeness to HQ have a lot more weight than closeness to enemy HQ
 - Muckraker AI
     - __Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis__
-    - Spawn less muckrakers and more politicians in the midgame
 - EC AI
     - Spawn less muckrakers after initial scouting, ~~and spawn more defensive politicians~~
 - Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
@@ -59,10 +58,8 @@ All of the bold points should be implemented before sprint 2
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-
-11. Make closeness to HQ have a lot more weight than closeness to enemy HQ
-12. Spawn less muckrakers and more politicians in the midgame
 13. Attack politicians check for buffrakers on the way, and kill them if they can
+14. Spawn buffrakers in place of buff polis
 
 
 Done:
@@ -81,5 +78,5 @@ Done:
 - ~~Not spawning polis to take over neutral ECs fast enough~~
 - ~~If muckraker buff is large enough, buff EC it just spawned from~~
 - ~~Debug wander and why units get stuck -> java ghosthug last round~~
-
+- ~~Spawn less muckrakers and more politicians in the midgame~~
 

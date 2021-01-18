@@ -11,6 +11,7 @@ public class EC extends Robot {
     boolean bidded = true;
     boolean initial;
     boolean mid = false;
+    boolean high = false;
 
     // unit count near EC
     int muckCount = 0;
@@ -78,7 +79,6 @@ public class EC extends Robot {
             medium();
             return;
         }
-        // TODO : still not no slanderer, but the case where you have a lot of money
         // check what kind of units are outside our base
         // if muckraker nearby, signal for help
         if (muckHelp) Coms.signalQueue.add(Coms.getMessage(Coms.IC.MUCKRAKER_HELP, muckHelpLoc));
@@ -108,7 +108,7 @@ public class EC extends Robot {
             // at the very first just build a lot of slanderers
             // initially build in a 1:2:1 ratio of p, s, m
             // then build in a 1:1:1 ratio of p, s, m
-            // then build in a 2:1:2 ratio of p, s, m
+            // then build in a 2:1:1 ratio of p, s, m
             if (rc.getRoundNum() <= 32) {
                 if (2*tM < tS) build(RobotType.MUCKRAKER, 1);
                 if (tS < 10) build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
@@ -185,7 +185,7 @@ public class EC extends Robot {
                         build(RobotType.POLITICIAN, 30);
                     }
                 }
-                if (tM < 2*tS) {
+                if (tM < tS) {
                     build(RobotType.MUCKRAKER, 1);
                 }
                 build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence()-250, 21)));
@@ -316,7 +316,7 @@ public class EC extends Robot {
             if (rc.getInfluence() <= 100) build(RobotType.POLITICIAN, 40, true);
             else build(RobotType.POLITICIAN,rc.getInfluence(),true);
         }
-        // build in a 3:1:3 ratio I think
+        // build in a 3:1:2 ratio I think
         if (tP < 3*tS) {
             int lowNeutral = 1000;
             int lowInd = -1;
@@ -336,7 +336,7 @@ public class EC extends Robot {
                 build(RobotType.POLITICIAN, 40);
             }
         }
-        if (tM < 3*tS) {
+        if (tM < 2*tS) {
             build(RobotType.MUCKRAKER, rc.getInfluence()/200);
         }
         build(RobotType.SLANDERER, Constants.getBestSlanderer(Math.max(rc.getInfluence(), 21)));
@@ -344,6 +344,15 @@ public class EC extends Robot {
 
     // stuff to do if you're rich, aka one ec has reached 100 mil
     public void rich() throws GameActionException {
+        if (!high) {
+            high = true;
+            // reset total count
+            tS = 0;
+            tP = 0;
+            tAP = 0;
+            tDP = 0;
+            tM = 0;
+        }
         // no slanderers
         if (rc.getInfluence() >= 10000000) {
             if (tP < tM) {
