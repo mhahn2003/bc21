@@ -73,6 +73,11 @@ public class EC extends Robot {
             else build(RobotType.POLITICIAN, 30);
         }
         else if (muckCount > 0) build(RobotType.POLITICIAN, 25);
+        // if can self buff do self buff
+        if (rc.getEmpowerFactor(team,12) > 2.5) {
+            if (rc.getInfluence() <= 100) build(RobotType.POLITICIAN, 25, true);
+            else build(RobotType.POLITICIAN,rc.getInfluence(),true);
+        }
         // scenario 2: no enemy units nearby
         if (initial) {
             // at the very first just build a lot of slanderers
@@ -193,12 +198,16 @@ public class EC extends Robot {
     }
 
     public void build(RobotType toBuild, int influence) throws GameActionException {
+        build(toBuild, influence, false);
+    }
+
+    public void build(RobotType toBuild, int influence, boolean onlyCardinal) throws GameActionException {
         int safetyNet = 0;
         if (muckCount > 0 && toBuild == RobotType.SLANDERER) return;
         if (polCount > 0) safetyNet = 100;
         if (toBuild == RobotType.MUCKRAKER) safetyNet = 0;
         if (influence + safetyNet > rc.getInfluence()) return;
-        for (Direction dir : directions) {
+        for (Direction dir : onlyCardinal? Direction.cardinalDirections(): directions) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
                 switch (toBuild) {
                     case POLITICIAN: tP++; break;

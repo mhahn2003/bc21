@@ -5,27 +5,40 @@ import ducks.utils.Debug;
 
 public class Politician extends Robot {
 
-    // whether it's an aggressive or defensive politician
-    private static boolean attack = false;
     private static int[] attackRadii = {1, 2, 4, 5, 8, 9};
-    private static int effThreshold = 50;
     private static int effect;
+    private static boolean ecoBuff = false;
 
 
     public Politician(RobotController rc) {
         super(rc);
-        if (rc.getInfluence() >= 50) attack = true;
+        if (rc.getEmpowerFactor(team,11) > 2.5) ecoBuff = true;
     }
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
         if (rc.getType() == RobotType.SLANDERER) return;
+        if (rc.getConviction() >= 100 && ecoBuff) buff();
         if (rc.getConviction() >= 300) attack();
         else {
             if (rc.getRoundNum() <= 400) {
                 if (rc.getInfluence() >= 50) attack();
                 else defend();
             } else defend();
+        }
+    }
+
+    // self buff the EC
+    static void buff() throws GameActionException {
+        RobotInfo[] rbs = rc.senseNearbyRobots(1);
+        if (rc.canEmpower(1) && rbs.length < rc.getEmpowerFactor(team,0)){
+            // todo: remove this statement afterwards
+            System.out.println("buff at "+rc.getLocation().toString());
+            rc.empower(1);
+        }
+        else if (rc.getEmpowerFactor(team,0) == 1){
+            // discuss: does it go for an attack or return all influence to the base?
+            attack();
         }
     }
 
