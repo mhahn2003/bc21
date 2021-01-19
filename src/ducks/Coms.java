@@ -10,9 +10,9 @@ import static ducks.utils.Constants.staleCooldown;
 
 public class Coms {
     public static PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
-    protected int relevantSize = 0;
-    protected int relevantInd = 0;
-    protected int[] relevantFlags = new int[30];
+    public static int relevantSize = 0;
+    public static int relevantInd = 0;
+    public static int[] relevantFlags = new int[30];
     protected RobotInfo processingRobot = null;
 
 
@@ -28,6 +28,7 @@ public class Coms {
 
     // TODO: need to order in terms of priority
     public enum IC {
+        NO_SLANDERER,
         MUCKRAKER_HELP,
         FRIEND_EC,
         EC_ID,
@@ -52,26 +53,27 @@ public class Coms {
     public static int getMessage(IC cat, MapLocation coord) {
         int message;
         switch (cat) {
-            case MUCKRAKER_HELP: message = 1; break;
-            case FRIEND_EC     : message = 2; break;
-            case EC_ID         : message = 3; break;
-            case ENEMY_EC      : message = 4; break;
-            case NEUTRAL_EC    : message = 5; break;
-            case POLITICIAN    : message = 6; break;
-            case SLANDERER     : message = 7; break;
-            case MUCKRAKER_ID  : message = 8; break;
-            case MAP_CORNER    : message = 9; break;
-            case MAP_NW        : message = 10; break;
-            case MAP_NE        : message = 11; break;
-            case MAP_SW        : message = 12; break;
-            case MAP_SE        : message = 13; break;
-            case MUCKRAKER     : message = 14; break;
-            case EDGE_N        : message = 15; break;
-            case EDGE_E        : message = 16; break;
-            case EDGE_S        : message = 17; break;
-            case EDGE_W        : message = 18; break;
-            case ATTACK        : message = 19; break;
-            default            : message = 20;
+            case NO_SLANDERER  : message = 1; break;
+            case MUCKRAKER_HELP: message = 2; break;
+            case FRIEND_EC     : message = 3; break;
+            case EC_ID         : message = 4; break;
+            case ENEMY_EC      : message = 5; break;
+            case NEUTRAL_EC    : message = 6; break;
+            case POLITICIAN    : message = 7; break;
+            case SLANDERER     : message = 8; break;
+            case MUCKRAKER_ID  : message = 9; break;
+            case MAP_CORNER    : message = 10; break;
+            case MAP_NW        : message = 11; break;
+            case MAP_NE        : message = 12; break;
+            case MAP_SW        : message = 13; break;
+            case MAP_SE        : message = 14; break;
+            case MUCKRAKER     : message = 15; break;
+            case EDGE_N        : message = 16; break;
+            case EDGE_E        : message = 17; break;
+            case EDGE_S        : message = 18; break;
+            case EDGE_W        : message = 19; break;
+            case ATTACK        : message = 20; break;
+            default            : message = 21;
         }
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
@@ -79,26 +81,27 @@ public class Coms {
     public static int getMessage(IC cat, MapLocation coord, int inf) {
         int message;
         switch (cat) {
-            case MUCKRAKER_HELP: message = 1; break;
-            case FRIEND_EC     : message = 2; break;
-            case EC_ID         : message = 3; break;
-            case ENEMY_EC      : message = 4; break;
-            case NEUTRAL_EC    : message = 5; break;
-            case POLITICIAN    : message = 6; break;
-            case SLANDERER     : message = 7; break;
-            case MUCKRAKER_ID  : message = 8; break;
-            case MAP_CORNER    : message = 9; break;
-            case MAP_NW        : message = 10; break;
-            case MAP_NE        : message = 11; break;
-            case MAP_SW        : message = 12; break;
-            case MAP_SE        : message = 13; break;
-            case MUCKRAKER     : message = 14; break;
-            case EDGE_N        : message = 15; break;
-            case EDGE_E        : message = 16; break;
-            case EDGE_S        : message = 17; break;
-            case EDGE_W        : message = 18; break;
-            case ATTACK        : message = 19; break;
-            default            : message = 20;
+            case NO_SLANDERER  : message = 1; break;
+            case MUCKRAKER_HELP: message = 2; break;
+            case FRIEND_EC     : message = 3; break;
+            case EC_ID         : message = 4; break;
+            case ENEMY_EC      : message = 5; break;
+            case NEUTRAL_EC    : message = 6; break;
+            case POLITICIAN    : message = 7; break;
+            case SLANDERER     : message = 8; break;
+            case MUCKRAKER_ID  : message = 9; break;
+            case MAP_CORNER    : message = 10; break;
+            case MAP_NW        : message = 11; break;
+            case MAP_NE        : message = 12; break;
+            case MAP_SW        : message = 13; break;
+            case MAP_SE        : message = 14; break;
+            case MUCKRAKER     : message = 15; break;
+            case EDGE_N        : message = 16; break;
+            case EDGE_E        : message = 17; break;
+            case EDGE_S        : message = 18; break;
+            case EDGE_W        : message = 19; break;
+            case ATTACK        : message = 20; break;
+            default            : message = 21;
         }
         message = addCoord(message, coord) + typeInt(rc.getType()) + addInf(inf);
         return message;
@@ -107,26 +110,27 @@ public class Coms {
     public static int getMessage(IC cat, int ID) {
         int message;
         switch (cat) {
-            case MUCKRAKER_HELP: message = 1; break;
-            case FRIEND_EC     : message = 2; break;
-            case EC_ID         : message = 3; break;
-            case ENEMY_EC      : message = 4; break;
-            case NEUTRAL_EC    : message = 5; break;
-            case POLITICIAN    : message = 6; break;
-            case SLANDERER     : message = 7; break;
-            case MUCKRAKER_ID  : message = 8; break;
-            case MAP_CORNER    : message = 9; break;
-            case MAP_NW        : message = 10; break;
-            case MAP_NE        : message = 11; break;
-            case MAP_SW        : message = 12; break;
-            case MAP_SE        : message = 13; break;
-            case MUCKRAKER     : message = 14; break;
-            case EDGE_N        : message = 15; break;
-            case EDGE_E        : message = 16; break;
-            case EDGE_S        : message = 17; break;
-            case EDGE_W        : message = 18; break;
-            case ATTACK        : message = 19; break;
-            default            : message = 20;
+            case NO_SLANDERER  : message = 1; break;
+            case MUCKRAKER_HELP: message = 2; break;
+            case FRIEND_EC     : message = 3; break;
+            case EC_ID         : message = 4; break;
+            case ENEMY_EC      : message = 5; break;
+            case NEUTRAL_EC    : message = 6; break;
+            case POLITICIAN    : message = 7; break;
+            case SLANDERER     : message = 8; break;
+            case MUCKRAKER_ID  : message = 9; break;
+            case MAP_CORNER    : message = 10; break;
+            case MAP_NW        : message = 11; break;
+            case MAP_NE        : message = 12; break;
+            case MAP_SW        : message = 13; break;
+            case MAP_SE        : message = 14; break;
+            case MUCKRAKER     : message = 15; break;
+            case EDGE_N        : message = 16; break;
+            case EDGE_E        : message = 17; break;
+            case EDGE_S        : message = 18; break;
+            case EDGE_W        : message = 19; break;
+            case ATTACK        : message = 20; break;
+            default            : message = 21;
         }
         message = addID(message, ID) + typeInt(rc.getType());
         return message;
@@ -165,25 +169,26 @@ public class Coms {
     public static IC getCat(int message) {
         message = message % (1 << 22);
         switch (message >> 17) {
-            case 1: return IC.MUCKRAKER_HELP;
-            case 2: return IC.FRIEND_EC;
-            case 3: return IC.EC_ID;
-            case 4: return IC.ENEMY_EC;
-            case 5: return IC.NEUTRAL_EC;
-            case 6: return IC.POLITICIAN;
-            case 7: return IC.SLANDERER;
-            case 8: return IC.MUCKRAKER_ID;
-            case 9: return IC.MAP_CORNER;
-            case 10: return IC.MAP_NW;
-            case 11: return IC.MAP_NE;
-            case 12: return IC.MAP_SW;
-            case 13: return IC.MAP_SE;
-            case 14: return IC.MUCKRAKER;
-            case 15: return IC.EDGE_N;
-            case 16: return IC.EDGE_E;
-            case 17: return IC.EDGE_S;
-            case 18: return IC.EDGE_W;
-            case 19: return IC.ATTACK;
+            case 1: return IC.NO_SLANDERER;
+            case 2: return IC.MUCKRAKER_HELP;
+            case 3: return IC.FRIEND_EC;
+            case 4: return IC.EC_ID;
+            case 5: return IC.ENEMY_EC;
+            case 6: return IC.NEUTRAL_EC;
+            case 7: return IC.POLITICIAN;
+            case 8: return IC.SLANDERER;
+            case 9: return IC.MUCKRAKER_ID;
+            case 10: return IC.MAP_CORNER;
+            case 11: return IC.MAP_NW;
+            case 12: return IC.MAP_NE;
+            case 13: return IC.MAP_SW;
+            case 14: return IC.MAP_SE;
+            case 15: return IC.MUCKRAKER;
+            case 16: return IC.EDGE_N;
+            case 17: return IC.EDGE_E;
+            case 18: return IC.EDGE_S;
+            case 19: return IC.EDGE_W;
+            case 20: return IC.ATTACK;
             default: return null;
         }
     }
@@ -567,36 +572,12 @@ public class Coms {
                         // rule out some spots
                         for (int i = 7; i >= 0; i--) {
                             for (int j = 7; j >= 0; j--) {
-                                if (mapSpots[i][j].x > minX) visited[i][j] = true;
+                                if (mapSpots[i][j].x < minX) visited[i][j] = true;
                             }
                         }
                     }
                 }
                 break;
-//            case ENDS:
-//                boolean changed = false;
-//                for (int i = 0; i < 9; i++) {
-//                    if (!corners[i] && (ID & (1 << i)) != 0) {
-//                        corners[i] = true;
-//                        changed = true;
-//                    }
-//                }
-//                if (changed && rc.getType() == RobotType.ENLIGHTENMENT_CENTER) {
-//                    int msgSum = 0;
-//                    for (int i = 0; i < 9; i++) {
-//                        if (corners[i]) msgSum += (1 << i);
-//                    }
-//                    signalQueue.add(getMessage(IC.ENDS, msgSum));
-//                    // need to check relevant flags and replace the previous ends flag if there is any
-//                    for (int i = 0; i < 20; i++) {
-//                        if (getCat(relevantFlags[i]) == IC.ENDS) {
-//                            removeRelevantFlag(relevantFlags[i]);
-//                            break;
-//                        }
-//                    }
-//                    addRelevantFlag(getMessage(IC.ENDS, msgSum));
-//                }
-//                break;
             case MAP_CORNER:
                 if (!mapGenerated) {
                     mapType = ID;
@@ -846,6 +827,9 @@ public class Coms {
                     staleness[minStaleInd] = staleCooldown;
                 }
                 break;
+            case NO_SLANDERER:
+                noSlanderer = true;
+                addRelevantFlag(getMessage(IC.NO_SLANDERER, 0));
         }
     }
 
@@ -859,7 +843,7 @@ public class Coms {
         }
     }
 
-    public void addRelevantFlag(int flag) {
+    public static void addRelevantFlag(int flag) {
         for (int i = 0; i < 20; i++) {
             if (relevantFlags[i] == 0) {
                 relevantFlags[i] = flag;
@@ -869,7 +853,7 @@ public class Coms {
         }
     }
 
-    public void removeRelevantFlag(int flag) {
+    public static void removeRelevantFlag(int flag) {
         for (int i = 0; i < 20; i++) {
             if (relevantFlags[i] == flag) {
                 relevantFlags[i] = 0;

@@ -5,27 +5,37 @@ import ducks.utils.Debug;
 
 public class Politician extends Robot {
 
-    // whether it's an aggressive or defensive politician
-    private static boolean attack = false;
     private static int[] attackRadii = {1, 2, 4, 5, 8, 9};
-    private static int effThreshold = 50;
     private static int effect;
+    private static boolean ecoBuff = false;
 
 
     public Politician(RobotController rc) {
         super(rc);
-        if (rc.getInfluence() >= 50) attack = true;
+        if (rc.getEmpowerFactor(team,11) > 4 && !noSlanderer) ecoBuff = true;
     }
 
     public void takeTurn() throws GameActionException {
         super.takeTurn();
         if (rc.getType() == RobotType.SLANDERER) return;
+        if (rc.getConviction() >= 100 && ecoBuff) buff();
         if (rc.getConviction() >= 300) attack();
         else {
             if (rc.getRoundNum() <= 400) {
                 if (rc.getInfluence() >= 50) attack();
                 else defend();
             } else defend();
+        }
+    }
+
+    // self buff the EC
+    static void buff() throws GameActionException {
+        RobotInfo[] rbs = rc.senseNearbyRobots(1);
+        if (rc.canEmpower(1) && rbs.length < rc.getEmpowerFactor(team,0)){
+            rc.empower(1);
+        }
+        else if (rc.getEmpowerFactor(team,0) == 1) {
+            attack();
         }
     }
 
@@ -57,7 +67,59 @@ public class Politician extends Robot {
                 }
             }
         }
-        if (closestNeutral != null) {
+        int closestBuffMuckDist = 100000;
+        RobotInfo closestBuffMuck = null;
+        for (RobotInfo r : robots) {
+            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER && r.getConviction() >= 150) {
+                int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
+                if (dist < closestBuffMuckDist) {
+                    closestBuffMuckDist = dist;
+                    closestBuffMuck = r;
+                }
+            }
+        }
+        if (closestBuffMuck != null) {
+            Debug.p("Going to closest buffraker: " + closestBuffMuck);
+            if (closestBuffMuckDist <= 9) {
+                Debug.p("Within empower distance");
+                // check if can kill
+                RobotInfo[] empowered = rc.senseNearbyRobots(closestNeutralDist);
+                int size = empowered.length;
+                int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
+                if (closestBuffMuck.getConviction()+1 <= effect) {
+                    Debug.p("Can kill, will kill");
+                    if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
+                } else {
+                    if (!moveAway) {
+                        Debug.p("Signalling attack");
+                        rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestNeutral));
+                    }
+                    int closerDist = closestBuffMuckDist;
+                    Direction optDir = null;
+                    for (int i = 0; i < 8; i++) {
+                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestBuffMuck.getLocation());
+                        if (dist < closerDist && rc.canMove(directions[i])) {
+                            closerDist = dist;
+                            optDir = directions[i];
+                        }
+                    }
+                    if (optDir != null) {
+                        Debug.p("The optimal direction to move is: " + optDir);
+                        rc.move(optDir);
+                    } else {
+                        // if can't move, then try to see whether it's good to just blast away
+                        if (attackEffect(closestBuffMuckDist)[1] > 25) {
+                            Debug.p("Can't kill, kamikaze time");
+                            if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
+                        }
+                    }
+                }
+            } else {
+                Debug.p("navbugging");
+                nav.bugNavigate(closestBuffMuck.getLocation());
+            }
+        }
+        else if (closestNeutral != null) {
             // should be able to kill if there's no units beside it
             Debug.p("Going to closest neutral EC: " + closestNeutral);
             if (closestNeutralDist <= 9) {
@@ -232,22 +294,31 @@ public class Politician extends Robot {
                 }
             }
             if (rc.isReady()) {
-                // check if empowering right now is pretty efficient
-                if (maxEff >= 25) {
+                int closestMuckDist = 100000;
+                RobotInfo closestMuck = null;
+                int closestBuffMuckDist = 100000;
+                RobotInfo closestBuffMuck = null;
+                for (RobotInfo r : robots) {
+                    if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER) {
+                        int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
+                        if (dist < closestMuckDist) {
+                            closestMuckDist = dist;
+                            closestMuck = r;
+                        }
+                        if (r.getConviction() >= 10 && dist < closestBuffMuckDist) {
+                            closestBuffMuckDist = dist;
+                            closestBuffMuck = r;
+                        }
+                    }
+                }
+                if (closestBuffMuck != null) {
+                    if (closestBuffMuckDist <= 2 && rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
+                    else nav.bugNavigate(closestBuffMuck.getLocation());
+                }
+                else if (maxEff >= 25) {
                     if (rc.canEmpower(maxEffRadius)) rc.empower(maxEffRadius);
                 } else {
                     // otherwise, chase nearby muckrakers and politicians
-                    int closestMuckDist = 100000;
-                    RobotInfo closestMuck = null;
-                    for (RobotInfo r : robots) {
-                        if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER) {
-                            int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
-                            if (dist < closestMuckDist) {
-                                closestMuckDist = dist;
-                                closestMuck = r;
-                            }
-                        }
-                    }
                     if (closestMuck != null) {
                         boolean defended = false;
                         RobotInfo[] near = rc.senseNearbyRobots(closestMuck.getLocation(), 4, team);

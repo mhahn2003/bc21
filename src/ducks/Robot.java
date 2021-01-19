@@ -51,6 +51,7 @@ public class Robot {
     static int mapType = -1;
     static MapLocation[] slandererLoc = new MapLocation[6];
     static int[] staleness = new int[6];
+    static boolean noSlanderer = false;
 
     // all robots in sensor radius
     static RobotInfo[] robots;
@@ -101,6 +102,14 @@ public class Robot {
             if (moveAway) {
                 // move away from the attacker if needed
                 if (rc.getLocation().isWithinDistanceSquared(attacker, attackDist+4)) {
+                    boolean stay = false;
+                    if (rc.getType() == RobotType.POLITICIAN && rc.getConviction() >= 300) {
+                        // check if right next to an ec
+                        RobotInfo[] near = rc.senseNearbyRobots(1);
+                        for (RobotInfo r : near) {
+                            if (r.getType() == RobotType.ENLIGHTENMENT_CENTER && r.getTeam() != team) stay = true;
+                        }
+                    }
                     int furthestDist = rc.getLocation().distanceSquaredTo(attacker);
                     Direction optDir = null;
                     for (int i = 0; i < 8; i++) {
@@ -110,7 +119,7 @@ public class Robot {
                             optDir = directions[i];
                         }
                     }
-                    if (optDir != null) rc.move(optDir);
+                    if (optDir != null && !stay) rc.move(optDir);
                 }
             }
         }
@@ -137,7 +146,6 @@ public class Robot {
             // go to the corners
             Nav.getEnds();
             wandLoc = ends[(rc.getID() % 4)];
-            Debug.p("going to: " + wandLoc);
             nav.bugNavigate(wandLoc);
         } else {
             int closestWandDist = 100000;
@@ -156,6 +164,7 @@ public class Robot {
                 wandLoc = ends[(rc.getID() % 4)];
             } else wandLoc = closestWand;
         }
+        Debug.p("going to: " + wandLoc);
         return wandLoc;
     }
 

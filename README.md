@@ -39,29 +39,20 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 All of the bold points should be implemented before sprint 2
 
 - Politician
-    - **If muckraker buff is large enough, buff EC it just spawned from**
     - Concentrate patrolling on the side where the attacks come from
-    - Account for enemy sending buffrakers
-    - Check if there's too much of an imbalance between attack and defense politicians
 - Slanderer
-    - Position the slanderers away from the enemy ECs if they are known
-    - Try to avoid muckrakers from a further range
-- Muckraker AI
+    - Make closeness to HQ have a lot more weight than closeness to enemy HQ
+- Muckraker
     - __Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis__
-    - **Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10**
-    - **When wandering has a tendency to move in groups, split them up somehow?**
-- Need to figure out a way to stop getting overwhelmed when enemy sends muckrakers
-    - Keep track of fPolcount and limit politician spawn
-    - Just spam muckrakers anyway
-- Slanderer coms doesn't seem to be working properly? Need to test/debug more
+- EC
+- There's an instance where politicians and muckrakers get stuck on the middle spots, running out of bytecode? Seems like a nullpointer issue
+- Improve moveAway functionality
 - Analyze top teams:
     - Specifically:
-    - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola
-    - ~~**Use IDs like baby duck to keep only a few muckrakers on each enemy politician to avoid too many units dying**~~
+    - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-8. If muckraker buff is large enough, buff EC it just spawned from
-9. Change moveAway such that it's in the movement so that people don't walk into it accidentally, and then this makes the people in the +4 radius not have to move away
+14. Spawn buffrakers in place of buff polis
 
 
 Done:
@@ -76,5 +67,10 @@ Done:
 - ~~Fix bug where IC.MUCKRAKER is being used for ID and location, and also it sometimes overrides the signal for the muckraker to escape properly~~
 - ~~When wandering has a tendency to move in groups, split them up somehow?~~
 - ~~Improve muckraker spacing from each other, sometimes they just go wayy backwards~~
-- Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10
-
+- ~~Muckrakers still crowd around a politician, probably bc they come back after getting out of range 10~~
+- ~~Not spawning polis to take over neutral ECs fast enough~~
+- ~~If muckraker buff is large enough, buff EC it just spawned from~~
+- ~~Debug wander and why units get stuck -> java ghosthug last round~~
+- ~~Spawn less muckrakers and more politicians in the midgame~~
+- ~~Attack politicians check for buffrakers on the way, and kill them if they can~~
+- ~~Defense politician more efficient when defending against buffrakers~~
