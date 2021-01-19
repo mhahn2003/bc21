@@ -15,16 +15,13 @@ public class EC extends Robot {
         super.takeTurn();
         nav.lookAround();
         RobotType toBuild = RobotType.SLANDERER;
-        int influence = 50;
-        for (Direction dir : directions) {
-            if (rc.canBuildRobot(toBuild, dir, rc.getInfluence())) {
-                rc.buildRobot(toBuild, dir, rc.getInfluence());
-                break;
+        if (rc.getInfluence()>100) {
+            for (Direction dir : directions) {
+                if (rc.canBuildRobot(toBuild, dir, rc.getInfluence())) {
+                    rc.buildRobot(toBuild, dir, rc.getInfluence());
+                    break;
+                }
             }
         }
-    }
-
-    static RobotType randomSpawnableRobotType() {
-        return spawnableRobot[(int) (Math.random() * spawnableRobot.length)];
     }
 }

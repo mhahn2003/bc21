@@ -15,11 +15,13 @@ public class Politician extends Robot {
 
     public Politician(RobotController rc) {
         super(rc);
-        if (rc.getEmpowerFactor(team,10)>1.05 &&
+        if (rc.getEmpowerFactor(team,9)>1.05 &&
             rc.getType()==RobotType.POLITICIAN &&
-            rc.getInfluence()>200){
+            rc.getInfluence()>=198){
             for(RobotInfo rb : rc.senseNearbyRobots(1)){
-                if (rb.type == RobotType.ENLIGHTENMENT_CENTER & rb.influence<rc.getInfluence()){
+                if (rb.type == RobotType.ENLIGHTENMENT_CENTER &&
+                    rb.getLocation().distanceSquaredTo(rc.getLocation())==1 &&
+                    rb.influence<rc.getInfluence()){
                     Debug.p("self buffer");
                     ecoBuff = true;
                     break;
@@ -53,14 +55,13 @@ public class Politician extends Robot {
 
         RobotInfo[] rbs =rc.senseNearbyRobots(1);
 
-        if (rbs.length<rc.getEmpowerFactor(team,0)){
-            Debug.p("buff at"+rc.getLocation().toString());
+        if (rbs.length == 1 || rbs.length < rc.getEmpowerFactor(team,0)){
+            Debug.p("buff at"+rc.getLocation().toString() + "with radius 1");
             rc.empower(1);
         }else if(rbs.length>2){
             Debug.p("buffer at"+rc.getLocation().toString() +"is blocked");
         }else if(rc.getEmpowerFactor(team,0)==1){
-            ecoBuff=false;
-            attack=true;
+            rc.empower(1);
         }
     }
 

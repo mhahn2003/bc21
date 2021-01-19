@@ -3,6 +3,8 @@ package selfbuff;
 import battlecode.common.*;
 import selfbuff.utils.*;
 
+import java.util.Map;
+
 public class EC extends Robot {
     int voteCount = -1;
     int bidCount = 1;
@@ -18,6 +20,8 @@ public class EC extends Robot {
     int tS = 0;
     int tP = 0;
     int tM = 0;
+
+    boolean buffing=false;
 
     public EC(RobotController rc) {
         super(rc);
@@ -67,25 +71,33 @@ public class EC extends Robot {
         else if (muckCount > 0) build(RobotType.POLITICIAN, 25);
         // scenario 2
         // if there is a gain from self buffing, start self buffing
-        if ((rc.getEmpowerFactor(team,10)>1.05) &&
+        double expectation = rc.getEmpowerFactor(team,10);
+        if ((expectation>1.05) &&
             (rc.getInfluence()/(float) GameConstants.ROBOT_INFLUENCE_LIMIT<0.8) ){
-            if (rc.getInfluence()>200){
+            buffing = true;
+            boolean builtBuffer=false;
+            for (RobotInfo rb: rc.senseNearbyRobots(1)){
+                if(rb.type==RobotType.POLITICIAN && rb.influence>rc.getInfluence()){
+                    builtBuffer=true;
+                }
+            }
+            if ( !builtBuffer && rc.getInfluence()>200){
+                Debug.p("with expectation "+ rc.getEmpowerFactor(team,10));
                 // prevent low influence self buffing politician
-                if (build(RobotType.POLITICIAN,rc.getInfluence(),true)){
+                if (build(RobotType.POLITICIAN,(int) (rc.getInfluence()*0.99) , true)){
                     Debug.p("ec at " + rc.getLocation().toString() + " build an buffer" );
                 }else {
                     Debug.p("ec at " + rc.getLocation().toString() + " failed to build an buffer" );
                 }
             }
+        }else{
+            buffing = false;
         }
-        // todo: some how connect this scenerario to self buff mode.
-        // if spamming, politicians can't empower only base
-        // the else is just an temperary fix
         // scenario 3: no enemy units nearby
         // initially build in a 1:4:4 ratio of p, s, m
         // then build in a 2:1:5 ratio of p, s, m
         // then build in a 4:1:2 ratio of p, s, m
-        else if (rc.getRoundNum() <= 50) {
+        if (rc.getRoundNum() <= 50) {
             if (4*tP < tS) {
                 if (rc.getInfluence() >= 400) build(RobotType.POLITICIAN, 400);
                 build(RobotType.POLITICIAN, 20);
@@ -118,17 +130,28 @@ public class EC extends Robot {
     }
 
     public boolean build(RobotType toBuild, int influence) throws GameActionException {
-        return build( toBuild, influence,false);
+        return build(toBuild, influence,false);
     }
 
-    public boolean build(RobotType toBuild, int influence, boolean onlyCardial) throws GameActionException {
+    public boolean build(RobotType toBuild, int influence, boolean onlyCardinal) throws GameActionException {
         int safetyNet = 0;
         if (muckCount > 0 && toBuild == RobotType.SLANDERER) return false;
         if (polCount > 0) safetyNet = 100;
         if (toBuild == RobotType.MUCKRAKER) safetyNet = 0;
         if (influence + safetyNet > rc.getInfluence()) return false;
-        for (Direction dir : onlyCardial? Direction.cardinalDirections(): directions) {
+        for (Direction dir :  (onlyCardinal? Direction.cardinalDirections() : directions)) {
             if (rc.canBuildRobot(toBuild, dir, influence)) {
+                if(buffing) {
+                    //no unit is built near politicians, politician can be build near other units assume that they will move away
+                    MapLocation nLoc = rc.getLocation().add(dir.rotateLeft());
+                    if (rc.canSenseLocation(nLoc) && rc.senseRobotAtLocation(nLoc) != null && rc.senseRobotAtLocation(nLoc).getType()==RobotType.POLITICIAN ) {
+                        continue;
+                    }
+                    nLoc = rc.getLocation().add(dir.rotateRight());
+                    if (rc.canSenseLocation(nLoc) && rc.senseRobotAtLocation(nLoc) != null && rc.senseRobotAtLocation(nLoc).getType()==RobotType.POLITICIAN) {
+                        continue;
+                    }
+                }
                 switch (toBuild) {
                     case POLITICIAN: tP++; break;
                     case SLANDERER: tS++; break;
