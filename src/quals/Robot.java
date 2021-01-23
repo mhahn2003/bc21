@@ -1,9 +1,9 @@
-package ducks;
+package quals;
 
 import battlecode.common.*;
-import ducks.utils.Debug;
+import quals.utils.Debug;
 
-import static ducks.RobotPlayer.turnCount;
+import static quals.RobotPlayer.turnCount;
 
 public class Robot {
     static RobotController rc;
@@ -51,7 +51,6 @@ public class Robot {
     static int mapType = -1;
     static MapLocation[] slandererLoc = new MapLocation[6];
     static int[] staleness = new int[6];
-    static boolean noSlanderer = false;
 
     // all robots in sensor radius
     static RobotInfo[] robots;
