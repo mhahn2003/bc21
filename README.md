@@ -63,10 +63,8 @@ All of the bold points should be implemented before sprint 2
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-14. remove self buff code
 15. take neutral ecs first
 16. fix attack politicians not exploding buffrakers
-17. self destruct useless politicians
 18. make politicians surround the hq and take up spaces rather than attacking
 19. build more slanderers even when we have more money
 20. deal with big polis near our ec
@@ -91,3 +89,5 @@ Done:
 - ~~Spawn less muckrakers and more politicians in the midgame~~
 - ~~Attack politicians check for buffrakers on the way, and kill them if they can~~
 - ~~Defense politician more efficient when defending against buffrakers~~
+- ~~Remove self buff code~~
+- ~~Self destruct useless politicians~~

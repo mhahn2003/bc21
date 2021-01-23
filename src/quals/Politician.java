@@ -16,6 +16,10 @@ public class Politician extends Robot {
     public void takeTurn() throws GameActionException {
         super.takeTurn();
         if (rc.getType() == RobotType.SLANDERER) return;
+        // self destruct if kinda useless
+        if (rc.getConviction() <= 10) {
+            if (rc.canEmpower(1)) rc.empower(1);
+        }
         if (rc.getConviction() >= 300) attack();
         else {
             if (rc.getRoundNum() <= 400) {
