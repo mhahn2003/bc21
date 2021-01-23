@@ -98,7 +98,7 @@ public class Robot {
             if (rc.getType() == RobotType.SLANDERER || rc.getRoundNum() < 200 || turnCount > 15) coms.displaySignal();
             else Coms.signalQueue.clear();
 //            Debug.p("After displaySignal: " + Clock.getBytecodeNum());
-            if (moveAway) {
+            if (moveAway && rc.getType() != RobotType.POLITICIAN) {
                 // move away from the attacker if needed
                 if (rc.getLocation().isWithinDistanceSquared(attacker, attackDist+4)) {
                     boolean stay = false;
