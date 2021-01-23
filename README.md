@@ -63,7 +63,6 @@ All of the bold points should be implemented before sprint 2
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-16. fix attack politicians not exploding buffrakers
 17. copy build order from top teams
 15. take neutral ecs first
 19. build more slanderers even when we have more money
@@ -94,3 +93,4 @@ Done:
 - ~~Defense politician more efficient when defending against buffrakers~~
 - ~~Remove self buff code~~
 - ~~Self destruct useless politicians~~
+- ~~fix attack politicians not exploding buffrakers~~

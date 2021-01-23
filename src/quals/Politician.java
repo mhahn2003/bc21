@@ -75,7 +75,7 @@ public class Politician extends Robot {
                 // check if can kill
                 RobotInfo[] empowered = rc.senseNearbyRobots(closestNeutralDist);
                 int size = empowered.length;
-                int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
+                int effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;
                 if (closestBuffMuck.getConviction()+1 <= effect) {
                     Debug.p("Can kill, will kill");
                     if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
@@ -113,7 +113,7 @@ public class Politician extends Robot {
                 // check if can kill
                 RobotInfo[] empowered = rc.senseNearbyRobots(closestNeutralDist);
                 int size = empowered.length;
-                int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
+                int effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                 RobotInfo neutralEC = rc.senseRobotAtLocation(closestNeutral);
                 if (neutralEC.getConviction()+1 <= effect) {
                     Debug.p("Can kill, will kill");
@@ -137,10 +137,10 @@ public class Politician extends Robot {
                         rc.move(optDir);
                     } else {
                         // if can't move, then try to see whether it's good to just blast away
-                        int teamPoli = (int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10;
+                        int teamPoli = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                         for (RobotInfo r : robots) {
                             if (r.getTeam() == team && Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN) {
-                                teamPoli += (int) ((double) r.getConviction() * rc.getEmpowerFactor(team, 0)) - 10;
+                                teamPoli += ((int) ((r.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                             }
                         }
                         Debug.p("Total team conviction: " + teamPoli);
@@ -167,7 +167,7 @@ public class Politician extends Robot {
                 // check if can kill
                 RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
                 int size = empowered.length;
-                int effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
+                int effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                 RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
                 if (enemyEC.getConviction()+1 <= effect) {
                     Debug.p("Can kill, will kill");
@@ -175,7 +175,7 @@ public class Politician extends Robot {
                 } else {
                     // signal that you're attacking, so move out of the way
                     // only signal if you're a fat politician
-                    if (rc.getConviction() >= 300 && !moveAway) {
+                    if (rc.getConviction() >= 300) {
                         Debug.p("Signalling attack");
                         rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
                     }
@@ -195,10 +195,10 @@ public class Politician extends Robot {
                     }
                     else {
                         // if can't move, then try to see whether it's good to just blast away
-                        int teamPoli = (int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10;
+                        int teamPoli = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                         for (RobotInfo r : robots) {
                             if (r.getTeam() == team && Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN) {
-                                teamPoli += (int) ((double) r.getConviction() * rc.getEmpowerFactor(team, 0)) - 10;
+                                teamPoli += ((int) ((r.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                             }
                         }
                         Debug.p("Total team conviction: " + teamPoli);
@@ -381,7 +381,7 @@ public class Politician extends Robot {
         RobotInfo[] empowered = rc.senseNearbyRobots(radius);
         int size = empowered.length;
         if (size == 0 || rc.getConviction() == 0) return new int[] {0, 0};
-        effect = ((int) ((double) rc.getConviction() * rc.getEmpowerFactor(team, 0)) - 10)/size;
+        effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;
         int eff = 0;
         int killCount = 0;
         for (RobotInfo r : empowered) {
