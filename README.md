@@ -61,7 +61,8 @@ All of the bold points should be implemented before sprint 2
 - Price calculation with unit count and influence
 
 Order:
-19. improve muckraker spacing and spreading
+18. fix mapSpots bug
+19. reduce bytecode for muckrakers
 20. Assist politicians
 21. deal with big polis near our ec
 
@@ -95,3 +96,4 @@ Done:
 - ~~copy build order from top teams~~
 - ~~make politicians surround the hq and take up spaces rather than attacking~~
 - ~~Make closeness to HQ have a lot more weight than closeness to enemy HQ~~
+- ~~improve muckraker spacing and spreading~~

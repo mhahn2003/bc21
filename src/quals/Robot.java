@@ -12,7 +12,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = false;
+    public static boolean debugOn = true;
 
     static int minX = 9999;
     static int maxX = 30065;
@@ -165,11 +165,14 @@ public class Robot {
             }
             RobotInfo[] nearMucks = new RobotInfo[3];
             int nearMuckSize = 0;
-            for (RobotInfo r : robots) {
-                if (nearMuckSize < 3 && r.getTeam() == team && r.getType() == RobotType.MUCKRAKER &&
-                    r.getLocation().distanceSquaredTo(closestEC) > rc.getLocation().distanceSquaredTo(closestEC)) {
-                    nearMucks[nearMuckSize] = r;
-                    nearMuckSize++;
+            if (robots.length <= 25) {
+                for (RobotInfo r : robots) {
+                    if (r.getTeam() == team && r.getType() == RobotType.MUCKRAKER &&
+                        r.getLocation().distanceSquaredTo(closestEC) > rc.getLocation().distanceSquaredTo(closestEC)) {
+                        nearMucks[nearMuckSize] = r;
+                        nearMuckSize++;
+                        if (nearMuckSize == 3) break;
+                    }
                 }
             }
             int closestOptDist = 100000;
