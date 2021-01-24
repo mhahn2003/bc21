@@ -66,7 +66,6 @@ All of the bold points should be implemented before sprint 2
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-17. copy build order from top teams
 18. make politicians surround the hq and take up spaces rather than attacking
 19. improve muckraker spacing and spreading
 20. Assist politicians
@@ -99,3 +98,4 @@ Done:
 - ~~fix attack politicians not exploding buffrakers~~
 - ~~take neutral ecs first~~
 - ~~build more slanderers even when we have more money~~
+- ~~copy build order from top teams~~

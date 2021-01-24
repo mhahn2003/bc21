@@ -167,7 +167,7 @@ public class Politician extends Robot {
                 // check if can kill
                 RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
                 int size = empowered.length;
-                int effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
+                int effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;
                 RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
                 if (enemyEC.getConviction()+1 <= effect) {
                     Debug.p("Can kill, will kill");
@@ -175,25 +175,31 @@ public class Politician extends Robot {
                 } else {
                     // signal that you're attacking, so move out of the way
                     // only signal if you're a fat politician
-                    if (rc.getConviction() >= 300) {
+                    if (rc.getConviction() >= 300 && closestECDist <= 4) {
                         Debug.p("Signalling attack");
                         rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
                     }
-                    // check if we can get closer, or if there's a lot of our own units in the way
-                    int closerDist = rc.getLocation().distanceSquaredTo(closestEC);
-                    Direction optDir = null;
-                    for (int i = 0; i < 8; i++) {
-                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestEC);
-                        if (dist < closerDist && rc.canMove(directions[i])) {
-                            closerDist = dist;
-                            optDir = directions[i];
+                    // check for any empty spots around the EC
+                    if (rc.getLocation().isAdjacentTo(closestEC)) {
+                        Direction dir = rc.getLocation().directionTo(closestEC);
+                        if (rc.getLocation().distanceSquaredTo(closestEC) == 2) {
+                            if (rc.canMove(dir.rotateLeft())) rc.move(dir.rotateLeft());
+                            if (rc.canMove(dir.rotateRight())) rc.move(dir.rotateRight());
                         }
+                    } else {
+                        int closestOpenDist = 10000;
+                        MapLocation closestOpen = null;
+                        for (int i = 0; i < 8; i++) {
+                            MapLocation loc = closestEC.add(directions[i]);
+                            int dist = loc.distanceSquaredTo(rc.getLocation());
+                            if (dist < closestOpenDist && !rc.isLocationOccupied(loc)) {
+                                closestOpen = loc;
+                                closestOpenDist = dist;
+                            }
+                        }
+                        if (closestOpen != null) nav.bugNavigate(closestOpen);
                     }
-                    if (optDir != null) {
-                        Debug.p("The optimal direction to move is: " + optDir);
-                        rc.move(optDir);
-                    }
-                    else {
+                    if (rc.isReady()) {
                         // if can't move, then try to see whether it's good to just blast away
                         int teamPoli = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                         for (RobotInfo r : robots) {
@@ -201,15 +207,9 @@ public class Politician extends Robot {
                                 teamPoli += ((int) ((r.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                             }
                         }
-                        Debug.p("Total team conviction: " + teamPoli);
-                        if (attackEffect(closestECDist)[1] > 2) {
-                            Debug.p("Can't kill, kamikaze time");
+                        if (teamPoli >= Math.min(2*enemyEC.getConviction(), 6000) || rc.getConviction() <= 100) {
+                            // just empower
                             if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
-                        } else {
-                            if (teamPoli >= Math.min(3*enemyEC.getConviction(), 6000) || rc.getConviction() <= 100) {
-                                // just empower
-                                if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
-                            }
                         }
                     }
                 }
