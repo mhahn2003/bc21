@@ -94,7 +94,7 @@ public class Politician extends Robot {
                         rc.move(optDir);
                     } else {
                         // if can't move, then try to see whether it's good to just blast away
-                        if (attackEffect(closestBuffMuckDist)[1] > 25) {
+                        if (attackEffect(closestBuffMuckDist)[0] > 20) {
                             Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
                         }
@@ -203,7 +203,7 @@ public class Politician extends Robot {
                         // if can't move, then try to see whether it's good to just blast away
                         int teamPoli = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                         for (RobotInfo r : robots) {
-                            if (r.getTeam() == team && Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN) {
+                            if (r.getTeam() == team && r.getType() == RobotType.POLITICIAN) {
                                 teamPoli += ((int) ((r.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
                             }
                         }

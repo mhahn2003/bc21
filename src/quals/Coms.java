@@ -196,7 +196,7 @@ public class Coms {
         MapLocation here = rc.getLocation();
         int remX = here.x % 128;
         int remY = here.y % 128;
-        message = message % (1 << 17);
+        message = message % (1 << 14);
         int x = message >> 7;
         int y = message % 128;
         if (Math.abs(x - remX) >= 64) {

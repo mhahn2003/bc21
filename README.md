@@ -37,10 +37,8 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 ### To-do list
 
 - Still breaks on the wander points for some reason
+- neutral ec location encoding broken
 - Need to concentrate politicians onto the enemy, maybe be more aggresive?
-- Politicians not attacking EC for some reason
-- Politicians still not killing buffrakers
-- EC not building polis to take over neutrals
 - new born neutral ecs only spamming polis and mucks
 - Politician
     - Concentrate patrolling on the side where the attacks come from
@@ -53,23 +51,23 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - Needs to go towards enemy EC more
     - Cardinal direction muckrakers for defense
     - 1 cost muckrakers also surround buffrakers to help protect it
-    - consider where other muckrakers are for the wander function
-        - Something like heuristic based on distance from the 3 nearest muckrakers in front of you
     - early buff mucks
     - flanking seems very effective
+    - 1 hp mucks are kinda bad with our code, just send politicians instead, we have enough eco for it
+    - account for 1 cost poli
 - EC
     - Deal with big polis near our ec
+    - doesn't spawn slanderers when poor
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 - Price calculation with unit count and influence
 
 Order:
-1. Fix neutral EC bug
-2. Fix politicians not attacking neutral EC
-3. Fix politicinas not killing buffrakers
+1. more politicians, less muckrakers
+2. fix build order for newly converted ecs
+3. figure out what to do when there's a politician near our base
 20. Assist politicians
-21. deal with big polis near our ec
 
 
 
@@ -103,3 +101,4 @@ Done:
 - ~~Make closeness to HQ have a lot more weight than closeness to enemy HQ~~
 - ~~improve muckraker spacing and spreading~~
 - ~~fix mapSpots bug - maps are switched for some reason?~
+- ~~EC not building polis to take over neutrals~~
