@@ -154,7 +154,7 @@ public class Slanderer extends Politician {
                         // move closer to EC but still away if possible
                         for (int i = 1; i < 8; i += 2) {
                             MapLocation loc = rc.getLocation().add(directions[i]);
-                            if (loc.distanceSquaredTo(closestEC) + loc.distanceSquaredTo(closestEnemy) < rc.getLocation().distanceSquaredTo(closestEC) + rc.getLocation().distanceSquaredTo(closestEnemy)
+                            if (10*loc.distanceSquaredTo(closestEC) + loc.distanceSquaredTo(closestEnemy) < 10*rc.getLocation().distanceSquaredTo(closestEC) + rc.getLocation().distanceSquaredTo(closestEnemy)
                                 && loc.distanceSquaredTo(closestEnemy) >= closestEC.distanceSquaredTo(closestEnemy)
                                 && !loc.isWithinDistanceSquared(closestEC, 4) && rc.canMove(directions[i])) {
                                 rc.move(directions[i]);

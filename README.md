@@ -56,17 +56,14 @@ All of the bold points should be implemented before sprint 2
     - consider where other muckrakers are for the wander function
         - Something like heuristic based on distance from the 3 nearest muckrakers in front of you
     - early buff mucks
+    - flanking seems very effective
 - EC
-    - Analyze top teams and improve build order
-    - Reset the count properly, we need more eco even if we have more than 10000+ influence
     - Deal with big polis near our ec
-- Improve moveAway functionality
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 
 Order:
-18. make politicians surround the hq and take up spaces rather than attacking
 19. improve muckraker spacing and spreading
 20. Assist politicians
 21. deal with big polis near our ec
@@ -99,3 +96,4 @@ Done:
 - ~~take neutral ecs first~~
 - ~~build more slanderers even when we have more money~~
 - ~~copy build order from top teams~~
+- ~~make politicians surround the hq and take up spaces rather than attacking~~

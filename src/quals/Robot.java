@@ -147,6 +147,7 @@ public class Robot {
             wandLoc = ends[(rc.getID() % 4)];
             nav.bugNavigate(wandLoc);
         } else {
+            
             int closestWandDist = 100000;
             MapLocation closestWand = null;
             for (int i = 7; i >= 0; i--) {
