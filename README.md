@@ -36,8 +36,12 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
-All of the bold points should be implemented before sprint 2
-
+- Still breaks on the wander points for some reason
+- Need to concentrate politicians onto the enemy, maybe be more aggresive?
+- Politicians not attacking EC for some reason
+- Politicians still not killing buffrakers
+- EC not building polis to take over neutrals
+- new born neutral ecs only spamming polis and mucks
 - Politician
     - Concentrate patrolling on the side where the attacks come from
     - Assist politicians : doubling as both a defender and an attacker
@@ -61,8 +65,9 @@ All of the bold points should be implemented before sprint 2
 - Price calculation with unit count and influence
 
 Order:
-18. fix mapSpots bug
-19. reduce bytecode for muckrakers
+1. Fix neutral EC bug
+2. Fix politicians not attacking neutral EC
+3. Fix politicinas not killing buffrakers
 20. Assist politicians
 21. deal with big polis near our ec
 
@@ -97,3 +102,4 @@ Done:
 - ~~make politicians surround the hq and take up spaces rather than attacking~~
 - ~~Make closeness to HQ have a lot more weight than closeness to enemy HQ~~
 - ~~improve muckraker spacing and spreading~~
+- ~~fix mapSpots bug - maps are switched for some reason?~

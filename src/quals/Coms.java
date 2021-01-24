@@ -149,7 +149,7 @@ public class Coms {
         return (message << 17)+ID;
     }
 
-    public static int addInf(int inf) { return ((Math.min(inf/70, 7)) << 14); }
+    public static int addInf(int inf) { return inf << 14; }
 
     public static RobotType getTyp(int message) {
         switch (message >> 22) {
@@ -386,7 +386,7 @@ public class Coms {
                             }
                             if (loc.equals(neutralECs[i])) {
                                 neutralECs[i] = null;
-                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
                                 neutralInf[i] = 0;
                                 break;
                             }
@@ -416,7 +416,7 @@ public class Coms {
                             }
                             if (loc.equals(neutralECs[i])) {
                                 neutralECs[i] = null;
-                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
                                 neutralInf[i] = 0;
                                 break;
                             }
@@ -450,10 +450,10 @@ public class Coms {
                         }
                         if (minInd != -1 && !seen) {
                             neutralECs[minInd] = r.getLocation();
-                            neutralInf[minInd] = r.getInfluence();
+                            neutralInf[minInd] = Math.min(r.getInfluence()/70, 7);
                             Debug.p("NEUTRAL: Adding to signal queue");
-                            signalQueue.add(getMessage(IC.NEUTRAL_EC, loc));
-                            addRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                            signalQueue.add(getMessage(IC.NEUTRAL_EC, loc, neutralInf[minInd]));
+                            addRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[minInd]));
                         }
                     }
                 }
@@ -691,7 +691,7 @@ public class Coms {
                     }
                     if (coord.equals(neutralECs[i])) {
                         neutralECs[i] = null;
-                        removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
+                        removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
                         neutralInf[i] = 0;
                         break;
                     }
@@ -721,7 +721,7 @@ public class Coms {
                     }
                     if (coord.equals(neutralECs[i])) {
                         neutralECs[i] = null;
-                        removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
+                        removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
                         neutralInf[i] = 0;
                         break;
                     }
@@ -756,7 +756,7 @@ public class Coms {
                 if (minInd != -1 && !seen) {
                     neutralECs[minInd] = coord;
                     neutralInf[minInd] = getInf(flag);
-                    addRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
+                    addRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[minInd]));
                 }
                 break;
             case EC_ID:
