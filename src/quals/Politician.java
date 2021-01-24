@@ -206,7 +206,7 @@ public class Politician extends Robot {
                             Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                         } else {
-                            if (teamPoli >= 3*enemyEC.getConviction() || rc.getConviction() <= 100) {
+                            if (teamPoli >= Math.min(3*enemyEC.getConviction(), 6000) || rc.getConviction() <= 100) {
                                 // just empower
                                 if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                             }

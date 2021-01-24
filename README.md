@@ -42,9 +42,9 @@ All of the bold points should be implemented before sprint 2
     - Concentrate patrolling on the side where the attacks come from
     - Need to secure neutrals faster
     - Attack politicians not exploding buffrakers -> don't approach when already one tagging it
-    ー　Use small buffs minimally just for a bit
     - Kill useless politicians
     - Just send big politicians to infiltrate and take over spawning spaces
+    - Assist politicians : doubling as both a defender and an attacker
 - Slanderer
     - Make closeness to HQ have a lot more weight than closeness to enemy HQ
 - Muckraker
@@ -53,6 +53,9 @@ All of the bold points should be implemented before sprint 2
     - Needs to go towards enemy EC more
     - Cardinal direction muckrakers for defense
     - 1 cost muckrakers also surround buffrakers to help protect it
+    - consider where other muckrakers are for the wander function
+        - Something like heuristic based on distance from the 3 nearest muckrakers in front of you
+    - early buff mucks
 - EC
     - Analyze top teams and improve build order
     - Reset the count properly, we need more eco even if we have more than 10000+ influence
@@ -64,11 +67,11 @@ All of the bold points should be implemented before sprint 2
 
 Order:
 17. copy build order from top teams
-15. take neutral ecs first
-19. build more slanderers even when we have more money
 18. make politicians surround the hq and take up spaces rather than attacking
 19. improve muckraker spacing and spreading
-20. deal with big polis near our ec
+20. Assist politicians
+21. deal with big polis near our ec
+
 
 
 
@@ -94,3 +97,5 @@ Done:
 - ~~Remove self buff code~~
 - ~~Self destruct useless politicians~~
 - ~~fix attack politicians not exploding buffrakers~~
+- ~~take neutral ecs first~~
+- ~~build more slanderers even when we have more money~~

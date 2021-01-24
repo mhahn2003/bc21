@@ -55,53 +55,6 @@ public class Nav {
         Debug.p("made nav");
     }
 
-//    public static void move(Direction dir) throws GameActionException {
-//        rc.move(dir);
-//
-//        MapLocation loc = rc.getLocation();
-//        MapLocation nloc;
-//        int[][]template;
-//        int dirID = directionToInt(dir);
-//        if (directionToInt(dir)%2==0){template = cardinalNewSense;}
-//        else {template = interCardinalNewSense;};
-//        int rotation=dirID>>1;
-//        int nx;
-//        int ny;
-//        for(int[] xypair : template){
-//            switch ( rotation%4){
-//                case 0: nloc = loc.translate( xypair[0], xypair[1]); break;
-//                case 1: nloc = loc.translate( xypair[1],-xypair[0]); break;
-//                case 2: nloc = loc.translate(-xypair[0],-xypair[1]); break;
-//                case 3: nloc = loc.translate(-xypair[1], xypair[0]); break;
-//                default: nloc = loc.translate( xypair[0], xypair[1]); Debug.p("nav move wrong");
-//            }
-//            nx=nloc.x%128;
-//            ny=nloc.y%128;
-//            if (mapPassibility[nx][ny]==0 && rc.canSenseLocation(nloc)){
-//                if(!rc.onTheMap(nloc)){mapPassibility[nx][ny]=-1;};
-//                mapPassibility[nx][ny]=rc.sensePassability(nloc);
-//            }
-//        }
-//    }
-
-//    public void initializingSurroundingMap() throws GameActionException {
-//        MapLocation loc = rc.getLocation();
-//        MapLocation nloc;
-//        int nx;
-//        int ny;
-//        for(int x = -sqrtSensorRadius; x<= sqrtSensorRadius; x++){
-//            for(int y = -sqrtSensorRadius; y<= sqrtSensorRadius; y++){
-//                nloc = loc.translate(x,y);
-//                nx=nloc.x%128;
-//                ny=nloc.y%128;
-//                if (mapPassibility[nx][ny]==0 && rc.canSenseLocation(nloc)){
-//                    if(!rc.onTheMap(nloc)){mapPassibility[nx][ny]=-1;};
-//                    mapPassibility[nx][ny]=rc.sensePassability(nloc);
-//                }
-//            }
-//        }
-//    }
-
     // chase a unit based on their ID
     public void chase(RobotInfo ri) throws GameActionException {
 
@@ -327,6 +280,10 @@ public class Nav {
         Direction optDir = rc.getLocation().directionTo(target);
         Direction left = optDir.rotateLeft();
         Direction right = optDir.rotateRight();
+        if (rc.getLocation().isAdjacentTo(target) && rc.canMove(optDir)) {
+            rc.move(optDir);
+            return optDir;
+        }
         double pass;
         double lPass;
         double rPass;
