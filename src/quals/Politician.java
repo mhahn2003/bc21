@@ -21,12 +21,8 @@ public class Politician extends Robot {
             if (rc.canEmpower(1)) rc.empower(1);
         }
         if (rc.getConviction() >= 300) attack();
-        else {
-            if (rc.getRoundNum() <= 400) {
-                if (rc.getInfluence() >= 50) attack();
-                else defend();
-            } else defend();
-        }
+        else if (rc.getConviction() >= 50) assist();
+        else defend();
     }
 
     // attack on the enemy ec
@@ -262,7 +258,7 @@ public class Politician extends Robot {
                 // search for other friendly politicians near
                 RobotInfo[] near = rc.senseNearbyRobots(enemyMuck, 2, team);
                 for (RobotInfo r : near) {
-                    if (r.getType() == RobotType.POLITICIAN && r.getInfluence() < 50) {
+                    if (r.getType() == RobotType.POLITICIAN && r.getInfluence() < 30) {
                         defended = true;
                         break;
                     }
@@ -325,7 +321,7 @@ public class Politician extends Robot {
                         int poliInd = 0;
                         RobotInfo[] nearP = rc.senseNearbyRobots(16, team);
                         for (RobotInfo r : nearP) {
-                            if (Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN && r.getInfluence() < 50) {
+                            if (Coms.getTyp(rc.getFlag(r.getID())) == RobotType.POLITICIAN && r.getInfluence() < 30) {
                                 if (poliInd < 5) {
                                     nearPolis[poliInd] = r.getLocation();
                                     poliInd++;

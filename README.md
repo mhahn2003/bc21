@@ -38,10 +38,8 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 - Still breaks on the wander points for some reason
 - Need to concentrate politicians onto the enemy, maybe be more aggresive?
-- new born neutral ecs only spamming polis and mucks
 - Politician
     - Concentrate patrolling on the side where the attacks come from
-    - Assist politicians : doubling as both a defender and an attacker
     - Assist politicians can also flank maybe?
 - Slanderer
 - Muckraker
@@ -54,20 +52,17 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - flanking seems very effective
     - 1 hp mucks are kinda bad with our code, just send politicians instead, we have enough eco for it
     - account for 1 cost poli
-    - consistently send 200 cost mucks/1 cost mucks instead of just 1 cost mucks
+    - heuristic isn't really working, look into a fix
+    - go to ECs but don't crowd around them, if there's a lot of units there just go somewhere else
 - EC
     - Deal with big polis near our ec
-    - doesn't spawn slanderers when poor
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
 - Price calculation with unit count and influence
 
 Order:
-1. more politicians, less muckrakers
-2. fix build order for newly converted ecs
 3. figure out what to do when there's a politician near our base
-20. Assist politicians
 
 
 
@@ -102,3 +97,6 @@ Done:
 - ~~improve muckraker spacing and spreading~~
 - ~~fix mapSpots bug - maps are switched for some reason?~
 - ~~EC not building polis to take over neutrals~~
+- ~~Assist politicians~~
+- ~~more politicians, less muckrakers~~
+- ~~fix build order for newly converted ecs~~

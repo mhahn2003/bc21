@@ -82,16 +82,16 @@ public class EC extends Robot {
             }
         }
         else if (muckCount > 0) {
-            build(RobotType.POLITICIAN, 25);
-            tDP--;
+            if (fPolCount < muckCount+1) build(RobotType.POLITICIAN, 25);
+            else build(RobotType.MUCKRAKER, 1);
         }
         // scenario 2: no enemy units nearby
             // at the very first just build a lot of slanderers
-            // build in a 1:1:1 ratio of p, s, m
-        if (rc.getRoundNum() <= 32) {
-            if (2*tM < tS) build(RobotType.MUCKRAKER, 1);
-            if (tS < 10) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
-            build(RobotType.POLITICIAN, 20);
+            // build in a 1:1:eps ratio of p, s, m
+        if (rc.getRoundNum() <= 40) {
+            if (tM < tS) build(RobotType.MUCKRAKER, 1);
+            if (5*tP < tS) build(RobotType.POLITICIAN, 20);
+            build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
         }
         if (rc.getRoundNum() <= 150) {
             if (tP < tS) {
@@ -117,19 +117,20 @@ public class EC extends Robot {
                     build(RobotType.POLITICIAN, 20);
                 }
             }
-            else if (tM < tS) {
+            else if (2*tM < tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
             else {
-                if (rc.getInfluence() >= 85) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
-                else build(RobotType.MUCKRAKER, 1);
+                if (rc.getInfluence() >= 85 || income <= 20) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
+                build(RobotType.MUCKRAKER, 1);
             }
         }
-        else if (rc.getRoundNum() <= 500) {
+        else if (rc.getRoundNum() <= 350) {
             if (rc.getRoundNum() == 151) resetCount();
             // have sustainable eco
-            if (income >= 130) {
-                if (tP < 2*tM) {
+            if (income >= 160) {
+                if (tP < 4*tM) {
+                    int random = (int) (rand * 6);
                     int lowNeutral = 1000;
                     int lowInd = -1;
                     for (int i = 0; i < 12; i++) {
@@ -140,17 +141,14 @@ public class EC extends Robot {
                     }
                     if (lowInd == -1) lowNeutral = 400;
                     else neutralCooldown[lowInd] = 40;
-                    if (rc.getInfluence() >= lowNeutral && tAP < tDP) {
-                        int random = (int) (rand * 6);
-                        if (random == 0) {
-                            build(RobotType.MUCKRAKER, lowNeutral);
-                            if (lowInd != -1) neutralCooldown[lowInd] = 0;
-                        } else build(RobotType.POLITICIAN, lowNeutral);
+                    if (rc.getInfluence() >= lowNeutral && tAP < 2*tDP) {
+                        build(RobotType.POLITICIAN, lowNeutral);
                     } else {
                         if (lowInd != -1) {
                             neutralCooldown[lowInd] = 0;
                             if (rc.getInfluence() + income * 10 > lowNeutral) build(RobotType.MUCKRAKER, 1);
                         }
+                        if (random % 2 == 0) build(RobotType.POLITICIAN, 50);
                         build(RobotType.POLITICIAN, 20);
                     }
                 }
@@ -159,37 +157,54 @@ public class EC extends Robot {
                     else build(RobotType.MUCKRAKER, 1);
                 }
             } else {
-                if (rc.getInfluence() >= 400) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
-                if (tP < tS) {
-                    int lowNeutral = 1000;
-                    int lowInd = -1;
-                    for (int i = 0; i < 12; i++) {
-                        if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
-                            lowNeutral = Math.min(lowNeutral, neutralInf[i] * 70 + 80);
-                            lowInd = i;
+                if (income < 100) {
+                    // if poor, just maintain a 2:2:1 ratio
+                    if (tP < tS) {
+                        // check available neutral ecs
+                        int lowNeutral = 1000;
+                        int lowInd = -1;
+                        for (int i = 0; i < 12; i++) {
+                            if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                                lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                                lowInd = i;
+                            }
+                        }
+                        if (lowInd == -1) lowNeutral = 400;
+                        else neutralCooldown[lowInd] = 40;
+                        if (rc.getInfluence() >= lowNeutral) {
+                            build(RobotType.POLITICIAN, lowNeutral);
+                        }
+                        else {
+                            if (lowInd != -1) {
+                                neutralCooldown[lowInd] = 0;
+                                if (rc.getInfluence() + income * 10 > lowNeutral) build(RobotType.MUCKRAKER, 1);
+                            }
+                            build(RobotType.POLITICIAN, 20);
                         }
                     }
-                    if (lowInd == -1) lowNeutral = 400;
-                    else neutralCooldown[lowInd] = 40;
-                    if (lowInd != -1 && rc.getInfluence() >= lowNeutral && 2 * tAP < tDP) build(RobotType.POLITICIAN, lowNeutral);
-                    else {
-                        build(RobotType.POLITICIAN, 20);
+                    else if (2*tM < tS) {
+                        build(RobotType.MUCKRAKER, 1);
                     }
+                    else {
+                        if (rc.getInfluence() >= 85 || income <= 20) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
+                        else build(RobotType.MUCKRAKER, 1);
+                    }
+                } else {
+                    if (rc.getInfluence() >= 400) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
+                    if (tP < tS) build(RobotType.POLITICIAN, 20);
+                    build(RobotType.MUCKRAKER, 1);
                 }
-                build(RobotType.MUCKRAKER, 1);
             }
         }
         else {
-            if (rc.getRoundNum() == 501) resetCount();
+            if (rc.getRoundNum() == 351) resetCount();
             if (income >= 300) {
-                if (tP < 3*tM) {
-                    if (rc.getInfluence() >= 750 && tAP < tDP) {
-                        int random = (int) (rand * 6);
-                        if (random == 0) {
-                            build(RobotType.MUCKRAKER, 500);
-                        } else build(RobotType.POLITICIAN, 750);
-                    } else {
-                        build(RobotType.POLITICIAN, 20);
+                if (tP < 5*tM) {
+                    if (rc.getInfluence() >= 750 && tAP < 2*tDP) build(RobotType.POLITICIAN, 750);
+                    else {
+                        int random = (int) (rand * 3);
+                        if (random == 0) build(RobotType.POLITICIAN, 20);
+                        else build(RobotType.POLITICIAN, 50);
                     }
                 }
                 else {
@@ -198,9 +213,76 @@ public class EC extends Robot {
                 }
             }
             else {
-                if (rc.getInfluence() >= 400) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
-                if (tP < tS) build(RobotType.POLITICIAN, 20);
-                build(RobotType.MUCKRAKER, 1);
+                if (income < 100) {
+                    // if poor, just maintain a 2:2:1 ratio
+                    if (tP < tS) {
+                        // check available neutral ecs
+                        int lowNeutral = 1000;
+                        int lowInd = -1;
+                        for (int i = 0; i < 12; i++) {
+                            if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                                lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                                lowInd = i;
+                            }
+                        }
+                        if (lowInd == -1) lowNeutral = 400;
+                        else neutralCooldown[lowInd] = 40;
+                        if (rc.getInfluence() >= lowNeutral) {
+                            build(RobotType.POLITICIAN, lowNeutral);
+                        }
+                        else {
+                            if (lowInd != -1) {
+                                neutralCooldown[lowInd] = 0;
+                                if (rc.getInfluence() + income * 10 > lowNeutral) build(RobotType.MUCKRAKER, 1);
+                            }
+                            build(RobotType.POLITICIAN, 20);
+                        }
+                    }
+                    else if (2*tM < tS) {
+                        build(RobotType.MUCKRAKER, 1);
+                    }
+                    else {
+                        if (rc.getInfluence() >= 85 || income <= 20) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
+                        else build(RobotType.MUCKRAKER, 1);
+                    }
+                } else if (income < 200) {
+                    if (tP < tS) {
+                        // check available neutral ecs
+                        int lowNeutral = 1000;
+                        int lowInd = -1;
+                        for (int i = 0; i < 12; i++) {
+                            if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                                lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                                lowInd = i;
+                            }
+                        }
+                        if (lowInd == -1) lowNeutral = 400;
+                        else neutralCooldown[lowInd] = 40;
+                        if (rc.getInfluence() >= lowNeutral) {
+                            build(RobotType.POLITICIAN, lowNeutral);
+                        }
+                        else {
+                            if (lowInd != -1) {
+                                neutralCooldown[lowInd] = 0;
+                                if (rc.getInfluence() + income * 10 > lowNeutral) build(RobotType.MUCKRAKER, 1);
+                            }
+                            int random = (int) (rand * 2);
+                            if (random == 0) build(RobotType.POLITICIAN, 50);
+                            else build(RobotType.POLITICIAN, 20);
+                        }
+                    }
+                    else if (3*tM < tS) {
+                        build(RobotType.MUCKRAKER, 1);
+                    }
+                    else {
+                        if (rc.getInfluence() >= 400) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
+                        else build(RobotType.MUCKRAKER, 1);
+                    }
+                } else {
+                    if (rc.getInfluence() >= 949) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
+                    if (tP < tS) build(RobotType.POLITICIAN, 20);
+                    build(RobotType.MUCKRAKER, 1);
+                }
             }
         }
         income = rc.getInfluence();
@@ -211,6 +293,7 @@ public class EC extends Robot {
     }
 
     public void build(RobotType toBuild, int influence, boolean onlyCardinal) throws GameActionException {
+        if (!rc.isReady()) return;
         int safetyNet = 0;
         if (muckCount > 0 && toBuild == RobotType.SLANDERER) return;
         if (polCount > 0) safetyNet = 100;
