@@ -211,7 +211,7 @@ public class ECComs extends Coms {
 
     public void updateMap() {
         Debug.p("updating map");
-        if (!mapGenerated) {
+        if (!mapGenerated && Math.abs(rc.getRoundNum()-turnCount) <= 10) {
             // check if need to generate map
             if (edges[0] && edges[1]) {
                 Debug.p("Generating map on NE corner");
