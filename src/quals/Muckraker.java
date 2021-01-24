@@ -1,7 +1,6 @@
 package quals;
 
 import battlecode.common.*;
-import quals.utils.Debug;
 
 public class Muckraker extends Robot {
 
@@ -168,6 +167,7 @@ public class Muckraker extends Robot {
                 }
                 // loc is our destination
                 if (nearPolSize != 0) {
+                    // TODO: not really sure if this piece of code works, maybe fix later?
                     // politician is near
                     int[] optDirH = new int[8];
                     for (int i = 0; i < nearPolSize; i++) {
@@ -194,37 +194,7 @@ public class Muckraker extends Robot {
                     }
                     if (optDir != null) rc.move(optDir);
                 } else {
-                    // check if the round is early and it's too cramped
-                    boolean separate = false;
-                    MapLocation nearMuck = null;
-                    int nearRadius;
-                    if (rc.getRoundNum() <= 150) nearRadius = 16;
-                    else if (rc.getRoundNum() <= 400) nearRadius = 9;
-                    else if (rc.getRoundNum() <= 700) nearRadius = 4;
-                    else nearRadius = 4;
-                    RobotInfo[] near = rc.senseNearbyRobots(nearRadius, team);
-                    int nearMuckDist = 100000;
-                    for (RobotInfo r : near) {
-                        if (r.getType() == RobotType.MUCKRAKER) {
-                            separate = true;
-                            int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
-                            if (dist < nearMuckDist) {
-                                nearMuckDist = dist;
-                                nearMuck = r.getLocation();
-                            }
-                        }
-                    }
-                    Debug.p("loc: " + loc);
-                    Debug.p("separate: " + separate);
-                    if (separate && closestEC != null && rc.getLocation().distanceSquaredTo(closestEC) < nearMuck.distanceSquaredTo(closestEC)) {
-                        Debug.p("need to separate from others");
-                        // try to separate from the muckraker
-                        Direction opp = rc.getLocation().directionTo(nearMuck);
-                        if (rc.getID() % 2 == 0) opp = opp.rotateLeft().rotateLeft();
-                        else opp = opp.rotateRight().rotateRight();
-
-                        nav.bugNavigate(rc.getLocation().add(opp));
-                    } else nav.bugNavigate(loc);
+                    nav.bugNavigate(loc);
                 }
             }
         }
