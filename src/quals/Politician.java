@@ -391,7 +391,7 @@ public class Politician extends Robot {
         int closestBuffMuckDist = 100000;
         RobotInfo closestBuffMuck = null;
         for (RobotInfo r : robots) {
-            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER && r.getConviction() >= 150) {
+            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER && r.getConviction() >= 50) {
                 int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
                 if (dist < closestBuffMuckDist) {
                     closestBuffMuckDist = dist;
@@ -425,7 +425,7 @@ public class Politician extends Robot {
                         rc.move(optDir);
                     } else {
                         // if can't move, then try to see whether it's good to just blast away
-                        if (attackEffect(closestBuffMuckDist)[0] > 20) {
+                        if (attackEffect(closestBuffMuckDist)[0] >= 20) {
                             Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
                         }
@@ -436,6 +436,70 @@ public class Politician extends Robot {
                 nav.bugNavigate(closestBuffMuck.getLocation());
             }
         }
+        else if (closestEC != null) {
+            int maxEff = 0;
+            int maxEffRadius = 0;
+            int maxKill = 0;
+            int maxRadius = 0;
+            for (int i = 0; i < 6; i++) {
+                int radius = attackRadii[i];
+                int[] att = attackEffect(radius);
+                int eff = att[0];
+                int kill = att[1];
+                if (kill > maxKill) {
+                    maxKill = kill;
+                    maxRadius = radius;
+                }
+                if (eff > maxEff) {
+                    maxEff = eff;
+                    maxEffRadius = radius;
+                }
+            }
+            if (maxKill >= 3) {
+                if (rc.canEmpower(maxRadius)) rc.empower(maxRadius);
+            } else {
+                if (closestECDist <= 9) {
+                    Debug.p("Within empower distance");
+                    // check if can kill
+                    RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
+                    int size = empowered.length;
+                    int effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;
+                    RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
+                    if (enemyEC.getConviction()+1 <= effect) {
+                        Debug.p("Can kill, will kill");
+                        if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
+                    } else {
+                        // check for any empty spots around the EC
+                        if (rc.getLocation().isAdjacentTo(closestEC)) {
+                            Direction dir = rc.getLocation().directionTo(closestEC);
+                            if (rc.getLocation().distanceSquaredTo(closestEC) == 2) {
+                                if (rc.canMove(dir.rotateLeft())) rc.move(dir.rotateLeft());
+                                if (rc.canMove(dir.rotateRight())) rc.move(dir.rotateRight());
+                            }
+                        } else {
+                            int closestOpenDist = 10000;
+                            MapLocation closestOpen = null;
+                            for (int i = 0; i < 8; i++) {
+                                MapLocation loc = closestEC.add(directions[i]);
+                                int dist = loc.distanceSquaredTo(rc.getLocation());
+                                if (dist < closestOpenDist && !rc.isLocationOccupied(loc)) {
+                                    closestOpen = loc;
+                                    closestOpenDist = dist;
+                                }
+                            }
+                            if (closestOpen != null) nav.bugNavigate(closestOpen);
+                        }
+                        if (rc.isReady()) {
+                            if (rc.canEmpower(maxEffRadius)) rc.empower(maxEffRadius);
+                        }
+                    }
+                } else {
+                    Debug.p("navbugging");
+                    nav.bugNavigate(closestEC);
+                }
+            }
+        }
+        else defend();
     }
 
     // calculates the efficiency of the attack
