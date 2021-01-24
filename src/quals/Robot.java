@@ -147,22 +147,52 @@ public class Robot {
             wandLoc = ends[(rc.getID() % 4)];
             nav.bugNavigate(wandLoc);
         } else {
-            
-            int closestWandDist = 100000;
-            MapLocation closestWand = null;
+            int closestECDist = 100000;
+            MapLocation closestEC = null;
+            for (int i = 0; i < 12; i++) {
+                if (friendECs[i] != null) {
+                    int dist = rc.getLocation().distanceSquaredTo(friendECs[i]);
+                    if (dist < closestECDist) {
+                        closestECDist = dist;
+                        closestEC = friendECs[i];
+                    }
+                }
+            }
+            if (closestEC == null) {
+                Nav.getEnds();
+                wandLoc = ends[(rc.getID() % 4)];
+                return wandLoc;
+            }
+            RobotInfo[] nearMucks = new RobotInfo[3];
+            int nearMuckSize = 0;
+            for (RobotInfo r : robots) {
+                if (nearMuckSize < 3 && r.getTeam() == team && r.getType() == RobotType.MUCKRAKER &&
+                    r.getLocation().distanceSquaredTo(closestEC) > rc.getLocation().distanceSquaredTo(closestEC)) {
+                    nearMucks[nearMuckSize] = r;
+                    nearMuckSize++;
+                }
+            }
+            int closestOptDist = 100000;
+            MapLocation closestOpt = null;
             for (int i = 7; i >= 0; i--) {
                  for (int j = 7; j >= 0; j--) {
                     int dist = rc.getLocation().distanceSquaredTo(mapSpots[i][j]);
-                    if (dist < closestWandDist && !visited[i][j]) {
-                        closestWandDist = dist;
-                        closestWand = mapSpots[i][j];
+                    int h = 0;
+                    for (int k = 0; k < nearMuckSize; k++) {
+                        int mDist = Math.max(nearMucks[k].getLocation().distanceSquaredTo(mapSpots[i][j]), 1);
+                        h += 500/mDist;
+                    }
+                    h -= 300/Math.max(dist, 1);
+                    if (h < closestOptDist && !visited[i][j]) {
+                        closestOptDist = h;
+                        closestOpt = mapSpots[i][j];
                     }
                  }
             }
-            if (closestWand == null) {
+            if (closestOpt == null) {
                 Nav.getEnds();
                 wandLoc = ends[(rc.getID() % 4)];
-            } else wandLoc = closestWand;
+            } else wandLoc = closestOpt;
         }
         Debug.p("going to: " + wandLoc);
         return wandLoc;

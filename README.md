@@ -40,13 +40,9 @@ All of the bold points should be implemented before sprint 2
 
 - Politician
     - Concentrate patrolling on the side where the attacks come from
-    - Need to secure neutrals faster
-    - Attack politicians not exploding buffrakers -> don't approach when already one tagging it
-    - Kill useless politicians
-    - Just send big politicians to infiltrate and take over spawning spaces
     - Assist politicians : doubling as both a defender and an attacker
+    - Assist politicians can also flank maybe?
 - Slanderer
-    - Make closeness to HQ have a lot more weight than closeness to enemy HQ
 - Muckraker
     - __Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis__
     - Send buffraker right after taken all the neutral ecs
@@ -62,6 +58,7 @@ All of the bold points should be implemented before sprint 2
 - Analyze top teams:
     - Specifically:
     - baby ducks, PP, Super Cow Powers, Kryptonite, Nikola, Chop Suey, Malott Fat Cats
+- Price calculation with unit count and influence
 
 Order:
 19. improve muckraker spacing and spreading
@@ -97,3 +94,4 @@ Done:
 - ~~build more slanderers even when we have more money~~
 - ~~copy build order from top teams~~
 - ~~make politicians surround the hq and take up spaces rather than attacking~~
+- ~~Make closeness to HQ have a lot more weight than closeness to enemy HQ~~
