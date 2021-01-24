@@ -37,7 +37,6 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 ### To-do list
 
 - Still breaks on the wander points for some reason
-- neutral ec location encoding broken
 - Need to concentrate politicians onto the enemy, maybe be more aggresive?
 - new born neutral ecs only spamming polis and mucks
 - Politician
@@ -55,6 +54,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - flanking seems very effective
     - 1 hp mucks are kinda bad with our code, just send politicians instead, we have enough eco for it
     - account for 1 cost poli
+    - consistently send 200 cost mucks/1 cost mucks instead of just 1 cost mucks
 - EC
     - Deal with big polis near our ec
     - doesn't spawn slanderers when poor

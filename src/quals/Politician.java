@@ -73,7 +73,7 @@ public class Politician extends Robot {
             if (closestBuffMuckDist <= 9) {
                 Debug.p("Within empower distance");
                 // check if can kill
-                RobotInfo[] empowered = rc.senseNearbyRobots(closestNeutralDist);
+                RobotInfo[] empowered = rc.senseNearbyRobots(closestBuffMuckDist);
                 int size = empowered.length;
                 int effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;
                 if (closestBuffMuck.getConviction()+1 <= effect) {
@@ -372,6 +372,68 @@ public class Politician extends Robot {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    static void assist() throws GameActionException {
+        int closestECDist = 100000;
+        MapLocation closestEC = null;
+        for (int i = 0; i < 12; i++) {
+            if (enemyECs[i] != null) {
+                int dist = rc.getLocation().distanceSquaredTo(enemyECs[i]);
+                if (dist < closestECDist) {
+                    closestECDist = dist;
+                    closestEC = enemyECs[i];
+                }
+            }
+        }
+        int closestBuffMuckDist = 100000;
+        RobotInfo closestBuffMuck = null;
+        for (RobotInfo r : robots) {
+            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER && r.getConviction() >= 150) {
+                int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
+                if (dist < closestBuffMuckDist) {
+                    closestBuffMuckDist = dist;
+                    closestBuffMuck = r;
+                }
+            }
+        }
+        if (closestBuffMuck != null) {
+            Debug.p("Going to closest buffraker: " + closestBuffMuck);
+            if (closestBuffMuckDist <= 9) {
+                Debug.p("Within empower distance");
+                // check if can kill
+                RobotInfo[] empowered = rc.senseNearbyRobots(closestBuffMuckDist);
+                int size = empowered.length;
+                int effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;
+                if (closestBuffMuck.getConviction()+1 <= effect) {
+                    Debug.p("Can kill, will kill");
+                    if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
+                } else {
+                    int closerDist = closestBuffMuckDist;
+                    Direction optDir = null;
+                    for (int i = 0; i < 8; i++) {
+                        int dist = rc.getLocation().add(directions[i]).distanceSquaredTo(closestBuffMuck.getLocation());
+                        if (dist < closerDist && rc.canMove(directions[i])) {
+                            closerDist = dist;
+                            optDir = directions[i];
+                        }
+                    }
+                    if (optDir != null) {
+                        Debug.p("The optimal direction to move is: " + optDir);
+                        rc.move(optDir);
+                    } else {
+                        // if can't move, then try to see whether it's good to just blast away
+                        if (attackEffect(closestBuffMuckDist)[0] > 20) {
+                            Debug.p("Can't kill, kamikaze time");
+                            if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
+                        }
+                    }
+                }
+            } else {
+                Debug.p("navbugging");
+                nav.bugNavigate(closestBuffMuck.getLocation());
             }
         }
     }
