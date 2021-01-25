@@ -62,7 +62,9 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-3. figure out what to do when there's a politician near our base
+3. code more robust defense; a lot of the times our ec has a lot of influence to work with but doesn't spend it and loses
+4. Taking over enemy ECs is still kinda wack for some reason, and need a lot of units to work somehow?
+5. Still not taking over neutral ecs fast enough (debug MainCampus on red)
 
 
 

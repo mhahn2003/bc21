@@ -387,7 +387,7 @@ public class Coms {
                             if (loc.equals(neutralECs[i])) {
                                 neutralECs[i] = null;
                                 removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
-                                neutralInf[i] = 0;
+                                neutralInf[i] = -1;
                                 break;
                             }
                         }
@@ -417,7 +417,7 @@ public class Coms {
                             if (loc.equals(neutralECs[i])) {
                                 neutralECs[i] = null;
                                 removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
-                                neutralInf[i] = 0;
+                                neutralInf[i] = -1;
                                 break;
                             }
                         }
@@ -692,7 +692,7 @@ public class Coms {
                     if (coord.equals(neutralECs[i])) {
                         neutralECs[i] = null;
                         removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
-                        neutralInf[i] = 0;
+                        neutralInf[i] = -1;
                         break;
                     }
                 }
@@ -722,7 +722,7 @@ public class Coms {
                     if (coord.equals(neutralECs[i])) {
                         neutralECs[i] = null;
                         removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
-                        neutralInf[i] = 0;
+                        neutralInf[i] = -1;
                         break;
                     }
                 }

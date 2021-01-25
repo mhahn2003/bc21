@@ -93,13 +93,13 @@ public class EC extends Robot {
             if (5*tP < tS) build(RobotType.POLITICIAN, 20);
             build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
         }
-        if (rc.getRoundNum() <= 150) {
+        else if (rc.getRoundNum() <= 150) {
             if (tP < tS) {
                 // check available neutral ecs
                 int lowNeutral = 1000;
                 int lowInd = -1;
                 for (int i = 0; i < 12; i++) {
-                    if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                    if (neutralInf[i] != -1 && neutralCooldown[i] <= 0) {
                         lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
                         lowInd = i;
                     }
@@ -134,7 +134,7 @@ public class EC extends Robot {
                     int lowNeutral = 1000;
                     int lowInd = -1;
                     for (int i = 0; i < 12; i++) {
-                        if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                        if (neutralInf[i] != -1 && neutralCooldown[i] <= 0) {
                             lowNeutral = Math.min(lowNeutral, neutralInf[i] * 70 + 80);
                             lowInd = i;
                         }
@@ -164,7 +164,7 @@ public class EC extends Robot {
                         int lowNeutral = 1000;
                         int lowInd = -1;
                         for (int i = 0; i < 12; i++) {
-                            if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                            if (neutralInf[i] != -1 && neutralCooldown[i] <= 0) {
                                 lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
                                 lowInd = i;
                             }
@@ -220,7 +220,7 @@ public class EC extends Robot {
                         int lowNeutral = 1000;
                         int lowInd = -1;
                         for (int i = 0; i < 12; i++) {
-                            if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                            if (neutralInf[i] != -1 && neutralCooldown[i] <= 0) {
                                 lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
                                 lowInd = i;
                             }
@@ -251,7 +251,7 @@ public class EC extends Robot {
                         int lowNeutral = 1000;
                         int lowInd = -1;
                         for (int i = 0; i < 12; i++) {
-                            if (neutralInf[i] != 0 && neutralCooldown[i] <= 0) {
+                            if (neutralInf[i] != -1 && neutralCooldown[i] <= 0) {
                                 lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
                                 lowInd = i;
                             }

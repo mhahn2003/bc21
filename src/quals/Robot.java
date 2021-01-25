@@ -80,6 +80,9 @@ public class Robot {
         team = rc.getTeam();
         enemy = rc.getTeam().opponent();
         actionRadius = rc.getType().actionRadiusSquared;
+        for (int i = 0; i < 12; i++) {
+            neutralInf[i] = -1;
+        }
     }
 
 
