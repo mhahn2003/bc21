@@ -199,13 +199,13 @@ public class Muckraker extends Robot {
                         for (int i = 0; i < 8; i++) {
                             MapLocation loc = closestEnemyEC.add(directions[i]);
                             int dist = loc.distanceSquaredTo(rc.getLocation());
-                            if (dist < closestOpenDist && !rc.isLocationOccupied(loc)) {
+                            if (dist < closestOpenDist) {
                                 RobotInfo rob = rc.senseRobotAtLocation(loc);
                                 if (rob == null) {
                                     closestOpen = loc;
                                     closestOpenDist = dist;
                                 }
-                                if (rob == null || rob.getTeam() != team || rob.getType() == RobotType.MUCKRAKER) surrounded = false;
+                                if (rob == null || (rob.getTeam() != team && rob.getType() == RobotType.POLITICIAN)) surrounded = false;
                             }
                         }
                         if (closestOpen != null) nav.bugNavigate(closestOpen);

@@ -190,8 +190,11 @@ public class Politician extends Robot {
                             MapLocation loc = closestEC.add(directions[i]);
                             int dist = loc.distanceSquaredTo(rc.getLocation());
                             if (dist < closestOpenDist && !rc.isLocationOccupied(loc)) {
-                                closestOpen = loc;
-                                closestOpenDist = dist;
+                                RobotInfo rob = rc.senseRobotAtLocation(loc);
+                                if (rob == null || (rob.getTeam() == team && rob.getType() == RobotType.MUCKRAKER)) {
+                                    closestOpen = loc;
+                                    closestOpenDist = dist;
+                                }
                             }
                         }
                         if (closestOpen != null) nav.bugNavigate(closestOpen);
