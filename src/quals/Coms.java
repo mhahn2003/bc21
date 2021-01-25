@@ -388,6 +388,7 @@ public class Coms {
                                 neutralECs[i] = null;
                                 removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
                                 neutralInf[i] = -1;
+                                neutralCooldown[i] = 0;
                                 break;
                             }
                         }
@@ -418,6 +419,7 @@ public class Coms {
                                 neutralECs[i] = null;
                                 removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
                                 neutralInf[i] = -1;
+                                neutralCooldown[i] = 0;
                                 break;
                             }
                         }
@@ -693,6 +695,7 @@ public class Coms {
                         neutralECs[i] = null;
                         removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
                         neutralInf[i] = -1;
+                        neutralCooldown[i] = 0;
                         break;
                     }
                 }
@@ -723,6 +726,7 @@ public class Coms {
                         neutralECs[i] = null;
                         removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
                         neutralInf[i] = -1;
+                        neutralCooldown[i] = 0;
                         break;
                     }
                 }
@@ -755,6 +759,7 @@ public class Coms {
                 }
                 if (minInd != -1 && !seen) {
                     neutralECs[minInd] = coord;
+                    Debug.p("Getting inf: " + getInf(flag));
                     neutralInf[minInd] = getInf(flag);
                     addRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[minInd]));
                 }

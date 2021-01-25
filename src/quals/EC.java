@@ -33,6 +33,7 @@ public class EC extends Robot {
         super.takeTurn();
         if (rc.getRoundNum() >= 500) bid();
         income = rc.getInfluence() - income;
+        Debug.p("income: " + income);
         Debug.p("tS: " + tS);
         Debug.p("tDP: " + tDP);
         Debug.p("tAP: " + tAP);
@@ -68,6 +69,10 @@ public class EC extends Robot {
         // if muckraker nearby, signal for help
         if (muckHelp) Coms.signalQueue.add(Coms.getMessage(Coms.IC.MUCKRAKER_HELP, muckHelpLoc));
         // scenario 1: if enemy units nearby
+        if (!rc.isReady()) {
+            income = rc.getInfluence();
+            return;
+        }
         double rand = Math.random();
         // TODO: fix our defense
         if (polCount > 0) {
@@ -99,11 +104,14 @@ public class EC extends Robot {
                 int lowNeutral = 1000;
                 int lowInd = -1;
                 for (int i = 0; i < 12; i++) {
+                    // debug
+                    Debug.p("neutralInf: " + i + ": " + neutralInf[i]);
                     if (neutralInf[i] != -1 && neutralCooldown[i] <= 0) {
                         lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
                         lowInd = i;
                     }
                 }
+                Debug.p("lowNeutral: " + lowNeutral);
                 if (lowInd == -1) lowNeutral = 400;
                 else neutralCooldown[lowInd] = 40;
                 if (rc.getInfluence() >= lowNeutral) {

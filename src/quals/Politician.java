@@ -20,7 +20,7 @@ public class Politician extends Robot {
         if (rc.getConviction() <= 10) {
             if (rc.canEmpower(1)) rc.empower(1);
         }
-        if (rc.getConviction() >= 300) attack();
+        if (rc.getConviction() >= 80) attack();
         else if (rc.getConviction() >= 50) assist();
         else defend();
     }
