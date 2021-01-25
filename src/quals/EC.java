@@ -47,7 +47,7 @@ public class EC extends Robot {
         MapLocation muckHelpLoc = null;
         for (RobotInfo r : robots) {
             if (r.getTeam() == team.opponent()) {
-                if (r.getType() == RobotType.POLITICIAN) {
+                if (r.getType() == RobotType.POLITICIAN && r.getLocation().isWithinDistanceSquared(rc.getLocation(), 20)) {
                     polCount++;
                     if (r.getConviction() > maxConv) maxConv = r.getConviction();
                 }
@@ -55,8 +55,8 @@ public class EC extends Robot {
                     if (r.getLocation().isWithinDistanceSquared(rc.getLocation(), 20)) {
                         muckHelp = true;
                         muckHelpLoc = r.getLocation();
+                        muckCount++;
                     }
-                    muckCount++;
                 }
             }
             if (r.getTeam() == team) {
@@ -137,7 +137,7 @@ public class EC extends Robot {
             if (rc.getRoundNum() == 151) resetCount();
             // have sustainable eco
             if (income >= 160) {
-                if (tP < 4*tM) {
+                if (tP < 8*tM) {
                     int random = (int) (rand * 6);
                     int lowNeutral = 1000;
                     int lowInd = -1;
@@ -166,8 +166,8 @@ public class EC extends Robot {
                 }
             } else {
                 if (income < 100) {
-                    // if poor, just maintain a 2:2:1 ratio
-                    if (tP < tS) {
+                    // if poor, just maintain a 4:2:1 ratio
+                    if (tP < 2*tS) {
                         // check available neutral ecs
                         int lowNeutral = 1000;
                         int lowInd = -1;
@@ -207,7 +207,7 @@ public class EC extends Robot {
         else {
             if (rc.getRoundNum() == 351) resetCount();
             if (income >= 300) {
-                if (tP < 5*tM) {
+                if (tP < 12*tM) {
                     if (rc.getInfluence() >= 750 && tAP < 2*tDP) build(RobotType.POLITICIAN, 750);
                     else {
                         int random = (int) (rand * 3);
@@ -222,8 +222,8 @@ public class EC extends Robot {
             }
             else {
                 if (income < 100) {
-                    // if poor, just maintain a 2:2:1 ratio
-                    if (tP < tS) {
+                    // if poor, just maintain a 4:2:1 ratio
+                    if (tP < 2*tS) {
                         // check available neutral ecs
                         int lowNeutral = 1000;
                         int lowInd = -1;
@@ -254,7 +254,7 @@ public class EC extends Robot {
                         else build(RobotType.MUCKRAKER, 1);
                     }
                 } else if (income < 200) {
-                    if (tP < tS) {
+                    if (tP < 3*tS) {
                         // check available neutral ecs
                         int lowNeutral = 1000;
                         int lowInd = -1;

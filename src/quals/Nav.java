@@ -19,7 +19,7 @@ public class Nav {
     private static Direction[] directions = Direction.cardinalDirections();
 
     // constants
-    private static double THRESHOLD = 0.45;
+    private static double THRESHOLD = 0.15;
 
     public Nav() {
         patience = 0;
@@ -73,6 +73,10 @@ public class Nav {
         return true;
     }
 
+    public static boolean checkDirMoveable(Direction dir) throws GameActionException {
+        return rc.canMove(dir) && rc.sensePassability(rc.getLocation().add(dir)) > THRESHOLD;
+    }
+
     /*
     Tries to move in the target direction
     Returns the Direction that we moved in
@@ -114,60 +118,11 @@ public class Nav {
     public static int bugVisitedLocationsLength;
 
     public Direction bugNavigate (MapLocation target) throws GameActionException {
+        if (!rc.isReady()) return null;
         Direction just = justMove(target);
         if (just != null) return just;
         Debug.p("Bug navigating to " + target);
-
-        if (isTrapped()) {
-            return null;
-        }
-
-        if (!target.equals(bugTarget)) {
-            bugTarget = target;
-            bugTracing = false;
-            bugClosestDistanceToTarget = rc.getLocation().distanceSquaredTo(bugTarget);
-        }
-
-        if (rc.getLocation().equals(bugTarget)) {
-            return null;
-        }
-
-        // bugClosestDistanceToTarget = Math.min(bugClosestDistanceToTarget, here.distanceSquaredTo(bugTarget));
-
-        Direction destDir = rc.getLocation().directionTo(bugTarget);
-
-        Debug.p("BUG_NAVIGATE");
-        Debug.p("bugTarget: " + bugTarget);
-        Debug.p("bugClosestDistanceToTarget: " + bugClosestDistanceToTarget);
-        Debug.p("destDir: " + destDir);
-        Debug.p("bugTracing: " + bugTracing);
-
-        if (!bugTracing) { // try to go directly towards the target
-            Direction tryMoveResult = tryMoveInDirection(destDir);
-            if (tryMoveResult != null) {
-                return tryMoveResult;
-            } else {
-                bugStartTracing();
-            }
-        } else { // we are on obstacle, trying to get off of it
-            if (rc.getLocation().distanceSquaredTo(bugTarget) < bugClosestDistanceToTarget) {
-                Direction tryMoveResult = tryMoveInDirection(destDir);
-                Debug.p("on obstacle");
-                if (tryMoveResult != null) { // we got off of the obstacle
-                    Debug.p("We're free!");
-                    bugTracing = false;
-                    return tryMoveResult;
-                }
-            }
-        }
-
-        Direction moveDir = bugTraceMove(false);
-
-        if (bugTurnsWithoutWall >= 2) {
-            bugTracing = false;
-        }
-
-        return moveDir;
+        return actualBug(target);
     }
 
     /*
@@ -272,10 +227,6 @@ public class Nav {
         return null;
     }
 
-    public static boolean checkDirMoveable(Direction dir) throws GameActionException {
-        return rc.canMove(dir) && rc.sensePassability(rc.getLocation().add(dir)) > THRESHOLD;
-    }
-
     public static Direction justMove(MapLocation target) throws GameActionException {
         Direction optDir = rc.getLocation().directionTo(target);
         Direction left = optDir.rotateLeft();
@@ -308,6 +259,60 @@ public class Nav {
             return right;
         }
         return null;
+    }
+
+    public Direction actualBug(MapLocation target) throws GameActionException {
+        if (!rc.isReady()) return null;
+        if (isTrapped()) {
+
+        }
+
+        if (!target.equals(bugTarget)) {
+            bugTarget = target;
+            bugTracing = false;
+            bugClosestDistanceToTarget = rc.getLocation().distanceSquaredTo(bugTarget);
+        }
+
+        if (rc.getLocation().equals(bugTarget)) {
+            return null;
+        }
+
+        // bugClosestDistanceToTarget = Math.min(bugClosestDistanceToTarget, here.distanceSquaredTo(bugTarget));
+
+        Direction destDir = rc.getLocation().directionTo(bugTarget);
+
+        Debug.p("BUG_NAVIGATE");
+        Debug.p("bugTarget: " + bugTarget);
+        Debug.p("bugClosestDistanceToTarget: " + bugClosestDistanceToTarget);
+        Debug.p("destDir: " + destDir);
+        Debug.p("bugTracing: " + bugTracing);
+
+        if (!bugTracing) { // try to go directly towards the target
+            Direction tryMoveResult = tryMoveInDirection(destDir);
+            if (tryMoveResult != null) {
+                return tryMoveResult;
+            } else {
+                bugStartTracing();
+            }
+        } else { // we are on obstacle, trying to get off of it
+            if (rc.getLocation().distanceSquaredTo(bugTarget) < bugClosestDistanceToTarget) {
+                Direction tryMoveResult = tryMoveInDirection(destDir);
+                Debug.p("on obstacle");
+                if (tryMoveResult != null) { // we got off of the obstacle
+                    Debug.p("We're free!");
+                    bugTracing = false;
+                    return tryMoveResult;
+                }
+            }
+        }
+
+        Direction moveDir = bugTraceMove(false);
+
+        if (bugTurnsWithoutWall >= 2) {
+            bugTracing = false;
+        }
+
+        return moveDir;
     }
 
 }

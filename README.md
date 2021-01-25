@@ -45,15 +45,11 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Muckraker
     - __Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis__
     - Send buffraker right after taken all the neutral ecs
-    - Needs to go towards enemy EC more
     - Cardinal direction muckrakers for defense
-    - 1 cost muckrakers also surround buffrakers to help protect it
     - early buff mucks
     - flanking seems very effective
-    - 1 hp mucks are kinda bad with our code, just send politicians instead, we have enough eco for it
     - account for 1 cost poli
     - heuristic isn't really working, look into a fix
-    - go to ECs but don't crowd around them, if there's a lot of units there just go somewhere else
 - EC
     - Deal with big polis near our ec
 - Analyze top teams:
@@ -62,9 +58,9 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-2. improve wander heuristic to explore further away from ec
 3. code more robust defense; a lot of the times our ec has a lot of influence to work with but doesn't spend it and loses
 4. Taking over enemy ECs is still kinda wack for some reason, and need a lot of units to work somehow?
+8. implement pathfinding to avoid 0.1 passability tiles at least for a little bit
 
 
 
@@ -102,3 +98,4 @@ Done:
 - ~~Assist politicians~~
 - ~~more politicians, less muckrakers~~
 - ~~fix build order for newly converted ecs~~
+- ~~build more politicians than slanderers~~

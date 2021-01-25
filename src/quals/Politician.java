@@ -56,7 +56,7 @@ public class Politician extends Robot {
         int closestBuffMuckDist = 100000;
         RobotInfo closestBuffMuck = null;
         for (RobotInfo r : robots) {
-            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER && r.getConviction() >= 150) {
+            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER && r.getConviction() >= 50) {
                 int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
                 if (dist < closestBuffMuckDist) {
                     closestBuffMuckDist = dist;
@@ -144,7 +144,7 @@ public class Politician extends Robot {
                             Debug.p("Can't kill, kamikaze time");
                             if (rc.canEmpower(closestNeutralDist)) rc.empower(closestNeutralDist);
                         } else {
-                            if (teamPoli >= 2*neutralEC.getConviction() || rc.getConviction() <= 100) {
+                            if (teamPoli >= neutralEC.getConviction()) {
                                 // just empower
                                 if (rc.canEmpower(closestNeutralDist)) rc.empower(closestNeutralDist);
                             }
@@ -197,13 +197,15 @@ public class Politician extends Robot {
                     }
                     if (rc.isReady()) {
                         // if can't move, then try to see whether it's good to just blast away
-                        int teamPoli = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
+                        int teamPoli = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;
+                        int teamCount = 0;
                         for (RobotInfo r : robots) {
                             if (r.getTeam() == team && r.getType() == RobotType.POLITICIAN) {
-                                teamPoli += ((int) ((r.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;;
+                                teamPoli += ((int) ((r.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;
+                                teamCount++;
                             }
                         }
-                        if (teamPoli >= Math.min(2*enemyEC.getConviction(), 6000) || rc.getConviction() <= 100) {
+                        if (teamPoli >= Math.min(enemyEC.getConviction(), 6000) || teamCount >= 16) {
                             // just empower
                             if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);
                         }
@@ -297,9 +299,7 @@ public class Politician extends Robot {
                     if (closestBuffMuckDist <= 2 && rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
                     else nav.bugNavigate(closestBuffMuck.getLocation());
                 }
-                else if (maxEff >= 25) {
-                    if (rc.canEmpower(maxEffRadius)) rc.empower(maxEffRadius);
-                } else {
+                else {
                     // otherwise, chase nearby muckrakers and politicians
                     if (closestMuck != null) {
                         boolean defended = false;
@@ -387,7 +387,7 @@ public class Politician extends Robot {
         int closestBuffMuckDist = 100000;
         RobotInfo closestBuffMuck = null;
         for (RobotInfo r : robots) {
-            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER && r.getConviction() >= 50) {
+            if (r.getTeam() == team.opponent() && r.getType() == RobotType.MUCKRAKER && r.getConviction() >= 20) {
                 int dist = rc.getLocation().distanceSquaredTo(r.getLocation());
                 if (dist < closestBuffMuckDist) {
                     closestBuffMuckDist = dist;

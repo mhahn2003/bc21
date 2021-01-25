@@ -31,6 +31,7 @@ public class Robot {
     static MapLocation[] neutralECs = new MapLocation[12];
     static int[] neutralInf = new int[12];
     static MapLocation[] enemyECs = new MapLocation[12];
+    static int[] enemySurrounded = new int[12];
     static int[] neutralCooldown = new int[12];
 
     // variables changed by coms
@@ -137,7 +138,10 @@ public class Robot {
         Debug.p("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
 //        Debug.p("Robot.takeTurn: " + Clock.getBytecodeNum());
         for (int i = 0; i < 6; i++) staleness[i]--;
-        for (int i = 0; i < 12; i++) neutralCooldown[i]--;
+        for (int i = 0; i < 12; i++) {
+            neutralCooldown[i]--;
+            enemySurrounded[i]--;
+        }
     }
 
 
@@ -145,6 +149,7 @@ public class Robot {
     // TODO: fix all the wander functions since we changed from void to MapLocation
     public static MapLocation wander() throws GameActionException {
         if (!mapGenerated) {
+            // do the thing where you separate from others
             // go to the corners
             Nav.getEnds();
             wandLoc = ends[(rc.getID() % 4)];
@@ -186,8 +191,10 @@ public class Robot {
                     int h = 0;
                     for (int k = 0; k < nearMuckSize; k++) {
                         int mDist = Math.max(nearMucks[k].getLocation().distanceSquaredTo(mapSpots[i][j]), 1);
+                        if (mDist < dist) h += 1000;
                         h += 500/mDist;
                     }
+                    if (dist <= 4) h = 0;
                     h -= 300/Math.max(dist, 1);
                     if (h < closestOptDist && !visited[i][j]) {
                         closestOptDist = h;
