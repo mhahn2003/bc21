@@ -42,6 +42,8 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - Assist politicians can also flank maybe?
 - Slanderer
 - Muckraker
+    - muckrakers are not sparse enough
+    - need more muckrakers to constantly get in and attack - maybe adjust the muckraker ratio a bit now that they're decent?
     - Send buffraker right after taken all the neutral ecs
     - Cardinal direction muckrakers for defense
     - early buff mucks
@@ -56,7 +58,8 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-1. make big boi politicians path towards our team's muckraker spots
+2. reset visited map once in a while (just reset once everywhere is visited)
+3. allocate some muckrakers to explore instead of all congregating to ec
 3. code more robust defense; a lot of the times our ec has a lot of influence to work with but doesn't spend it and loses
 8. implement pathfinding to avoid 0.1 passability tiles at least for a little bit
 9. remove ID from list to check if outputs an invalid category (maybe by adding a IC.REMOVEID category?)

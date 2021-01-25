@@ -344,6 +344,22 @@ public class ECComs extends Coms {
             }
             addRelevantFlag(getMessage(IC.MAP_SW, msgSum));
         }
+        // TODO: implement after quals
+//        boolean allVisited = true;
+//        for (int i = 7; i >= 0; i--) {
+//            for (int j = 7; j >= 0; j--) {
+//                if (!visited[i][j]) allVisited = false;
+//            }
+//        }
+//        if (allVisited) {
+//            // reset map
+//            signalQueue.add(getMessage(IC.RESET, 0));
+//            for (int i = 7; i >= 0; i--) {
+//                for (int j = 7; j >= 0; j--) {
+//
+//                }
+//            }
+//        }
     }
 
     public boolean sanityCheck(int flag) {

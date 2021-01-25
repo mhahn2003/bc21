@@ -28,6 +28,7 @@ public class Coms {
 
     // TODO: need to order in terms of priority
     public enum IC {
+        RESET,
         MUCKRAKER_HELP,
         FRIEND_EC,
         EC_ID,
@@ -52,6 +53,7 @@ public class Coms {
     public static int getMessage(IC cat, MapLocation coord) {
         int message;
         switch (cat) {
+            case RESET         : message = 1; break;
             case MUCKRAKER_HELP: message = 2; break;
             case FRIEND_EC     : message = 3; break;
             case EC_ID         : message = 4; break;
@@ -79,6 +81,7 @@ public class Coms {
     public static int getMessage(IC cat, MapLocation coord, int inf) {
         int message;
         switch (cat) {
+            case RESET         : message = 1; break;
             case MUCKRAKER_HELP: message = 2; break;
             case FRIEND_EC     : message = 3; break;
             case EC_ID         : message = 4; break;
@@ -107,6 +110,7 @@ public class Coms {
     public static int getMessage(IC cat, int ID) {
         int message;
         switch (cat) {
+            case RESET         : message = 1; break;
             case MUCKRAKER_HELP: message = 2; break;
             case FRIEND_EC     : message = 3; break;
             case EC_ID         : message = 4; break;
@@ -165,6 +169,7 @@ public class Coms {
     public static IC getCat(int message) {
         message = message % (1 << 22);
         switch (message >> 17) {
+            case 1: return IC.RESET;
             case 2: return IC.MUCKRAKER_HELP;
             case 3: return IC.FRIEND_EC;
             case 4: return IC.EC_ID;

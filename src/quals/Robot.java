@@ -12,7 +12,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = true;
+    public static boolean debugOn = false;
 
     static int minX = 9999;
     static int maxX = 30065;
@@ -124,15 +124,15 @@ public class Robot {
                 }
             }
         }
-        if (mapGenerated) {
-            // debug purposes
-            for (int i = 0; i < 8; i++) {
-                for (int j = 0; j < 8; j++) {
-                    if (visited[i][j]) rc.setIndicatorDot(mapSpots[i][j], 0, 0, 255);
-                    else rc.setIndicatorDot(mapSpots[i][j], 255, 0, 0);
-                }
-            }
-        }
+//        if (mapGenerated) {
+//            // debug purposes
+//            for (int i = 0; i < 8; i++) {
+//                for (int j = 0; j < 8; j++) {
+//                    if (visited[i][j]) rc.setIndicatorDot(mapSpots[i][j], 0, 0, 255);
+//                    else rc.setIndicatorDot(mapSpots[i][j], 255, 0, 0);
+//                }
+//            }
+//        }
         Debug.p("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
 //        Debug.p("Robot.takeTurn: " + Clock.getBytecodeNum());
         for (int i = 0; i < 6; i++) staleness[i]--;
