@@ -171,7 +171,7 @@ public class Politician extends Robot {
                 } else {
                     // signal that you're attacking, so move out of the way
                     // only signal if you're a fat politician
-                    if (rc.getConviction() >= 300 && closestECDist <= 4) {
+                    if (rc.getConviction() >= 300 && closestECDist <= 8) {
                         Debug.p("Signalling attack");
                         rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
                     }

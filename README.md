@@ -58,6 +58,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
+1. fix signals bouncing back and forth with neutral ecs: feeling it's probably something with relevant flags
 3. code more robust defense; a lot of the times our ec has a lot of influence to work with but doesn't spend it and loses
 4. Taking over enemy ECs is still kinda wack for some reason, and need a lot of units to work somehow?
 8. implement pathfinding to avoid 0.1 passability tiles at least for a little bit
