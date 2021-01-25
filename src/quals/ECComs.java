@@ -169,6 +169,7 @@ public class ECComs extends Coms {
                 Debug.p("index: " + relevantInd);
                 Debug.p("size: " + relevantSize);
                 Debug.p("Type: " + getCat(relevantFlags[relevantInd % relevantSize]));
+                Debug.p("coord: " + getCoord(relevantFlags[relevantInd % relevantSize]));
                 rc.setFlag(relevantFlags[relevantInd % relevantSize]);
                 relevantInd++;
             }
@@ -192,6 +193,7 @@ public class ECComs extends Coms {
             }
         }
         if (!processed) {
+            if (!sanityCheck(flag)) return;
             if (cat != IC.MUCKRAKER && cat != IC.MUCKRAKER_HELP && cat != IC.MUCKRAKER_ID && cat != IC.POLITICIAN
             && cat != IC.MAP_NE && cat != IC.MAP_NW && cat != IC.MAP_SE
             && cat != IC.MAP_SW && cat != IC.ATTACK) {
@@ -342,5 +344,12 @@ public class ECComs extends Coms {
             }
             addRelevantFlag(getMessage(IC.MAP_SW, msgSum));
         }
+    }
+
+    public boolean sanityCheck(int flag) {
+        if (getCat(flag) == IC.NEUTRAL_EC || getCat(flag) == IC.ENEMY_EC) {
+            return !getCoord(flag).equals(rc.getLocation());
+        }
+        return true;
     }
 }

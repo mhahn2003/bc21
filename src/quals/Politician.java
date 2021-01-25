@@ -164,6 +164,7 @@ public class Politician extends Robot {
                 RobotInfo[] empowered = rc.senseNearbyRobots(closestECDist);
                 int size = empowered.length;
                 int effect = ((int) ((rc.getConviction() - 10) * rc.getEmpowerFactor(team, 0)))/size;
+                Debug.p("effect: " + effect);
                 RobotInfo enemyEC = rc.senseRobotAtLocation(closestEC);
                 if (enemyEC.getConviction()+1 <= effect) {
                     Debug.p("Can kill, will kill");
@@ -171,7 +172,7 @@ public class Politician extends Robot {
                 } else {
                     // signal that you're attacking, so move out of the way
                     // only signal if you're a fat politician
-                    if (rc.getConviction() >= 300 && closestECDist <= 8) {
+                    if (rc.getConviction() >= 200 && closestECDist <= 8) {
                         Debug.p("Signalling attack");
                         rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestEC));
                     }
@@ -205,6 +206,8 @@ public class Politician extends Robot {
                                 teamCount++;
                             }
                         }
+                        Debug.p("teamPoli: " + teamPoli);
+                        Debug.p("teamCount: " + teamCount);
                         if (teamPoli >= Math.min(enemyEC.getConviction(), 6000) || teamCount >= 16) {
                             // just empower
                             if (rc.canEmpower(closestECDist)) rc.empower(closestECDist);

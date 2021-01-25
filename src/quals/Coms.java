@@ -386,7 +386,8 @@ public class Coms {
                             }
                             if (loc.equals(neutralECs[i])) {
                                 neutralECs[i] = null;
-                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
+                                removeNeutralRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                //removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
                                 neutralInf[i] = -1;
                                 neutralCooldown[i] = 0;
                                 break;
@@ -417,7 +418,8 @@ public class Coms {
                             }
                             if (loc.equals(neutralECs[i])) {
                                 neutralECs[i] = null;
-                                removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
+                                removeNeutralRelevantFlag(getMessage(IC.NEUTRAL_EC, loc));
+                                //removeRelevantFlag(getMessage(IC.NEUTRAL_EC, loc, neutralInf[i]));
                                 neutralInf[i] = -1;
                                 neutralCooldown[i] = 0;
                                 break;
@@ -693,7 +695,8 @@ public class Coms {
                     }
                     if (coord.equals(neutralECs[i])) {
                         neutralECs[i] = null;
-                        removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
+                        removeNeutralRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
+                        //removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
                         neutralInf[i] = -1;
                         neutralCooldown[i] = 0;
                         break;
@@ -724,7 +727,8 @@ public class Coms {
                     }
                     if (coord.equals(neutralECs[i])) {
                         neutralECs[i] = null;
-                        removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
+                        removeNeutralRelevantFlag(getMessage(IC.NEUTRAL_EC, coord));
+                        //removeRelevantFlag(getMessage(IC.NEUTRAL_EC, coord, neutralInf[i]));
                         neutralInf[i] = -1;
                         neutralCooldown[i] = 0;
                         break;
@@ -841,7 +845,7 @@ public class Coms {
     }
 
     public static void addRelevantFlag(int flag) {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 30; i++) {
             if (relevantFlags[i] == 0) {
                 relevantFlags[i] = flag;
                 relevantSize++;
@@ -851,8 +855,18 @@ public class Coms {
     }
 
     public static void removeRelevantFlag(int flag) {
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 30; i++) {
             if (relevantFlags[i] == flag) {
+                relevantFlags[i] = 0;
+                relevantSize--;
+                break;
+            }
+        }
+    }
+
+    public static void removeNeutralRelevantFlag(int flag) {
+        for (int i = 0; i < 30; i++) {
+            if (getCat(relevantFlags[i]) == IC.NEUTRAL_EC && getCoord(relevantFlags[i]).equals(getCoord(flag))) {
                 relevantFlags[i] = 0;
                 relevantSize--;
                 break;

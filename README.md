@@ -37,13 +37,11 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 ### To-do list
 
 - Still breaks on the wander points for some reason
-- Need to concentrate politicians onto the enemy, maybe be more aggresive?
 - Politician
     - Concentrate patrolling on the side where the attacks come from
     - Assist politicians can also flank maybe?
 - Slanderer
 - Muckraker
-    - __Ideas for a 1000 muckraker rush? Surrounded by 1 cost muck/polis__
     - Send buffraker right after taken all the neutral ecs
     - Cardinal direction muckrakers for defense
     - early buff mucks
@@ -58,11 +56,10 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-1. fix signals bouncing back and forth with neutral ecs: feeling it's probably something with relevant flags
+1. make big boi politicians path towards our team's muckraker spots
 3. code more robust defense; a lot of the times our ec has a lot of influence to work with but doesn't spend it and loses
-4. Taking over enemy ECs is still kinda wack for some reason, and need a lot of units to work somehow?
 8. implement pathfinding to avoid 0.1 passability tiles at least for a little bit
-
+9. remove ID from list to check if outputs an invalid category (maybe by adding a IC.REMOVEID category?)
 
 
 
@@ -100,3 +97,4 @@ Done:
 - ~~more politicians, less muckrakers~~
 - ~~fix build order for newly converted ecs~~
 - ~~build more politicians than slanderers~~
+- ~~fix signals bouncing back and forth with neutral ecs: feeling it's probably something with relevant flags~~
