@@ -174,7 +174,6 @@ public class ECComs extends Coms {
                 // add it to a list of last displayed flags to reduce redundancy between ecs
                 int flag = signalQueue.poll();
                 Debug.p("getting from signalQueue");
-                if (flagIndex % 20 == 12) Debug.p("ASDFASDFASDFASDFASDFASDFASDFSDFASDFASDF\nasdfasdf\n\n\n\n\nasdfasdfasdfas\n\n\n");
                 lastFlags[flagIndex % 20] = flag % (1 << 22);
                 flagIndex++;
                 Debug.p("Type: " + getCat(flag));
