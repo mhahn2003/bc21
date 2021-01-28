@@ -526,14 +526,29 @@ public class Coms {
                     if (r == null || r.getType() != RobotType.ENLIGHTENMENT_CENTER) {
                         if (foundECs[i] == 1 && vert) {
                             vert = false;
+                            for (int a = 0; a < ECSize; a++) {
+                                if (foundECs[a] == 1) {
+                                    foundECs[a] = 0;
+                                }
+                            }
                             signalQueue.add(getMessage(IC.NO_SYM, 1));
                         }
                         if (foundECs[i] == 2 && horz) {
                             horz = false;
+                            for (int a = 0; a < ECSize; a++) {
+                                if (foundECs[a] == 2) {
+                                    foundECs[a] = 0;
+                                }
+                            }
                             signalQueue.add(getMessage(IC.NO_SYM, 2));
                         }
                         if (foundECs[i] == 3 && diag) {
                             diag = false;
+                            for (int a = 0; a < ECSize; a++) {
+                                if (foundECs[a] == 3) {
+                                    foundECs[a] = 0;
+                                }
+                            }
                             signalQueue.add(getMessage(IC.NO_SYM, 3));
                         }
                         signalQueue.add(getMessage(IC.NO_EC, possibleECs[i]));
@@ -982,14 +997,29 @@ public class Coms {
             case NO_SYM:
                 if (ID == 1 && vert) {
                     vert = false;
+                    for (int i = 0; i < ECSize; i++) {
+                        if (foundECs[i] == 1) {
+                            foundECs[i] = 0;
+                        }
+                    }
                     addRelevantFlag(getMessage(IC.NO_SYM, ID));
                 }
                 if (ID == 2 && horz) {
                     horz = false;
+                    for (int i = 0; i < ECSize; i++) {
+                        if (foundECs[i] == 2) {
+                            foundECs[i] = 0;
+                        }
+                    }
                     addRelevantFlag(getMessage(IC.NO_SYM, ID));
                 }
                 if (ID == 3 && diag) {
                     diag = false;
+                    for (int i = 0; i < ECSize; i++) {
+                        if (foundECs[i] == 3) {
+                            foundECs[i] = 0;
+                        }
+                    }
                     addRelevantFlag(getMessage(IC.NO_SYM, ID));
                 }
                 break;

@@ -59,7 +59,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-3. allocate some muckrakers to explore instead of all congregating to ec
+3. allocate some muckrakers to explore instead of all congregating to ec - fix the surrounding bug with high passabilities since the cooldown only applies when rc.isReady
 4. signal big polis near ECs to either more poli reinforcements or more muckraker reinforcements
 5. need to space our muckrakers more even still: analyze better muckraker micro, probably wololo
 
