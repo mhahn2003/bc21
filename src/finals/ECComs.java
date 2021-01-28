@@ -212,6 +212,7 @@ public class ECComs extends Coms {
     }
 
     public void updateMap() {
+        if (explored) return;
         Debug.p("updating map");
         if (!mapGenerated && Math.abs(rc.getRoundNum()-turnCount) <= 10) {
             // check if need to generate map
@@ -344,22 +345,18 @@ public class ECComs extends Coms {
             }
             addRelevantFlag(getMessage(IC.MAP_SW, msgSum));
         }
-        // TODO: implement after quals
-//        boolean allVisited = true;
-//        for (int i = 7; i >= 0; i--) {
-//            for (int j = 7; j >= 0; j--) {
-//                if (!visited[i][j]) allVisited = false;
-//            }
-//        }
-//        if (allVisited) {
-//            // reset map
-//            signalQueue.add(getMessage(IC.RESET, 0));
-//            for (int i = 7; i >= 0; i--) {
-//                for (int j = 7; j >= 0; j--) {
-//
-//                }
-//            }
-//        }
+        boolean allVisited = true;
+        for (int i = 7; i >= 0; i--) {
+            for (int j = 7; j >= 0; j--) {
+                if (!visited[i][j]) allVisited = false;
+            }
+        }
+        if (allVisited) {
+            // reset map
+            signalQueue.add(getMessage(IC.RESET, 0));
+            addRelevantFlag(getMessage(IC.RESET, 0));
+            explored = true;
+        }
     }
 
     public boolean sanityCheck(int flag) {

@@ -52,6 +52,7 @@ public class Robot {
     static int mapType = -1;
     static MapLocation[] slandererLoc = new MapLocation[6];
     static int[] staleness = new int[6];
+    static boolean explored = false;
 
     // all robots in sensor radius
     static RobotInfo[] robots;
