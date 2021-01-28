@@ -177,7 +177,10 @@ public class EC extends Robot {
                 }
                 else {
                     if (rc.getInfluence() >= 1500) build(RobotType.MUCKRAKER, 1500);
-                    else if (rc.getInfluence() >= 949) build(RobotType.SLANDERER, 949);
+                    else if (rc.getInfluence() >= 949) {
+                        build(RobotType.SLANDERER, 949);
+                        tM++;
+                    }
                     else if (rc.getInfluence() + 4*income >= 949) {
                         build(RobotType.MUCKRAKER, 10);
                         tM--;
@@ -226,7 +229,6 @@ public class EC extends Robot {
                         else build(RobotType.MUCKRAKER, 1);
                     }
                 } else {
-                    // TODO: edit here
                     if (rc.getInfluence() >= 606) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
                     if (tP < tS) build(RobotType.POLITICIAN, 20);
                     build(RobotType.MUCKRAKER, 1);
@@ -236,23 +238,32 @@ public class EC extends Robot {
         else {
             if (rc.getRoundNum() == 351) resetCount();
             if (income >= 300) {
-                if (tP < 8*tM) {
-                    if (rc.getInfluence() >= 750 && tAP < 2*tDP) build(RobotType.POLITICIAN, 750);
-                    else {
-                        int random = (int) (rand * 3);
-                        if (random == 0) build(RobotType.POLITICIAN, 20);
-                        else build(RobotType.POLITICIAN, 50);
+                if (tP < 4*tM) {
+                    int random = (int) (rand * 4);
+                    if (rc.getInfluence() >= 750 && tAP < 3*tDP) {
+                        if (random == 0) {
+                            build(RobotType.MUCKRAKER, 750);
+                            tM--;
+                            tP++;
+                        }
+                        build(RobotType.POLITICIAN, 750);
                     }
+                    else build(RobotType.POLITICIAN, 30);
                 }
                 else {
-                    if (rc.getInfluence() >= 500) build(RobotType.MUCKRAKER, 200);
+                    if (rc.getInfluence() >= 2000) build(RobotType.MUCKRAKER, 1500);
+                    else if (rc.getInfluence() >= 949) {
+                        build(RobotType.MUCKRAKER, 949);
+                        tM++;
+                    }
                     else build(RobotType.MUCKRAKER, 1);
                 }
             }
             else {
                 if (income < 100) {
-                    // if poor, just maintain a 4:2:1 ratio
-                    if (tP < 2*tS) {
+                    int random = (int) (rand * 4);
+                    // if poor, just maintain a 1:1:1 ratio
+                    if (tP < tS) {
                         // check available neutral ecs
                         int lowNeutral = 1000;
                         int lowInd = -1;
@@ -265,55 +276,78 @@ public class EC extends Robot {
                         if (lowInd == -1) lowNeutral = 400;
                         else neutralCooldown[lowInd] = 40;
                         if (rc.getInfluence() >= lowNeutral) {
+                            if (lowInd == -1) {
+                                if (random == 0) {
+                                    build(RobotType.MUCKRAKER, lowNeutral);
+                                    tM--;
+                                    tP++;
+                                }
+                            }
                             build(RobotType.POLITICIAN, lowNeutral);
                         }
                         else {
                             if (lowInd != -1) {
                                 neutralCooldown[lowInd] = 0;
-                                if (rc.getInfluence() + income * 10 > lowNeutral) build(RobotType.MUCKRAKER, 1);
+                                if (rc.getInfluence() + income * 5 > lowNeutral) build(RobotType.MUCKRAKER, 1);
                             }
                             build(RobotType.POLITICIAN, 20);
                         }
                     }
-                    else if (2*tM < tS) {
+                    else if (tM < tS) {
                         build(RobotType.MUCKRAKER, 1);
                     }
                     else {
-                        if (rc.getInfluence() >= 85 || income <= 20) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
+                        if (income <= 30 || rc.getInfluence() >= income*6) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
                         else build(RobotType.MUCKRAKER, 1);
                     }
                 } else if (income < 200) {
-                    if (tP < 3*tS) {
-                        // check available neutral ecs
+                    if (tP < 2*tS) {
+                        int random = (int) (rand * 4);
                         int lowNeutral = 1000;
                         int lowInd = -1;
                         for (int i = 0; i < 12; i++) {
                             if (neutralInf[i] != -1 && neutralCooldown[i] <= 0) {
-                                lowNeutral = Math.min(lowNeutral, neutralInf[i]*70+80);
+                                lowNeutral = Math.min(lowNeutral, neutralInf[i] * 70 + 80);
                                 lowInd = i;
                             }
                         }
                         if (lowInd == -1) lowNeutral = 400;
                         else neutralCooldown[lowInd] = 40;
-                        if (rc.getInfluence() >= lowNeutral) {
+                        if (rc.getInfluence() >= lowNeutral && tAP < 2*tDP) {
+                            if (lowInd == -1) {
+                                if (random == 0) {
+                                    build(RobotType.MUCKRAKER, lowNeutral);
+                                    tM--;
+                                    tP++;
+                                }
+                            }
                             build(RobotType.POLITICIAN, lowNeutral);
-                        }
-                        else {
+                        } else {
                             if (lowInd != -1) {
                                 neutralCooldown[lowInd] = 0;
-                                if (rc.getInfluence() + income * 10 > lowNeutral) build(RobotType.MUCKRAKER, 1);
+                                if (rc.getInfluence() + income * 10 > lowNeutral) {
+                                    tM--;
+                                    tP++;
+                                    build(RobotType.MUCKRAKER, 1);
+                                }
                             }
-                            int random = (int) (rand * 2);
-                            if (random == 0) build(RobotType.POLITICIAN, 50);
-                            else build(RobotType.POLITICIAN, 20);
+                            if (random == 0) {
+                                build(RobotType.MUCKRAKER, 100);
+                                tM--;
+                                tP++;
+                            }
+                            build(RobotType.POLITICIAN, 20);
                         }
                     }
-                    else if (3*tM < tS) {
+                    else if (tM < tS) {
                         build(RobotType.MUCKRAKER, 1);
                     }
                     else {
-                        if (rc.getInfluence() >= 400) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
-                        else build(RobotType.MUCKRAKER, 1);
+                        if (rc.getInfluence() >= 949) build(RobotType.SLANDERER, 949);
+                        else {
+                            build(RobotType.MUCKRAKER, 1);
+                            tM--;
+                        }
                     }
                 } else {
                     if (rc.getInfluence() >= 949) build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));

@@ -57,7 +57,6 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-2. need small amounts of bigger slanderers, they get more eco
 3. maybe also spread out from others when searching from possible ec locations
 3. **allocate some muckrakers to explore instead of all congregating to ec**
 4. surrounded IC?
