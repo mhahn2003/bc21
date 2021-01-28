@@ -137,7 +137,7 @@ public class EC extends Robot {
             if (rc.getRoundNum() == 151) resetCount();
             // have sustainable eco
             if (income >= 160) {
-                if (tP < 4*tM) {
+                if (tP < 8*tM) {
                     int random = (int) (rand * 6);
                     int lowNeutral = 1000;
                     int lowInd = -1;
@@ -207,7 +207,7 @@ public class EC extends Robot {
         else {
             if (rc.getRoundNum() == 351) resetCount();
             if (income >= 300) {
-                if (tP < 6*tM) {
+                if (tP < 12*tM) {
                     if (rc.getInfluence() >= 750 && tAP < 2*tDP) build(RobotType.POLITICIAN, 750);
                     else {
                         int random = (int) (rand * 3);

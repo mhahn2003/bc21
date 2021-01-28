@@ -36,6 +36,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
+- **we just need much better exploration code**
 - Still breaks on the wander points for some reason
 - Politician
     - Concentrate patrolling on the side where the attacks come from
@@ -58,8 +59,11 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
+1. attack politicians still have a bug for some reason?
 2. reset visited map once in a while (just reset once everywhere is visited)
 3. allocate some muckrakers to explore instead of all congregating to ec
+4. signal big polis near ECs to either more poli reinforcements or more muckraker reinforcements
+5. need to space our muckrakers more even still: analyze better muckraker micro, probably wololo
 3. code more robust defense; a lot of the times our ec has a lot of influence to work with but doesn't spend it and loses
 8. implement pathfinding to avoid 0.1 passability tiles at least for a little bit
 9. remove ID from list to check if outputs an invalid category (maybe by adding a IC.REMOVEID category?)
