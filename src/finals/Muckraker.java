@@ -1,6 +1,7 @@
 package finals;
 
 import battlecode.common.*;
+import finals.utils.Debug;
 
 public class Muckraker extends Robot {
 
@@ -159,7 +160,7 @@ public class Muckraker extends Robot {
             }
             if (suspectSlanderer != null) nav.bugNavigate(suspectSlanderer);
             else if (closestEnemyEC != null) {
-                if (rc.getLocation().distanceSquaredTo(closestEnemyEC) > 20) {
+                if (rc.getLocation().distanceSquaredTo(closestEnemyEC) > 17) {
                     // navigate to there, but still separating from each other
                     Direction optDir = rc.getLocation().directionTo(closestEnemyEC);
                     Direction leftDir = optDir.rotateLeft();
@@ -211,15 +212,16 @@ public class Muckraker extends Robot {
                         if (closestOpen != null) nav.bugNavigate(closestOpen);
                         else {
                             if (surrounded) {
+                                Debug.p("is surrounded");
                                 for (int i = 0; i < 12; i++) {
-                                    if (enemyECs[i].equals(closestEnemyEC)) enemySurrounded[i] = 150;
+                                    if (closestEnemyEC.equals(enemyECs[i])) enemySurrounded[i] = 150;
                                 }
                             } else {
                                 for (int i = 0; i < 12; i++) {
-                                    if (enemyECs[i].equals(closestEnemyEC)) {
-                                        // just stay there for 30 rounds and then leave
-                                        if (enemySurrounded[i] <= -40) enemySurrounded[i] = -30;
-                                        enemySurrounded[i] += 2;
+                                    if (closestEnemyEC.equals(enemyECs[i])) {
+                                        // just stay there for 10 rounds and then leave
+                                        if (enemySurrounded[i] <= -40) enemySurrounded[i] = -10;
+                                        enemySurrounded[i] += (int) 2.0/rc.sensePassability(rc.getLocation());
                                         if (enemySurrounded[i] >= 0) enemySurrounded[i] = 150;
                                     }
                                 }

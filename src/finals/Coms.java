@@ -16,6 +16,8 @@ public class Coms {
     protected RobotInfo processingRobot = null;
     public static boolean relevantDiscovery = false;
 
+    public int tempID = 0;
+
 
     // number of possible cases for InfoCategory enum class
     private static int numCase = 17;
@@ -560,6 +562,7 @@ public class Coms {
         for (int i = 0; i < 12; i++) {
             if (ECIds[i] != 0) {
                 if (rc.canGetFlag(ECIds[i])) {
+                    tempID = ECIds[i];
                     processFlag(rc.getFlag(ECIds[i]));
                 }
             }
@@ -568,6 +571,7 @@ public class Coms {
         for (RobotInfo r : robots) {
             if (r.getTeam() == team && rc.canGetFlag(r.getID())) {
                 processingRobot = r;
+                tempID = r.getID();
                 processFlag(rc.getFlag(r.getID()));
             }
         }
@@ -581,6 +585,7 @@ public class Coms {
         if (flag % (1 << 22) == 0 || cat == null) return;
         MapLocation coord = getCoord(flag);
         int ID = getID(flag);
+        Debug.p("Received from: " + tempID);
         Debug.p("Signal type: " + cat.toString());
         Debug.p("Signal Coords: " + coord.toString());
         Debug.p("Signal ID: " + ID);

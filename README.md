@@ -36,8 +36,6 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 
 ### To-do list
 
-- **we just need much better exploration code**
-- Still breaks on the wander points for some reason
 - Politician
     - Concentrate patrolling on the side where the attacks come from
     - Assist politicians can also flank maybe?
@@ -59,8 +57,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-2. still symmetry bug
-3. allocate some muckrakers to explore instead of all congregating to ec - fix the surrounding bug with high passabilities since the cooldown only applies when rc.isReady
+3. allocate some muckrakers to explore instead of all congregating to ec
 4. why is every muckraker 1 cost?
 4. signal big polis near ECs to either more poli reinforcements or more muckraker reinforcements
 5. need to space our muckrakers more even still: analyze better muckraker micro, probably wololo
@@ -114,3 +111,4 @@ Done:
 - ~~completely revamp the wander function~~
 - ~~need to find corners much faster~~
 - ~~use symmetry to find supposed ec locations~~
+- ~~fix the surrounding bug with high passabilities since the cooldown only applies when rc.isReady~~
