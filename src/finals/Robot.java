@@ -33,6 +33,10 @@ public class Robot {
     static MapLocation[] enemyECs = new MapLocation[12];
     static int[] enemySurrounded = new int[12];
     static int[] neutralCooldown = new int[12];
+    static MapLocation[] possibleECs = new MapLocation[36];
+    // 1: vert, 2: horz, 3: diag, 0: found
+    static int[] foundECs = new int[36];
+    static int ECSize = 0;
 
     // variables changed by coms
     static boolean moveAway = false;
@@ -53,6 +57,10 @@ public class Robot {
     static MapLocation[] slandererLoc = new MapLocation[6];
     static int[] staleness = new int[6];
     static boolean explored = false;
+    // the three symmetries
+    static boolean vert = true;
+    static boolean horz = true;
+    static boolean diag = true;
 
     // all robots in sensor radius
     static RobotInfo[] robots;
@@ -147,67 +155,145 @@ public class Robot {
     // wander around
     // TODO: fix all the wander functions since we changed from void to MapLocation
     public static MapLocation wander() throws GameActionException {
-        if (!mapGenerated) {
-            // do the thing where you separate from others
-            // go to the corners
-            Nav.getEnds();
-            wandLoc = ends[(rc.getID() % 4)];
-            nav.bugNavigate(wandLoc);
-        } else {
-            int closestECDist = 100000;
-            MapLocation closestEC = null;
-            for (int i = 0; i < 12; i++) {
-                if (friendECs[i] != null) {
-                    int dist = rc.getLocation().distanceSquaredTo(friendECs[i]);
-                    if (dist < closestECDist) {
-                        closestECDist = dist;
-                        closestEC = friendECs[i];
+        if (!explored) {
+            // first need to find the map dimensions asap
+            if (minX == 9999 || maxX == 30065 || minY == 9999 || maxY == 30065) {
+                // go to the corner that is not discovered
+                if (!mapGenerated) {
+                    // do the thing where you separate from others
+                    // go to the corners
+                    Nav.getEnds();
+                    wandLoc = ends[(rc.getID() % 4)];
+                    return wandLoc;
+                } else {
+                    // one corner already found, go find the other!
+                    if (rc.getID() % 3 == 0) {
+                        // go find the other corner
+                        Nav.getEnds();
+                        int closestDist = 100000;
+                        for (int i = 0; i < 4; i++) {
+                            if ((ends[i].x == 9999 || ends[i].x == 30065) && (ends[i].y == 9999 || ends[i].y == 30065)) return ends[i];
+                            if (ends[i].x == 9999 || ends[i].x == 30065 || ends[i].y == 9999 || ends[i].y == 30065) {
+                                int dist = Math.abs(ends[i].x-rc.getLocation().x)+Math.abs(ends[i].y-rc.getLocation().y);
+                                if (dist < closestDist) {
+                                    closestDist = dist;
+                                    wandLoc = ends[i];
+                                }
+                            }
+                        }
+                        return wandLoc;
+                    } else {
+                        // but some should just keep on exploring
+                        return map();
                     }
                 }
-            }
-            if (closestEC == null) {
-                Nav.getEnds();
-                wandLoc = ends[(rc.getID() % 4)];
-                return wandLoc;
-            }
-            RobotInfo[] nearMucks = new RobotInfo[3];
-            int nearMuckSize = 0;
-            if (robots.length <= 25) {
-                for (RobotInfo r : robots) {
-                    if (r.getTeam() == team && r.getType() == RobotType.MUCKRAKER &&
-                        r.getLocation().distanceSquaredTo(closestEC) > rc.getLocation().distanceSquaredTo(closestEC)) {
-                        nearMucks[nearMuckSize] = r;
-                        nearMuckSize++;
-                        if (nearMuckSize == 3) break;
+            } else {
+                // third explore, filling out the map
+                // other 2 thirds go to supposed ec locations and figure out if they're good or bad
+                if (rc.getID() % 3 == 1) return map();
+                else {
+                    int closestPossDist = 1000000;
+                    MapLocation closestPoss = null;
+                    for (int i = 0; i < 36; i++) {
+                        if (foundECs[i] != 0) {
+                            int dist = rc.getLocation().distanceSquaredTo(possibleECs[i]);
+                            if (dist < closestPossDist) {
+                                closestPossDist = dist;
+                                closestPoss = possibleECs[i];
+                            }
+                        }
                     }
+                    if (closestPoss != null) return closestPoss;
+                    else return map();
                 }
             }
-            int closestOptDist = 100000;
-            MapLocation closestOpt = null;
-            for (int i = 7; i >= 0; i--) {
-                 for (int j = 7; j >= 0; j--) {
-                    int dist = rc.getLocation().distanceSquaredTo(mapSpots[i][j]);
-                    int h = 0;
-                    for (int k = 0; k < nearMuckSize; k++) {
-                        int mDist = Math.max(nearMucks[k].getLocation().distanceSquaredTo(mapSpots[i][j]), 1);
-                        if (mDist < dist) h += 1000;
-                        h += 500/mDist;
-                    }
-                    if (dist <= 4) h = 0;
-                    h -= 300/Math.max(dist, 1);
-                    if (h < closestOptDist && !visited[i][j]) {
-                        closestOptDist = h;
-                        closestOpt = mapSpots[i][j];
-                    }
-                 }
-            }
-            if (closestOpt == null) {
-                Nav.getEnds();
-                wandLoc = ends[(rc.getID() % 4)];
-            } else wandLoc = closestOpt;
         }
-        Debug.p("going to: " + wandLoc);
-        return wandLoc;
+        else {
+            // mostly go towards supposed EC locations,
+            // but a portion just do the same thing as politicians where you go away from other units
+            if (rc.getID() % 5 == 0) {
+                // do the jittery dance thingy
+                return jitter();
+            } else {
+                // mostly go towards supposed EC locations
+                int closestPossDist = 1000000;
+                MapLocation closestPoss = null;
+                for (int i = 0; i < 36; i++) {
+                    if (foundECs[i] != 0) {
+                        int dist = rc.getLocation().distanceSquaredTo(possibleECs[i]);
+                        if (dist < closestPossDist) {
+                            closestPossDist = dist;
+                            closestPoss = possibleECs[i];
+                        }
+                    }
+                }
+                if (closestPoss != null) return closestPoss;
+                else {
+                    return jitter();
+                }
+            }
+        }
+//        if (!mapGenerated) {
+//            // do the thing where you separate from others
+//            // go to the corners
+//            Nav.getEnds();
+//            wandLoc = ends[(rc.getID() % 4)];
+//            nav.bugNavigate(wandLoc);
+//        } else {
+//            int closestECDist = 100000;
+//            MapLocation closestEC = null;
+//            for (int i = 0; i < 12; i++) {
+//                if (friendECs[i] != null) {
+//                    int dist = rc.getLocation().distanceSquaredTo(friendECs[i]);
+//                    if (dist < closestECDist) {
+//                        closestECDist = dist;
+//                        closestEC = friendECs[i];
+//                    }
+//                }
+//            }
+//            if (closestEC == null) {
+//                Nav.getEnds();
+//                wandLoc = ends[(rc.getID() % 4)];
+//                return wandLoc;
+//            }
+//            RobotInfo[] nearMucks = new RobotInfo[3];
+//            int nearMuckSize = 0;
+//            if (robots.length <= 25) {
+//                for (RobotInfo r : robots) {
+//                    if (r.getTeam() == team && r.getType() == RobotType.MUCKRAKER &&
+//                        r.getLocation().distanceSquaredTo(closestEC) > rc.getLocation().distanceSquaredTo(closestEC)) {
+//                        nearMucks[nearMuckSize] = r;
+//                        nearMuckSize++;
+//                        if (nearMuckSize == 3) break;
+//                    }
+//                }
+//            }
+//            int closestOptDist = 100000;
+//            MapLocation closestOpt = null;
+//            for (int i = 7; i >= 0; i--) {
+//                 for (int j = 7; j >= 0; j--) {
+//                    int dist = rc.getLocation().distanceSquaredTo(mapSpots[i][j]);
+//                    int h = 0;
+//                    for (int k = 0; k < nearMuckSize; k++) {
+//                        int mDist = Math.max(nearMucks[k].getLocation().distanceSquaredTo(mapSpots[i][j]), 1);
+//                        if (mDist < dist) h += 1000;
+//                        h += 500/mDist;
+//                    }
+//                    if (dist <= 4) h = 0;
+//                    h -= 300/Math.max(dist, 1);
+//                    if (h < closestOptDist && !visited[i][j]) {
+//                        closestOptDist = h;
+//                        closestOpt = mapSpots[i][j];
+//                    }
+//                 }
+//            }
+//            if (closestOpt == null) {
+//                Nav.getEnds();
+//                wandLoc = ends[(rc.getID() % 4)];
+//            } else wandLoc = closestOpt;
+//        }
+//        Debug.p("going to: " + wandLoc);
+//        return wandLoc;
     }
 
     // patrol around center
@@ -234,5 +320,93 @@ public class Robot {
             }
         }
         if (rc.canMove(rotateDir)) rc.move(rotateDir);
+    }
+
+    public static MapLocation jitter() {
+        int unitInd = 0;
+        MapLocation[] nearUnits = new MapLocation[5];
+        RobotInfo[] nearU = rc.senseNearbyRobots(16, team);
+        for (RobotInfo r : nearU) {
+            if (unitInd < 5) {
+                nearUnits[unitInd] = r.getLocation();
+                unitInd++;
+            }
+            if (unitInd == 5) break;
+        }
+        int maxH = 0;
+        Direction optDir = null;
+        for (int i = 0; i < 8; i++) {
+            MapLocation loc = rc.getLocation().add(directions[i]);
+            int h = 0;
+            for (int j = 0; j < unitInd; j++) {
+                Debug.p("near poli: " + j + " " + nearUnits[j]);
+                h += loc.distanceSquaredTo(nearUnits[j]);
+            }
+            if (h > maxH && rc.canMove(directions[i])) {
+                maxH = h;
+                optDir = directions[i];
+            }
+        }
+        if (unitInd == 0 || optDir == null) {
+            // go to corner?
+            Nav.getEnds();
+            wandLoc = ends[(rc.getID() % 4)];
+            return wandLoc;
+        } else return rc.getLocation().add(optDir);
+    }
+
+    public static MapLocation map() {
+        int closestECDist = 100000;
+        MapLocation closestEC = null;
+        for (int i = 0; i < 12; i++) {
+            if (friendECs[i] != null) {
+                int dist = rc.getLocation().distanceSquaredTo(friendECs[i]);
+                if (dist < closestECDist) {
+                    closestECDist = dist;
+                    closestEC = friendECs[i];
+                }
+            }
+        }
+        if (closestEC == null) {
+            Nav.getEnds();
+            wandLoc = ends[(rc.getID() % 4)];
+            return wandLoc;
+        }
+        RobotInfo[] nearMucks = new RobotInfo[3];
+        int nearMuckSize = 0;
+        if (robots.length <= 25) {
+            for (RobotInfo r : robots) {
+                if (r.getTeam() == team && r.getType() == RobotType.MUCKRAKER &&
+                        r.getLocation().distanceSquaredTo(closestEC) > rc.getLocation().distanceSquaredTo(closestEC)) {
+                    nearMucks[nearMuckSize] = r;
+                    nearMuckSize++;
+                    if (nearMuckSize == 3) break;
+                }
+            }
+        }
+        int closestOptDist = 100000;
+        MapLocation closestOpt = null;
+        for (int i = 7; i >= 0; i--) {
+            for (int j = 7; j >= 0; j--) {
+                int dist = rc.getLocation().distanceSquaredTo(mapSpots[i][j]);
+                int h = 0;
+                for (int k = 0; k < nearMuckSize; k++) {
+                    int mDist = Math.max(nearMucks[k].getLocation().distanceSquaredTo(mapSpots[i][j]), 1);
+                    if (mDist < dist) h += 1000;
+                    h += 500/mDist;
+                }
+                if (dist <= 4) h = 0;
+                h -= 300/Math.max(dist, 1);
+                if (h < closestOptDist && !visited[i][j]) {
+                    closestOptDist = h;
+                    closestOpt = mapSpots[i][j];
+                }
+            }
+        }
+        if (closestOpt == null) {
+            Nav.getEnds();
+            wandLoc = ends[(rc.getID() % 4)];
+        } else wandLoc = closestOpt;
+        return wandLoc;
     }
 }

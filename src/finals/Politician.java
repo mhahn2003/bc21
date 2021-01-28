@@ -222,8 +222,7 @@ public class Politician extends Robot {
                 nav.bugNavigate(closestEC);
             }
         } else {
-            wander();
-            nav.bugNavigate(wandLoc);
+            nav.bugNavigate(wander());
         }
     }
 
@@ -351,8 +350,7 @@ public class Politician extends Robot {
                             }
                             if (closestEC != null) nav.bugNavigate(closestEC);
                             else {
-                                wander();
-                                nav.bugNavigate(wandLoc);
+                                nav.bugNavigate(wander());
                             }
                         } else {
                             Debug.p("polis near me");
