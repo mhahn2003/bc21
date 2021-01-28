@@ -40,6 +40,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
     - Concentrate patrolling on the side where the attacks come from
     - Assist politicians can also flank maybe?
 - Slanderer
+    - blocking spawning space for some reason, test on andromeda
 - Muckraker
     - muckrakers are not sparse enough
     - need more muckrakers to constantly get in and attack - maybe adjust the muckraker ratio a bit now that they're decent?
@@ -57,9 +58,6 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-5. don't explode neutral ecs if there are nearby enemy polis
-3. code more robust defense; a lot of the times our ec has a lot of influence to work with but doesn't spend it and loses
-6. when only small politicians around ec, don't care. if a big poli around ec, then just build muckrakers on cardinal directions
 8. implement pathfinding to avoid 0.1 passability tiles at least for a little bit
 9. remove ID from list to check if outputs an invalid category (maybe by adding a IC.REMOVEID category?)
 

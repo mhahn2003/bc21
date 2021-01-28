@@ -169,7 +169,8 @@ public class EC extends Robot {
                             tM--;
                             tP++;
                         }
-                        build(RobotType.POLITICIAN, 20);
+                        if (random == 3) build(RobotType.POLITICIAN, 50);
+                        else build(RobotType.POLITICIAN, 20);
                     }
                 }
                 else {
@@ -245,7 +246,10 @@ public class EC extends Robot {
                         }
                         build(RobotType.POLITICIAN, 750);
                     }
-                    else build(RobotType.POLITICIAN, 30);
+                    else {
+                        if (random == 0) build(RobotType.POLITICIAN, 50);
+                        else build(RobotType.POLITICIAN, 30);
+                    }
                 }
                 else {
                     if (rc.getInfluence() >= 2000) build(RobotType.MUCKRAKER, 1500);
@@ -333,7 +337,8 @@ public class EC extends Robot {
                                 tM--;
                                 tP++;
                             }
-                            build(RobotType.POLITICIAN, 20);
+                            if (random == 3) build(RobotType.POLITICIAN, 50);
+                            else build(RobotType.POLITICIAN, 20);
                         }
                     }
                     else if (tM < tS) {
