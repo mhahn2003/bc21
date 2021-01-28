@@ -12,7 +12,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = true;
+    public static boolean debugOn = false;
 
     static int minX = 9999;
     static int maxX = 30065;

@@ -57,10 +57,12 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-3. allocate some muckrakers to explore instead of all congregating to ec
-4. why is every muckraker 1 cost?
-4. signal big polis near ECs to either more poli reinforcements or more muckraker reinforcements
+2. need small amounts of bigger slanderers, they get more eco
+3. maybe also spread out from others when searching from possible ec locations
+3. **allocate some muckrakers to explore instead of all congregating to ec**
+4. surrounded IC?
 5. need to space our muckrakers more even still: analyze better muckraker micro, probably wololo
+6. communicate when ec is surrounded so muckrakers/politicians can go to other stuff
 
 do until 1/27
 
