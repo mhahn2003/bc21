@@ -93,9 +93,9 @@ public class EC extends Robot {
         // scenario 2: no enemy units nearby
             // at the very first just build a lot of slanderers
             // build in a 1:1:eps ratio of p, s, m
-        if (rc.getRoundNum() <= 50) {
-            if (tM < 3*tS) build(RobotType.MUCKRAKER, 1);
-            if (tP < tS) build(RobotType.POLITICIAN, 20);
+        if (rc.getRoundNum() <= 40) {
+            if (tM < tS) build(RobotType.MUCKRAKER, 1);
+            if (5*tP < tS) build(RobotType.POLITICIAN, 20);
             build(RobotType.SLANDERER, Constants.getBestSlanderer(rc.getInfluence()));
         }
         else if (rc.getRoundNum() <= 150) {
@@ -125,7 +125,7 @@ public class EC extends Robot {
                     build(RobotType.POLITICIAN, 20);
                 }
             }
-            else if (2*tM < tS) {
+            else if (tM < tS) {
                 build(RobotType.MUCKRAKER, 1);
             }
             else {
@@ -137,7 +137,7 @@ public class EC extends Robot {
             if (rc.getRoundNum() == 151) resetCount();
             // have sustainable eco
             if (income >= 160) {
-                if (tP < 3*tM) {
+                if (tP < 5*tM) {
                     int random = (int) (rand * 4);
                     int lowNeutral = 1000;
                     int lowInd = -1;
@@ -238,7 +238,7 @@ public class EC extends Robot {
         else {
             if (rc.getRoundNum() == 351) resetCount();
             if (income >= 300) {
-                if (tP < 4*tM) {
+                if (tP < 8*tM) {
                     int random = (int) (rand * 4);
                     if (rc.getInfluence() >= 750 && tAP < 3*tDP) {
                         if (random == 0) {

@@ -2,7 +2,7 @@ package finals.utils;
 
 public class Constants {
 
-    public static int staleCooldown = 60;
+    public static int staleCooldown = 200;
     public static int[] bestSlanderers = {21, 41, 63, 85, 107, 130, 204, 310, 400, 500, 606, 724, 810, 902, 949};
 
     public static int getBestSlanderer(int inf) {

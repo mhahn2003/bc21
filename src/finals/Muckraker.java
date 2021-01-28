@@ -159,6 +159,25 @@ public class Muckraker extends Robot {
                 }
             }
             if (suspectSlanderer != null) nav.bugNavigate(suspectSlanderer);
+            else if (rc.getConviction() > 20) {
+                if (closestEnemyEC != null) {
+                    if (rc.getLocation().distanceSquaredTo(closestEnemyEC) > 17) {
+                        nav.bugNavigate(closestEnemyEC);
+                    } else {
+                        // patrol for a bit, if it can't find anything, cross off the list and move on
+                        for (int i = 0; i < 12; i++) {
+                            if (closestEnemyEC.equals(enemyECs[i])) {
+                                if (enemySurrounded[i] <= -40) enemySurrounded[i] = -40;
+                                enemySurrounded[i] += (int) 3.0/rc.sensePassability(rc.getLocation());
+                                if (enemySurrounded[i] >= 0) enemySurrounded[i] = 400;
+                            }
+                        }
+                        patrol(closestEnemyEC, 4, 16);
+                    }
+                } else {
+                    nav.bugNavigate(wander());
+                }
+            }
             else if (closestEnemyEC != null) {
                 if (rc.getLocation().distanceSquaredTo(closestEnemyEC) > 17) {
                     // navigate to there, but still separating from each other
@@ -167,9 +186,9 @@ public class Muckraker extends Robot {
                     Direction rightDir = optDir.rotateRight();
                     MapLocation[] nearMucks = new MapLocation[3];
                     int nearMuckSize = 0;
-                    RobotInfo[] near = rc.senseNearbyRobots(15, team);
+                    RobotInfo[] near = rc.senseNearbyRobots(30, team);
                     for (RobotInfo r : near) {
-                        if (r.getType() == RobotType.MUCKRAKER) {
+                        if (r.getType() == RobotType.MUCKRAKER && r.getConviction() <= 10) {
                             nearMucks[nearMuckSize] = r.getLocation();
                             nearMuckSize++;
                             if (nearMuckSize == 3) break;
@@ -220,9 +239,9 @@ public class Muckraker extends Robot {
                                 for (int i = 0; i < 12; i++) {
                                     if (closestEnemyEC.equals(enemyECs[i])) {
                                         // just stay there for 10 rounds and then leave
-                                        if (enemySurrounded[i] <= -40) enemySurrounded[i] = -10;
-                                        enemySurrounded[i] += (int) 2.0/rc.sensePassability(rc.getLocation());
-                                        if (enemySurrounded[i] >= 0) enemySurrounded[i] = 150;
+                                        if (enemySurrounded[i] <= -10) enemySurrounded[i] = -10;
+                                        enemySurrounded[i] += (int) 3.0/rc.sensePassability(rc.getLocation());
+                                        if (enemySurrounded[i] >= 0) enemySurrounded[i] = 250;
                                     }
                                 }
                             }
@@ -231,7 +250,40 @@ public class Muckraker extends Robot {
                     }
                 }
             }
-            else nav.bugNavigate(wander());
+            else {
+                MapLocation loc = wander();
+                if (rc.getLocation().distanceSquaredTo(loc) > 17) {
+                    Direction optDir = rc.getLocation().directionTo(loc);
+                    Direction leftDir = optDir.rotateLeft();
+                    Direction rightDir = optDir.rotateRight();
+                    MapLocation[] nearMucks = new MapLocation[3];
+                    int nearMuckSize = 0;
+                    RobotInfo[] near = rc.senseNearbyRobots(30, team);
+                    for (RobotInfo r : near) {
+                        if (r.getType() == RobotType.MUCKRAKER && r.getConviction() <= 10) {
+                            nearMucks[nearMuckSize] = r.getLocation();
+                            nearMuckSize++;
+                            if (nearMuckSize == 3) break;
+                        }
+                    }
+                    int optH = 0;
+                    int leftH = 0;
+                    int rightH = 0;
+                    for (int i = 0; i < nearMuckSize; i++) {
+                        optH += rc.getLocation().add(optDir).distanceSquaredTo(nearMucks[i]);
+                        leftH += rc.getLocation().add(leftDir).distanceSquaredTo(nearMucks[i]);
+                        rightH += rc.getLocation().add(rightDir).distanceSquaredTo(nearMucks[i]);
+                    }
+                    if (!rc.canMove(optDir)) optH = 0;
+                    if (!rc.canMove(leftDir)) leftH = 0;
+                    if (!rc.canMove(rightDir)) rightH = 0;
+                    int H = Math.max(optH, Math.max(leftH, rightH));
+                    if (H == 0) nav.bugNavigate(loc);
+                    else if (H == optH) rc.move(optDir);
+                    else if (H == rightH) rc.move(rightDir);
+                    else rc.move(leftDir);
+                } else nav.bugNavigate(loc);
+            }
 
 //            // loc is our destination
 //            if (nearPolSize != 0) {

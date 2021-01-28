@@ -57,14 +57,7 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-3. maybe also spread out from others when searching from possible ec locations
-3. **allocate some muckrakers to explore instead of all congregating to ec**
-4. surrounded IC?
-5. need to space our muckrakers more even still: analyze better muckraker micro, probably wololo
-6. communicate when ec is surrounded so muckrakers/politicians can go to other stuff
-
-do until 1/27
-
+5. don't explode neutral ecs if there are nearby enemy polis
 3. code more robust defense; a lot of the times our ec has a lot of influence to work with but doesn't spend it and loses
 6. when only small politicians around ec, don't care. if a big poli around ec, then just build muckrakers on cardinal directions
 8. implement pathfinding to avoid 0.1 passability tiles at least for a little bit
@@ -113,3 +106,4 @@ Done:
 - ~~need to find corners much faster~~
 - ~~use symmetry to find supposed ec locations~~
 - ~~fix the surrounding bug with high passabilities since the cooldown only applies when rc.isReady~~
+- ~~maybe also spread out from others when searching from possible ec locations~~
