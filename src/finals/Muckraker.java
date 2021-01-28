@@ -186,7 +186,7 @@ public class Muckraker extends Robot {
                     Direction rightDir = optDir.rotateRight();
                     MapLocation[] nearMucks = new MapLocation[3];
                     int nearMuckSize = 0;
-                    RobotInfo[] near = rc.senseNearbyRobots(30, team);
+                    RobotInfo[] near = rc.senseNearbyRobots(15, team);
                     for (RobotInfo r : near) {
                         if (r.getType() == RobotType.MUCKRAKER && r.getConviction() <= 10) {
                             nearMucks[nearMuckSize] = r.getLocation();
@@ -258,7 +258,7 @@ public class Muckraker extends Robot {
                     Direction rightDir = optDir.rotateRight();
                     MapLocation[] nearMucks = new MapLocation[3];
                     int nearMuckSize = 0;
-                    RobotInfo[] near = rc.senseNearbyRobots(30, team);
+                    RobotInfo[] near = rc.senseNearbyRobots(15, team);
                     for (RobotInfo r : near) {
                         if (r.getType() == RobotType.MUCKRAKER && r.getConviction() <= 10) {
                             nearMucks[nearMuckSize] = r.getLocation();

@@ -102,7 +102,7 @@ public class Politician extends Robot {
                 nav.bugNavigate(closestBuffMuck.getLocation());
             }
         }
-        else if (closestNeutral != null) {
+        else if (closestNeutral != null && rc.getRoundNum() < 350) {
             // should be able to kill if there's no units beside it
             Debug.p("Going to closest neutral EC: " + closestNeutral);
             if (closestNeutralDist <= 9) {
