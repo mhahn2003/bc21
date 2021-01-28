@@ -12,7 +12,7 @@ public class Robot {
     static ECComs eccoms;
 
     // debug variable
-    public static boolean debugOn = false;
+    public static boolean debugOn = true;
 
     static int minX = 9999;
     static int maxX = 30065;
@@ -101,7 +101,7 @@ public class Robot {
     public void takeTurn() throws GameActionException {
         Coms.resetVariables();
         robots = rc.senseNearbyRobots();
-        if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER){
+        if (rc.getType() == RobotType.ENLIGHTENMENT_CENTER) {
             eccoms.getInfo();
         } else {
 //            Debug.p("Before coms: " + Clock.getBytecodeNum());
@@ -144,6 +144,13 @@ public class Robot {
 //                }
 //            }
 //        }
+        for (int i = 0; i < 12; i++) {
+            if (totalECs[i] != null) Debug.p("ECs: " + totalECs[i]);
+        }
+        for (int i = 0; i < ECSize; i++) {
+            Debug.p("possible EC: " + possibleECs[i]);
+            Debug.p("found: " + foundECs[i]);
+        }
         Debug.p("\nmaxY:"+(edges[0]? maxY:0)+"\nmaxX:"+(edges[1]? maxX:0)+"\nminY:"+(edges[2]? minY:0)+"\nminX:"+(edges[3]? minX:0));
 //        Debug.p("Robot.takeTurn: " + Clock.getBytecodeNum());
         for (int i = 0; i < 6; i++) staleness[i]--;
@@ -190,23 +197,31 @@ public class Robot {
                     }
                 }
             } else {
-                // third explore, filling out the map
-                // other 2 thirds go to supposed ec locations and figure out if they're good or bad
-                if (rc.getID() % 3 == 1) return map();
-                else {
-                    int closestPossDist = 1000000;
-                    MapLocation closestPoss = null;
-                    for (int i = 0; i < 36; i++) {
-                        if (foundECs[i] != 0) {
-                            int dist = rc.getLocation().distanceSquaredTo(possibleECs[i]);
-                            if (dist < closestPossDist) {
-                                closestPossDist = dist;
-                                closestPoss = possibleECs[i];
+                if (!mapGenerated) {
+                    // do the thing where you separate from others
+                    // go to the corners
+                    Nav.getEnds();
+                    wandLoc = ends[(rc.getID() % 4)];
+                    return wandLoc;
+                } else {
+                    // third explore, filling out the map
+                    // other 2 thirds go to supposed ec locations and figure out if they're good or bad
+                    if (rc.getID() % 3 == 1) return map();
+                    else {
+                        int closestPossDist = 1000000;
+                        MapLocation closestPoss = null;
+                        for (int i = 0; i < 36; i++) {
+                            if (foundECs[i] != 0) {
+                                int dist = rc.getLocation().distanceSquaredTo(possibleECs[i]);
+                                if (dist < closestPossDist) {
+                                    closestPossDist = dist;
+                                    closestPoss = possibleECs[i];
+                                }
                             }
                         }
+                        if (closestPoss != null) return closestPoss;
+                        else return map();
                     }
-                    if (closestPoss != null) return closestPoss;
-                    else return map();
                 }
             }
         }

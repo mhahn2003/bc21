@@ -1,6 +1,6 @@
 package finals.utils;
 
-import static quals.Robot.debugOn;
+import static finals.Robot.debugOn;
 
 public class Debug {
 

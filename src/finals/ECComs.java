@@ -26,6 +26,7 @@ public class ECComs extends Coms {
         relevantSize = 1;
         relevantFlags[0] = getMessage(IC.EC_ID, rc.getID());
         friendECs[0] = rc.getLocation();
+        totalECs[0] = rc.getLocation();
     }
 
     public void loopBots() throws GameActionException {
@@ -143,8 +144,8 @@ public class ECComs extends Coms {
                         break;
                     }
                 }
-                for (int i = 0; i < relevantSize; i++) {
-                    if (relevantFlags[relevantInd % relevantSize] % (1 << 22) == flag % (1 << 22)) {
+                for (int i = 0; i < relevantSize-2; i++) {
+                    if (relevantFlags[i] % (1 << 22) == flag % (1 << 22)) {
                         redundant = true;
                         break;
                     }
@@ -212,6 +213,17 @@ public class ECComs extends Coms {
     }
 
     public void updateMap() {
+        if (!corners) {
+            if (minX != 9999 && maxX != 30065 && minY != 9999 && maxY != 30065) {
+                corners = true;
+                // check all the symmetry stuff
+                for (int i = 0; i < 12; i++) {
+                    if (totalECs[i] != null) {
+                        symmetry(totalECs[i]);
+                    }
+                }
+            }
+        }
         if (explored) return;
         Debug.p("updating map");
         if (!mapGenerated && Math.abs(rc.getRoundNum()-turnCount) <= 10) {

@@ -357,14 +357,14 @@ public class Coms {
                         }
                     }
                 }
-                if (!corners) {
-                    if (minX != 9999 && maxX != 30065 && minY != 9999 && maxY != 30065) {
-                        corners = true;
-                        // check all the symmetry stuff
-                        for (int i = 0; i < 12; i++) {
-                            if (totalECs[i] != null) {
-                                symmetry(totalECs[i]);
-                            }
+            }
+            if (!corners) {
+                if (minX != 9999 && maxX != 30065 && minY != 9999 && maxY != 30065) {
+                    corners = true;
+                    // check all the symmetry stuff
+                    for (int i = 0; i < 12; i++) {
+                        if (totalECs[i] != null) {
+                            symmetry(totalECs[i]);
                         }
                     }
                 }
@@ -759,6 +759,28 @@ public class Coms {
                 }
                 break;
             case ENEMY_EC:
+                minInd = -1;
+                seen = false;
+                for (int i = 11; i >= 0; i--) {
+                    if (totalECs[i] == null) minInd = i;
+                    else if (coord.equals(totalECs[i]))  {
+                        seen = true;
+                        break;
+                    }
+                }
+                if (minInd != -1 && !seen) {
+                    totalECs[minInd] = coord;
+                    if (corners) {
+                        for (int i = 0; i < 36; i++) {
+                            if (coord.equals(possibleECs[i])) {
+                                foundECs[i] = 0;
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (!seen) symmetry(coord);
+                    }
+                }
                 for (int i = 0; i < 12; i++) {
                     if (coord.equals(friendECs[i])) {
                         friendECs[i] = null;
@@ -791,6 +813,28 @@ public class Coms {
 
                 break;
             case FRIEND_EC:
+                minInd = -1;
+                seen = false;
+                for (int i = 11; i >= 0; i--) {
+                    if (totalECs[i] == null) minInd = i;
+                    else if (coord.equals(totalECs[i]))  {
+                        seen = true;
+                        break;
+                    }
+                }
+                if (minInd != -1 && !seen) {
+                    totalECs[minInd] = coord;
+                    if (corners) {
+                        for (int i = 0; i < 36; i++) {
+                            if (coord.equals(possibleECs[i])) {
+                                foundECs[i] = 0;
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (!seen) symmetry(coord);
+                    }
+                }
                 for (int i = 0; i < 12; i++) {
                     if (coord.equals(enemyECs[i])) {
                         enemyECs[i] = null;
@@ -822,6 +866,28 @@ public class Coms {
                 }
                 break;
             case NEUTRAL_EC:
+                minInd = -1;
+                seen = false;
+                for (int i = 11; i >= 0; i--) {
+                    if (totalECs[i] == null) minInd = i;
+                    else if (coord.equals(totalECs[i]))  {
+                        seen = true;
+                        break;
+                    }
+                }
+                if (minInd != -1 && !seen) {
+                    totalECs[minInd] = coord;
+                    if (corners) {
+                        for (int i = 0; i < 36; i++) {
+                            if (coord.equals(possibleECs[i])) {
+                                foundECs[i] = 0;
+                                seen = true;
+                                break;
+                            }
+                        }
+                        if (!seen) symmetry(coord);
+                    }
+                }
                 minInd = -1;
                 seen = false;
                 for (int i = 11; i >= 0; i--) {
@@ -907,7 +973,6 @@ public class Coms {
                 explored = true;
                 break;
             case NO_EC:
-                // TODO: implement
                 for (int i = 0; i < ECSize; i++) {
                     if (possibleECs[i].equals(coord) && foundECs[i] != 0) {
                         foundECs[i] = 0;
@@ -985,23 +1050,72 @@ public class Coms {
     // figure out possible ec locations with symmetry
     // assumes that we know all the corners
     public static void symmetry(MapLocation loc) {
+        Debug.p("Calling symmetry on: " + loc);
         for (int j = 0; j < ECSize; j++) {
             if (possibleECs[j].equals(loc)) return;
         }
         if (vert) {
-            possibleECs[ECSize] = new MapLocation(minX+maxX-loc.x, loc.y);
-            foundECs[ECSize] = 1;
-            ECSize++;
+            MapLocation temp = new MapLocation(minX+maxX-loc.x, loc.y);
+            boolean seen = false;
+            for (int i = 0; i < 12; i++) {
+                if (temp.equals(totalECs[i])) {
+                    seen = true;
+                    break;
+                }
+            }
+            for (int i = 0; i < ECSize; i++) {
+                if (temp.equals(possibleECs[i])) {
+                    seen = true;
+                    break;
+                }
+            }
+            if (!seen) {
+                possibleECs[ECSize] = new MapLocation(minX + maxX - loc.x, loc.y);
+                foundECs[ECSize] = 1;
+                ECSize++;
+            }
         }
         if (horz) {
-            possibleECs[ECSize] = new MapLocation(loc.x, minY+maxY-loc.y);
-            foundECs[ECSize] = 2;
-            ECSize++;
+            MapLocation temp = new MapLocation(loc.x, minY+maxY-loc.y);
+            boolean seen = false;
+            for (int i = 0; i < 12; i++) {
+                if (temp.equals(totalECs[i])) {
+                    seen = true;
+                    break;
+                }
+            }
+            for (int i = 0; i < ECSize; i++) {
+                if (temp.equals(possibleECs[i])) {
+                    seen = true;
+                    break;
+                }
+            }
+            if (!seen) {
+                possibleECs[ECSize] = new MapLocation(loc.x, minY + maxY - loc.y);
+                foundECs[ECSize] = 2;
+                ECSize++;
+            }
         }
         if (diag) {
-            possibleECs[ECSize] = new MapLocation(minX+maxX-loc.x, minY+maxY-loc.y);
-            foundECs[ECSize] = 3;
-            ECSize++;
+            MapLocation temp = new MapLocation(minX+maxX-loc.x, minY+maxY-loc.y);
+            boolean seen = false;
+            for (int i = 0; i < 12; i++) {
+                if (temp.equals(totalECs[i])) {
+                    seen = true;
+                    break;
+                }
+            }
+            for (int i = 0; i < ECSize; i++) {
+                if (temp.equals(possibleECs[i])) {
+                    seen = true;
+                    break;
+                }
+            }
+            if (!seen) {
+                possibleECs[ECSize] = new MapLocation(minX + maxX - loc.x, minY + maxY - loc.y);
+                foundECs[ECSize] = 3;
+                ECSize++;
+            }
         }
     }
 }

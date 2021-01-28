@@ -187,7 +187,7 @@ public class Muckraker extends Robot {
                     if (!rc.canMove(rightDir)) rightH = 0;
                     int H = Math.max(optH, Math.max(leftH, rightH));
                     if (H == 0) nav.bugNavigate(closestEnemyEC);
-                    if (H == optH) rc.move(optDir);
+                    else if (H == optH) rc.move(optDir);
                     else if (H == rightH) rc.move(rightDir);
                     else rc.move(leftDir);
                 } else {
