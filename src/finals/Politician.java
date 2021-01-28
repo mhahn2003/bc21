@@ -76,6 +76,7 @@ public class Politician extends Robot {
                     Debug.p("Can kill, will kill");
                     if (rc.canEmpower(closestBuffMuckDist)) rc.empower(closestBuffMuckDist);
                 } else {
+                    if (!moveAway) rc.setFlag(Coms.getMessage(Coms.IC.ATTACK, closestBuffMuck.getLocation()));
                     int closerDist = closestBuffMuckDist;
                     Direction optDir = null;
                     for (int i = 0; i < 8; i++) {

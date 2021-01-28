@@ -17,6 +17,7 @@ public class EC extends Robot {
     int polCount = 0;
     int fMuckCount = 0;
     int fPolCount = 0;
+    int polSum = 0;
 
     // total unit count
     int tS = 0;
@@ -42,6 +43,7 @@ public class EC extends Robot {
         polCount = 0;
         fMuckCount = 0;
         fPolCount = 0;
+        polSum = 0;
         int maxConv = 0;
         boolean muckHelp = false;
         MapLocation muckHelpLoc = null;
@@ -49,13 +51,14 @@ public class EC extends Robot {
             if (r.getTeam() == team.opponent()) {
                 if (r.getType() == RobotType.POLITICIAN && r.getLocation().isWithinDistanceSquared(rc.getLocation(), 20)) {
                     polCount++;
-                    if (r.getConviction() > maxConv) maxConv = r.getConviction();
+                    polSum += (r.getConviction()-10)*rc.getEmpowerFactor(team.opponent(), 0);
                 }
                 if (r.getType() == RobotType.MUCKRAKER) {
                     if (r.getLocation().isWithinDistanceSquared(rc.getLocation(), 20)) {
                         muckHelp = true;
                         muckHelpLoc = r.getLocation();
                         muckCount++;
+                        if (r.getConviction() > maxConv) maxConv = r.getConviction();
                     }
                 }
             }
@@ -74,21 +77,15 @@ public class EC extends Robot {
             return;
         }
         double rand = Math.random();
-        // TODO: fix our defense
-        if (polCount > 0) {
-            int random = (int) (rand * 4);
-            if (random < 3) {
-                build(RobotType.MUCKRAKER, 1);
-                tM--;
-            }
-            else {
-                build(RobotType.POLITICIAN, 30);
-                tDP--;
-            }
+        if (polSum >= rc.getInfluence()/4) {
+            build(RobotType.MUCKRAKER, 1, true);
+            build(RobotType.POLITICIAN, 20);
         }
         else if (muckCount > 0) {
-            if (fPolCount < muckCount+1) build(RobotType.POLITICIAN, 25);
-            else build(RobotType.MUCKRAKER, 1);
+            if (maxConv >= 100) build(RobotType.POLITICIAN, 2*maxConv+11);
+            else if (maxConv >= 20) build(RobotType.POLITICIAN, 50);
+            else build(RobotType.POLITICIAN, 20);
+            build(RobotType.MUCKRAKER, 1);
         }
         // scenario 2: no enemy units nearby
             // at the very first just build a lot of slanderers
