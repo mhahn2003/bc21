@@ -59,8 +59,6 @@ This is the Battlecode 2021 scaffold, containing an `examplefuncsplayer`. Read h
 - Price calculation with unit count and influence
 
 Order:
-1. completely revamp the wander function
-- need to find corners much faster
 2. use symmetry to find supposed ec locations
 3. allocate some muckrakers to explore instead of all congregating to ec
 4. signal big polis near ECs to either more poli reinforcements or more muckraker reinforcements
@@ -112,3 +110,5 @@ Done:
 - ~~fix build order for newly converted ecs~~
 - ~~build more politicians than slanderers~~
 - ~~fix signals bouncing back and forth with neutral ecs: feeling it's probably something with relevant flags~~
+- ~~completely revamp the wander function~~
+- ~~need to find corners much faster~~

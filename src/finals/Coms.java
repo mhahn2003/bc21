@@ -19,8 +19,8 @@ public class Coms {
     // number of possible cases for InfoCategory enum class
     private static int numCase = 17;
 
-    //[0,16] bits for information (16 bits) (msg)    ( msg&0x00ffff     )
-    //[17,22] for IC (6 bits)               (msg<<16)((msg&0x3f0000)>>16)
+    //[1,17] bits for information (16 bits) (msg)    ( msg&0x00ffff     )
+    //[18,22] for IC (6 bits)               (msg<<16)((msg&0x3f0000)>>16)
     //[23,24] for robot type (2 bits)       (msg<<22)((msg&0xc00000)>>22)
 
     public Coms() {
@@ -35,6 +35,7 @@ public class Coms {
         ENEMY_EC,
         NEUTRAL_EC,
         NO_EC,
+        NO_SYM,
         POLITICIAN,
         SLANDERER,
         MUCKRAKER_ID,
@@ -61,21 +62,22 @@ public class Coms {
             case ENEMY_EC      : message = 5; break;
             case NEUTRAL_EC    : message = 6; break;
             case NO_EC         : message = 7; break;
-            case POLITICIAN    : message = 8; break;
-            case SLANDERER     : message = 9; break;
-            case MUCKRAKER_ID  : message = 10; break;
-            case MAP_CORNER    : message = 11; break;
-            case MAP_NW        : message = 12; break;
-            case MAP_NE        : message = 13; break;
-            case MAP_SW        : message = 14; break;
-            case MAP_SE        : message = 15; break;
-            case MUCKRAKER     : message = 16; break;
-            case EDGE_N        : message = 17; break;
-            case EDGE_E        : message = 18; break;
-            case EDGE_S        : message = 19; break;
-            case EDGE_W        : message = 20; break;
-            case ATTACK        : message = 21; break;
-            default            : message = 22;
+            case NO_SYM        : message = 8; break;
+            case POLITICIAN    : message = 9; break;
+            case SLANDERER     : message = 10; break;
+            case MUCKRAKER_ID  : message = 11; break;
+            case MAP_CORNER    : message = 12; break;
+            case MAP_NW        : message = 13; break;
+            case MAP_NE        : message = 14; break;
+            case MAP_SW        : message = 15; break;
+            case MAP_SE        : message = 16; break;
+            case MUCKRAKER     : message = 17; break;
+            case EDGE_N        : message = 18; break;
+            case EDGE_E        : message = 19; break;
+            case EDGE_S        : message = 20; break;
+            case EDGE_W        : message = 21; break;
+            case ATTACK        : message = 22; break;
+            default            : message = 23;
         }
         message = addCoord(message, coord) + typeInt(rc.getType());
         return message;
@@ -90,21 +92,22 @@ public class Coms {
             case ENEMY_EC      : message = 5; break;
             case NEUTRAL_EC    : message = 6; break;
             case NO_EC         : message = 7; break;
-            case POLITICIAN    : message = 8; break;
-            case SLANDERER     : message = 9; break;
-            case MUCKRAKER_ID  : message = 10; break;
-            case MAP_CORNER    : message = 11; break;
-            case MAP_NW        : message = 12; break;
-            case MAP_NE        : message = 13; break;
-            case MAP_SW        : message = 14; break;
-            case MAP_SE        : message = 15; break;
-            case MUCKRAKER     : message = 16; break;
-            case EDGE_N        : message = 17; break;
-            case EDGE_E        : message = 18; break;
-            case EDGE_S        : message = 19; break;
-            case EDGE_W        : message = 20; break;
-            case ATTACK        : message = 21; break;
-            default            : message = 22;
+            case NO_SYM        : message = 8; break;
+            case POLITICIAN    : message = 9; break;
+            case SLANDERER     : message = 10; break;
+            case MUCKRAKER_ID  : message = 11; break;
+            case MAP_CORNER    : message = 12; break;
+            case MAP_NW        : message = 13; break;
+            case MAP_NE        : message = 14; break;
+            case MAP_SW        : message = 15; break;
+            case MAP_SE        : message = 16; break;
+            case MUCKRAKER     : message = 17; break;
+            case EDGE_N        : message = 18; break;
+            case EDGE_E        : message = 19; break;
+            case EDGE_S        : message = 20; break;
+            case EDGE_W        : message = 21; break;
+            case ATTACK        : message = 22; break;
+            default            : message = 23;
         }
         message = addCoord(message, coord) + typeInt(rc.getType()) + addInf(inf);
         return message;
@@ -120,21 +123,22 @@ public class Coms {
             case ENEMY_EC      : message = 5; break;
             case NEUTRAL_EC    : message = 6; break;
             case NO_EC         : message = 7; break;
-            case POLITICIAN    : message = 8; break;
-            case SLANDERER     : message = 9; break;
-            case MUCKRAKER_ID  : message = 10; break;
-            case MAP_CORNER    : message = 11; break;
-            case MAP_NW        : message = 12; break;
-            case MAP_NE        : message = 13; break;
-            case MAP_SW        : message = 14; break;
-            case MAP_SE        : message = 15; break;
-            case MUCKRAKER     : message = 16; break;
-            case EDGE_N        : message = 17; break;
-            case EDGE_E        : message = 18; break;
-            case EDGE_S        : message = 19; break;
-            case EDGE_W        : message = 20; break;
-            case ATTACK        : message = 21; break;
-            default            : message = 22;
+            case NO_SYM        : message = 8; break;
+            case POLITICIAN    : message = 9; break;
+            case SLANDERER     : message = 10; break;
+            case MUCKRAKER_ID  : message = 11; break;
+            case MAP_CORNER    : message = 12; break;
+            case MAP_NW        : message = 13; break;
+            case MAP_NE        : message = 14; break;
+            case MAP_SW        : message = 15; break;
+            case MAP_SE        : message = 16; break;
+            case MUCKRAKER     : message = 17; break;
+            case EDGE_N        : message = 18; break;
+            case EDGE_E        : message = 19; break;
+            case EDGE_S        : message = 20; break;
+            case EDGE_W        : message = 21; break;
+            case ATTACK        : message = 22; break;
+            default            : message = 23;
         }
         message = addID(message, ID) + typeInt(rc.getType());
         return message;
@@ -180,20 +184,21 @@ public class Coms {
             case 5: return IC.ENEMY_EC;
             case 6: return IC.NEUTRAL_EC;
             case 7: return IC.NO_EC;
-            case 8: return IC.POLITICIAN;
-            case 9: return IC.SLANDERER;
-            case 10: return IC.MUCKRAKER_ID;
-            case 11: return IC.MAP_CORNER;
-            case 12: return IC.MAP_NW;
-            case 13: return IC.MAP_NE;
-            case 14: return IC.MAP_SW;
-            case 15: return IC.MAP_SE;
-            case 16: return IC.MUCKRAKER;
-            case 17: return IC.EDGE_N;
-            case 18: return IC.EDGE_E;
-            case 19: return IC.EDGE_S;
-            case 20: return IC.EDGE_W;
-            case 21: return IC.ATTACK;
+            case 8: return IC.NO_SYM;
+            case 9: return IC.POLITICIAN;
+            case 10: return IC.SLANDERER;
+            case 11: return IC.MUCKRAKER_ID;
+            case 12: return IC.MAP_CORNER;
+            case 13: return IC.MAP_NW;
+            case 14: return IC.MAP_NE;
+            case 15: return IC.MAP_SW;
+            case 16: return IC.MAP_SE;
+            case 17: return IC.MUCKRAKER;
+            case 18: return IC.EDGE_N;
+            case 19: return IC.EDGE_E;
+            case 20: return IC.EDGE_S;
+            case 21: return IC.EDGE_W;
+            case 22: return IC.ATTACK;
             default: return null;
         }
     }
@@ -352,6 +357,17 @@ public class Coms {
                         }
                     }
                 }
+                if (!corners) {
+                    if (minX != 9999 && maxX != 30065 && minY != 9999 && maxY != 30065) {
+                        corners = true;
+                        // check all the symmetry stuff
+                        for (int i = 0; i < 12; i++) {
+                            if (totalECs[i] != null) {
+                                symmetry(totalECs[i]);
+                            }
+                        }
+                    }
+                }
             }
             // whether you're a guarding a slanderer
             RobotInfo[] closeRobots = rc.senseNearbyRobots(20, team);
@@ -371,6 +387,21 @@ public class Coms {
                     Debug.p("ID is: " + id);
                     MapLocation loc = r.getLocation();
                     Debug.p("Location is: " + loc);
+                    int mInd = -1;
+                    boolean added = false;
+                    for (int i = 11; i >= 0; i--) {
+                        if (totalECs[i] == null) {
+                            mInd = i;
+                        } else if (totalECs[i].equals(r.getLocation())) {
+                            added = true;
+                            break;
+                        }
+                    }
+                    if (mInd != -1 && !added) {
+                        // new ec location, do stuff with symmetry
+                        totalECs[mInd] = r.getLocation();
+                        if (corners) symmetry(totalECs[mInd]);
+                    }
                     if (r.getTeam() == team) {
                         int minInd = -1;
                         boolean seen = false;
@@ -486,6 +517,28 @@ public class Coms {
                         foundSlanderer = true;
                         signalQueue.add(getMessage(IC.SLANDERER, r.getLocation()));
                     }
+                }
+            }
+            // check for possible symmetry locations
+            for (int i = 0; i < ECSize; i++) {
+                if (foundECs[i] != 0 && rc.canSenseLocation(possibleECs[i])) {
+                    RobotInfo r = rc.senseRobotAtLocation(possibleECs[i]);
+                    if (r == null || r.getType() != RobotType.ENLIGHTENMENT_CENTER) {
+                        if (foundECs[i] == 1 && vert) {
+                            vert = false;
+                            signalQueue.add(getMessage(IC.NO_SYM, 1));
+                        }
+                        if (foundECs[i] == 2 && horz) {
+                            horz = false;
+                            signalQueue.add(getMessage(IC.NO_SYM, 2));
+                        }
+                        if (foundECs[i] == 3 && diag) {
+                            diag = false;
+                            signalQueue.add(getMessage(IC.NO_SYM, 3));
+                        }
+                        signalQueue.add(getMessage(IC.NO_EC, possibleECs[i]));
+                    }
+                    foundECs[i] = 0;
                 }
             }
         }
@@ -855,6 +908,25 @@ public class Coms {
                 break;
             case NO_EC:
                 // TODO: implement
+                for (int i = 0; i < ECSize; i++) {
+                    if (possibleECs[i].equals(coord) && foundECs[i] != 0) {
+                        foundECs[i] = 0;
+                    }
+                }
+                break;
+            case NO_SYM:
+                if (ID == 1 && vert) {
+                    vert = false;
+                    addRelevantFlag(getMessage(IC.NO_SYM, ID));
+                }
+                if (ID == 2 && horz) {
+                    horz = false;
+                    addRelevantFlag(getMessage(IC.NO_SYM, ID));
+                }
+                if (ID == 3 && diag) {
+                    diag = false;
+                    addRelevantFlag(getMessage(IC.NO_SYM, ID));
+                }
                 break;
         }
     }
@@ -908,5 +980,28 @@ public class Coms {
         updateNW = false;
         updateSE = false;
         updateSW = false;
+    }
+
+    // figure out possible ec locations with symmetry
+    // assumes that we know all the corners
+    public static void symmetry(MapLocation loc) {
+        for (int j = 0; j < ECSize; j++) {
+            if (possibleECs[j].equals(loc)) return;
+        }
+        if (vert) {
+            possibleECs[ECSize] = new MapLocation(minX+maxX-loc.x, loc.y);
+            foundECs[ECSize] = 1;
+            ECSize++;
+        }
+        if (horz) {
+            possibleECs[ECSize] = new MapLocation(loc.x, minY+maxY-loc.y);
+            foundECs[ECSize] = 2;
+            ECSize++;
+        }
+        if (diag) {
+            possibleECs[ECSize] = new MapLocation(minX+maxX-loc.x, minY+maxY-loc.y);
+            foundECs[ECSize] = 3;
+            ECSize++;
+        }
     }
 }

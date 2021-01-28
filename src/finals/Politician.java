@@ -221,9 +221,7 @@ public class Politician extends Robot {
                 Debug.p("navbugging");
                 nav.bugNavigate(closestEC);
             }
-        } else {
-            nav.bugNavigate(wander());
-        }
+        } else nav.bugNavigate(wander());
     }
 
     static void defend() throws GameActionException {
@@ -349,9 +347,7 @@ public class Politician extends Robot {
                                 }
                             }
                             if (closestEC != null) nav.bugNavigate(closestEC);
-                            else {
-                                nav.bugNavigate(wander());
-                            }
+                            else nav.bugNavigate(wander());
                         } else {
                             Debug.p("polis near me");
                             int maxH = 0;

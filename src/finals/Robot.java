@@ -27,6 +27,7 @@ public class Robot {
     // ECIds may not necessarily correspond to EC MapLocations
     // discuss: 3 by 12 array?
     static int[] ECIds = new int[12];
+    static MapLocation[] totalECs = new MapLocation[12];
     static MapLocation[] friendECs = new MapLocation[12];
     static MapLocation[] neutralECs = new MapLocation[12];
     static int[] neutralInf = new int[12];
@@ -61,6 +62,7 @@ public class Robot {
     static boolean vert = true;
     static boolean horz = true;
     static boolean diag = true;
+    static boolean corners = false;
 
     // all robots in sensor radius
     static RobotInfo[] robots;
@@ -154,7 +156,7 @@ public class Robot {
 
     // wander around
     // TODO: fix all the wander functions since we changed from void to MapLocation
-    public static MapLocation wander() throws GameActionException {
+    public static MapLocation wander() {
         if (!explored) {
             // first need to find the map dimensions asap
             if (minX == 9999 || maxX == 30065 || minY == 9999 || maxY == 30065) {
