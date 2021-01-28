@@ -16,6 +16,7 @@ public class ECComs extends Coms {
     private static boolean allSearched = false;
     private int[] lastFlags = new int[20];
     private int flagIndex = 0;
+
     // edges, ec id and locations, enemy loc
 
     private HashSet<Integer> robotIDs = new HashSet<>(50);
@@ -23,8 +24,9 @@ public class ECComs extends Coms {
     public ECComs() {
         super();
         ECIds[0] = rc.getID();
-        relevantSize = 1;
+        relevantSize = 2;
         relevantFlags[0] = getMessage(IC.EC_ID, rc.getID());
+        relevantFlags[1] = getMessage(IC.FRIEND_EC, rc.getLocation());
         friendECs[0] = rc.getLocation();
         totalECs[0] = rc.getLocation();
     }
@@ -130,24 +132,35 @@ public class ECComs extends Coms {
         loopECS();
         updateMap();
         if (turnCount < 7) {
-            lastFlags[9] = getMessage(IC.EC_ID, rc.getID()) % (1 << 22);
+            lastFlags[19] = getMessage(IC.EC_ID, rc.getID()) % (1 << 22);
             rc.setFlag(getMessage(IC.EC_ID, rc.getID()));
             loopFlags();
         } else {
+            // debug
+//            for (int i = 0; i < 20; i++) {
+//                if (lastFlags[i] != 0) {
+//                    Debug.p("last flag index: " + i);
+//                    Debug.p("Type: " + getCat(lastFlags[i]));
+//                }
+//            }
             // remove redundant flags
             while (!signalQueue.isEmpty()) {
                 boolean redundant = false;
                 int flag = signalQueue.peek();
                 for (int i = 0; i < 20; i++) {
                     if (lastFlags[i] == flag % (1 << 22)) {
+//                        Debug.p("redundant bc of last flags, index: " + i);
                         redundant = true;
                         break;
                     }
                 }
-                for (int i = 0; i < relevantSize-2; i++) {
-                    if (relevantFlags[i] % (1 << 22) == flag % (1 << 22)) {
-                        redundant = true;
-                        break;
+                if (!relevantDiscovery) {
+                    for (int i = 0; i < relevantSize; i++) {
+                        if (relevantFlags[i] % (1 << 22) == flag % (1 << 22)) {
+//                            Debug.p("redundant bc of relevant flags, index: " + i);
+                            redundant = true;
+                            break;
+                        }
                     }
                 }
                 if (redundant) {
@@ -161,6 +174,7 @@ public class ECComs extends Coms {
                 // add it to a list of last displayed flags to reduce redundancy between ecs
                 int flag = signalQueue.poll();
                 Debug.p("getting from signalQueue");
+                if (flagIndex % 20 == 12) Debug.p("ASDFASDFASDFASDFASDFASDFASDFSDFASDFASDF\nasdfasdf\n\n\n\n\nasdfasdfasdfas\n\n\n");
                 lastFlags[flagIndex % 20] = flag % (1 << 22);
                 flagIndex++;
                 Debug.p("Type: " + getCat(flag));
@@ -199,8 +213,6 @@ public class ECComs extends Coms {
             && cat != IC.MAP_NE && cat != IC.MAP_NW && cat != IC.MAP_SE
             && cat != IC.MAP_SW && cat != IC.ATTACK) {
                 Debug.p("not processed yet, adding to queue: " + flag);
-                lastFlags[flagIndex % 20] = flag % (1 << 22);
-                flagIndex++;
                 signalQueue.add(convertFlag(flag));
             }
             if (cat != IC.MUCKRAKER_HELP && cat != IC.MUCKRAKER && cat != IC.ATTACK && cat != IC.MUCKRAKER_ID && cat != IC.POLITICIAN) super.processFlag(flag);

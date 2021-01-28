@@ -12,8 +12,9 @@ public class Coms {
     public static PriorityQueue<Integer> signalQueue = new PriorityQueue<>();
     public static int relevantSize = 0;
     public static int relevantInd = 0;
-    public static int[] relevantFlags = new int[30];
+    public static int[] relevantFlags = new int[40];
     protected RobotInfo processingRobot = null;
+    public static boolean relevantDiscovery = false;
 
 
     // number of possible cases for InfoCategory enum class
@@ -34,6 +35,10 @@ public class Coms {
         EC_ID,
         ENEMY_EC,
         NEUTRAL_EC,
+        EDGE_N,
+        EDGE_E,
+        EDGE_S,
+        EDGE_W,
         NO_EC,
         NO_SYM,
         POLITICIAN,
@@ -45,10 +50,6 @@ public class Coms {
         MAP_SW,
         MAP_SE,
         MUCKRAKER,
-        EDGE_N,
-        EDGE_E,
-        EDGE_S,
-        EDGE_W,
         ATTACK,
     }
 
@@ -61,21 +62,21 @@ public class Coms {
             case EC_ID         : message = 4; break;
             case ENEMY_EC      : message = 5; break;
             case NEUTRAL_EC    : message = 6; break;
-            case NO_EC         : message = 7; break;
-            case NO_SYM        : message = 8; break;
-            case POLITICIAN    : message = 9; break;
-            case SLANDERER     : message = 10; break;
-            case MUCKRAKER_ID  : message = 11; break;
-            case MAP_CORNER    : message = 12; break;
-            case MAP_NW        : message = 13; break;
-            case MAP_NE        : message = 14; break;
-            case MAP_SW        : message = 15; break;
-            case MAP_SE        : message = 16; break;
-            case MUCKRAKER     : message = 17; break;
-            case EDGE_N        : message = 18; break;
-            case EDGE_E        : message = 19; break;
-            case EDGE_S        : message = 20; break;
-            case EDGE_W        : message = 21; break;
+            case EDGE_N        : message = 7; break;
+            case EDGE_E        : message = 8; break;
+            case EDGE_S        : message = 9; break;
+            case EDGE_W        : message = 10; break;
+            case NO_EC         : message = 11; break;
+            case NO_SYM        : message = 12; break;
+            case POLITICIAN    : message = 13; break;
+            case SLANDERER     : message = 14; break;
+            case MUCKRAKER_ID  : message = 15; break;
+            case MAP_CORNER    : message = 16; break;
+            case MAP_NW        : message = 17; break;
+            case MAP_NE        : message = 18; break;
+            case MAP_SW        : message = 19; break;
+            case MAP_SE        : message = 20; break;
+            case MUCKRAKER     : message = 21; break;
             case ATTACK        : message = 22; break;
             default            : message = 23;
         }
@@ -91,21 +92,21 @@ public class Coms {
             case EC_ID         : message = 4; break;
             case ENEMY_EC      : message = 5; break;
             case NEUTRAL_EC    : message = 6; break;
-            case NO_EC         : message = 7; break;
-            case NO_SYM        : message = 8; break;
-            case POLITICIAN    : message = 9; break;
-            case SLANDERER     : message = 10; break;
-            case MUCKRAKER_ID  : message = 11; break;
-            case MAP_CORNER    : message = 12; break;
-            case MAP_NW        : message = 13; break;
-            case MAP_NE        : message = 14; break;
-            case MAP_SW        : message = 15; break;
-            case MAP_SE        : message = 16; break;
-            case MUCKRAKER     : message = 17; break;
-            case EDGE_N        : message = 18; break;
-            case EDGE_E        : message = 19; break;
-            case EDGE_S        : message = 20; break;
-            case EDGE_W        : message = 21; break;
+            case EDGE_N        : message = 7; break;
+            case EDGE_E        : message = 8; break;
+            case EDGE_S        : message = 9; break;
+            case EDGE_W        : message = 10; break;
+            case NO_EC         : message = 11; break;
+            case NO_SYM        : message = 12; break;
+            case POLITICIAN    : message = 13; break;
+            case SLANDERER     : message = 14; break;
+            case MUCKRAKER_ID  : message = 15; break;
+            case MAP_CORNER    : message = 16; break;
+            case MAP_NW        : message = 17; break;
+            case MAP_NE        : message = 18; break;
+            case MAP_SW        : message = 19; break;
+            case MAP_SE        : message = 20; break;
+            case MUCKRAKER     : message = 21; break;
             case ATTACK        : message = 22; break;
             default            : message = 23;
         }
@@ -122,21 +123,21 @@ public class Coms {
             case EC_ID         : message = 4; break;
             case ENEMY_EC      : message = 5; break;
             case NEUTRAL_EC    : message = 6; break;
-            case NO_EC         : message = 7; break;
-            case NO_SYM        : message = 8; break;
-            case POLITICIAN    : message = 9; break;
-            case SLANDERER     : message = 10; break;
-            case MUCKRAKER_ID  : message = 11; break;
-            case MAP_CORNER    : message = 12; break;
-            case MAP_NW        : message = 13; break;
-            case MAP_NE        : message = 14; break;
-            case MAP_SW        : message = 15; break;
-            case MAP_SE        : message = 16; break;
-            case MUCKRAKER     : message = 17; break;
-            case EDGE_N        : message = 18; break;
-            case EDGE_E        : message = 19; break;
-            case EDGE_S        : message = 20; break;
-            case EDGE_W        : message = 21; break;
+            case EDGE_N        : message = 7; break;
+            case EDGE_E        : message = 8; break;
+            case EDGE_S        : message = 9; break;
+            case EDGE_W        : message = 10; break;
+            case NO_EC         : message = 11; break;
+            case NO_SYM        : message = 12; break;
+            case POLITICIAN    : message = 13; break;
+            case SLANDERER     : message = 14; break;
+            case MUCKRAKER_ID  : message = 15; break;
+            case MAP_CORNER    : message = 16; break;
+            case MAP_NW        : message = 17; break;
+            case MAP_NE        : message = 18; break;
+            case MAP_SW        : message = 19; break;
+            case MAP_SE        : message = 20; break;
+            case MUCKRAKER     : message = 21; break;
             case ATTACK        : message = 22; break;
             default            : message = 23;
         }
@@ -183,21 +184,21 @@ public class Coms {
             case 4: return IC.EC_ID;
             case 5: return IC.ENEMY_EC;
             case 6: return IC.NEUTRAL_EC;
-            case 7: return IC.NO_EC;
-            case 8: return IC.NO_SYM;
-            case 9: return IC.POLITICIAN;
-            case 10: return IC.SLANDERER;
-            case 11: return IC.MUCKRAKER_ID;
-            case 12: return IC.MAP_CORNER;
-            case 13: return IC.MAP_NW;
-            case 14: return IC.MAP_NE;
-            case 15: return IC.MAP_SW;
-            case 16: return IC.MAP_SE;
-            case 17: return IC.MUCKRAKER;
-            case 18: return IC.EDGE_N;
-            case 19: return IC.EDGE_E;
-            case 20: return IC.EDGE_S;
-            case 21: return IC.EDGE_W;
+            case 7: return IC.EDGE_N;
+            case 8: return IC.EDGE_E;
+            case 9: return IC.EDGE_S;
+            case 10: return IC.EDGE_W;
+            case 11: return IC.NO_EC;
+            case 12: return IC.NO_SYM;
+            case 13: return IC.POLITICIAN;
+            case 14: return IC.SLANDERER;
+            case 15: return IC.MUCKRAKER_ID;
+            case 16: return IC.MAP_CORNER;
+            case 17: return IC.MAP_NW;
+            case 18: return IC.MAP_NE;
+            case 19: return IC.MAP_SW;
+            case 20: return IC.MAP_SE;
+            case 21: return IC.MUCKRAKER;
             case 22: return IC.ATTACK;
             default: return null;
         }
@@ -1037,17 +1038,18 @@ public class Coms {
     }
 
     public static void addRelevantFlag(int flag) {
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 40; i++) {
             if (relevantFlags[i] == 0) {
                 relevantFlags[i] = flag;
                 relevantSize++;
                 break;
             }
         }
+        relevantDiscovery = true;
     }
 
     public static void removeRelevantFlag(int flag) {
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 40; i++) {
             if (relevantFlags[i] == flag) {
                 relevantFlags[i] = 0;
                 relevantSize--;
@@ -1057,7 +1059,7 @@ public class Coms {
     }
 
     public static void removeNeutralRelevantFlag(int flag) {
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 40; i++) {
             if (getCat(relevantFlags[i]) == IC.NEUTRAL_EC && getCoord(relevantFlags[i]).equals(getCoord(flag))) {
                 relevantFlags[i] = 0;
                 relevantSize--;
@@ -1075,6 +1077,7 @@ public class Coms {
         updateNW = false;
         updateSE = false;
         updateSW = false;
+        relevantDiscovery = false;
     }
 
     // figure out possible ec locations with symmetry
